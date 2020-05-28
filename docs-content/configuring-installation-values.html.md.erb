@@ -1,0 +1,135 @@
+---
+title: Configuring Installation Values for Spring Cloud Data Flow for Kubernetes
+owner: Spring Cloud Data Flow Release Engineering
+---
+
+This topic describes how to configure the Spring Cloud Data Flow for Kubernetes installation resources before deploying to the Kubernetes cluster.
+
+Before proceeding, review the [Preparing to Install SCDF for Kubernetes](preparing-to-install-scdf-for-kubernetes.html) topic for details about:
+
+* Preparing the Spring Cloud Data Flow for Kubernetes installation resources on your local workstation,
+* Installing required command-line tools, and
+* Preparing the Kubernetes cluster and application-image registry dependencies.
+
+## <a id='overview'></a> Overview
+
+There are a few concepts that drive how the configuration of Spring Cloud Data Flow for Kubernetes is performed.
+
+* Support for multiple deployment environments
+* Configuration of application properties
+* Configuration of Kubernetes Resources
+* Support for installation in an air-gapped environment
+
+The following sections explain these concepts and the steps you need to take to configure them.
+
+
+## <a id='support-for-multiple-environments'></a> Support for multiple deployment environments
+
+The installation is based on the tool [Kustomize](https://kustomize.io) that allows you to customize Kubernetes resources by providing base resources files and patch files that modify the base resources to target different deployment environments.
+Kustomize is built into the kubectl CLI.
+The provided configuration files support a development and production environment.
+The development environment is intended to quickly try Spring Cloud Data Flow for Kubernetes by provisioning a RabbitMQ message broker and Postresql database.
+
+
+### <a id='directory-structure'></a> Directory Structure
+
+The installation directory structure contains the following directories.
+
+* `bin` - scripts for installing and installing to the development environment as well as a script for performing image relocation.
+* `apps` - Kubernetes resource files and application configuration files to support deployment to multiple environments
+* `services` - Kubernetes resources for deploying RabbitMQ and Postgresql fur use with the development environment
+
+The apps directory contains the following folder structure based on Kustomize namving conventions
+
+<pre>
+.
+├── apps
+│   ├── data-flow
+│   │   ├── images
+│   │   ├── kustomize
+│   │   │   ├── base
+│   │   │   └── overlays
+│   │   └── schemas
+│   └── skipper
+│       ├── images
+│       ├── kustomize
+│       │   ├── base
+│       │   └── overlays
+│       └── schemas
+</pre>
+
+There are two directories for each application that is part of Spring Cloud Data Flow for Kubernetes.
+The first directory, data-flow, contains the Data Flow Server and the second directory contains the Skipper server.
+Within each application directory there is the following directory structure
+
+* `images` - location for container images that can be downloaded separately.
+* `kustomize` - the directory containing Kubernetes and application configuration files for use with Kustomize.
+* `schemas` - Database schemas that you can install manually if you do not want each server to install them upon startup.
+
+The contents of the kustomize directory is shown below.
+Edit files in this directory to configure the application and Kubernetes resources.
+
+<pre>
+.
+├── base
+│   ├── deployment.yaml
+│   ├── kustomization.yaml
+│   ├── role-binding.yaml
+│   ├── roles.yaml
+│   ├── service-account.yaml
+│   └── service.yaml
+└── overlays
+    ├── dev
+    │   ├── application.yaml
+    │   ├── deployment-patch.yaml
+    │   ├── kustomization.yaml
+    │   └── service-patch.yaml
+    └── production
+        ├── application.yaml
+        ├── deployment-patch.yaml
+        ├── kustomization.yaml
+        └── service-patch.yaml
+</pre>
+
+**Base**
+
+The `base` directory contains kubernetes resource files with default configuration values that are then patched by files in the overlays directory.
+The file `kustomization.yaml` references the other yaml files in that directory.
+
+**Overlays**
+
+There is a directory per deployment environment.
+In this case `dev` and `production` environments.
+In each directory there is a `kustomization.yaml` file that references the `kustomization.yaml` file in the base and adds additional patches to modify values unique to the target deployment environment.
+You can also add additonal configuration in the `kustomization.yaml` to set the target namespace to deploy to add labels and name prefixes.  See the [kustomization documentation](https://github.com/kubernetes-sigs/kustomize/blob/master/docs/fields.md) for additional fields that can be configured in the kustomization.yaml file.
+
+
+## <a id='configuration-steps'></a> Configuration Steps
+
+The file `application.yaml` is a Spring Boot configuration file that you will edit to configure the Data Flow and Skipper server.
+For example, you can configure `spring.datasource` properties or `spring.cloud.dataflow.features` properties.
+The `deployment-patch.yaml` and `service-patch.yaml` files are where you will patch the base kubernetes resources with values appropriate for your target environment.
+Examples of these fields are memory/cpu allocations and ingress configuration.
+
+
+### <a id='ingress-resource-configuration'></a> Ingress Resource
+
+You can modify the `ingress-patch.yaml` in `apps/ingress/kustomize/overlays/dev/` directory.
+Modify the host field to provide the DNS name required for your Ingress Controller configuration.
+
+
+### <a id='loadbalancer-configuration'></a> Load Balancer
+
+If your Kubernetes cluster supports Kubernetes Services of type LoadBalancer, you may use that type of service to provision a load balancer using an Ingress Controller such as NGINX or Contour.
+
+<p class="note">
+  This option is recommended when deploying Spring Cloud Data Flow for Kubernetes to VMware Enterprise PKS on AWS, Azure, or GCP, or on vSphere with NSX-T container networking.
+</p>
+<p class="note warning">
+  This option is <strong>not compatible</strong> with VMware Enterprise PKS to vSphere with Flannel container networking.
+</p>
+
+
+## <a id='configure-app-registry-values'></a> Next: Configure App Registry Values
+
+Spring Cloud Data Flow for Kubernetes depends on an external image registry to store the images it builds for buildpack-based applications. Proceed to the [Configuring the Application Image Registry](configuring-app-image-registry.html) topic for details on configuring Harbor, GCR, or Dockerhub as this registry for the installation.

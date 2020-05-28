@@ -1,0 +1,45 @@
+---
+title: Preparing to Spring Cloud Data Flow for Kubernetes
+owner: Spring Cloud Data Flow Release Engineering
+---
+
+This topic describes how to prepare dependencies and your local workstation to install Spring Cloud Data Flow for Kubernetes.
+
+## <a id='preparing-installation-resources'></a> Preparing the Installation Resources
+
+Download the Spring Cloud Data Flow for Kubernetes installation resources from [VMware Tanzu Network](https://network.pivotal.io/products/p-scdf-for-kubernetes).
+
+1. Log into [VMware Tanzu Network](https://network.pivotal.io).
+
+1. Navigate to the [Spring Cloud Data Flow for Kubernetes product listing](https://network.pivotal.io/products/p-scdf-for-kubernetes).
+
+1. Download the "SCDF for Kubernetes installation scripts" file to a local directory of your choice.
+
+1. Extract the contents of `data-flow-0.1.0.tgz'
+
+```bash
+$ tar xzvf data-flow-0.1.0.tgz
+```
+
+
+## <a id='app-container-registry'></a> Container Registry for App Images
+
+Spring Cloud Data Flow for Kubernetes depends on a container image registry that contains the container images that will be deployed to the Kubernetes cluster.  Supported registries include Harbor, Google Container Registry (GCR), and Dockerhub.
+
+If you are using Harbor as your container registry, ensure that it is deployed in your environment and is accessible at a domain name of your choice. The [VMware Harbor Registry tile](https://network.pivotal.io/products/harbor-container-registry) is one option to deploy it when using Ops Manager.
+
+## <a id='command-line-tools'></a> Command-Line Tools
+
+The installation procedure for Spring Cloud Data Flow for Kubernetes requires a Linux or macOS workstation with the following command-line tools installed.
+
+For more information about installing the `kapp` and `kbld` tools from VMware Tanzu Network, see the [Installing Command-Line Tools](installing-command-line-tools.html) topic.
+
+* The Kubernetes CLI, `kubectl`. For more information, see the [Installing the Kubernetes CLI](https://docs.pivotal.io/pks/installing-kubectl-cli.html) topic.
+* The `kapp` utility, version v0.22.0 or later.
+* The `kbld` utility, version v0.19.0 or later.
+* The `yq` utility, version v3.0 or later.
+* The `sed` utility.  Should already be installed on your workstation.
+
+## <a id='kubernetes-cluster'></a> Next: Preparing the Kubernetes Cluster
+
+Spring Cloud Data Flow for Kubernetes requires that the Kubernetes cluster satisfy certain minimum resource requirements and capabilities. Proceed to the [Preparing the Kubernetes Cluster](preparing-kubernetes-cluster.html) topic for more details.
