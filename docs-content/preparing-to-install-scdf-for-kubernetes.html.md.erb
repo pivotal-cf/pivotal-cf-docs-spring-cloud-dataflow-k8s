@@ -60,7 +60,7 @@ To relocate the Data Flow server, use the Docker CLI to authenticate to your rei
 For Skipper image relocation execute
 
 ```bash
-./bin/relocate-image.sh --app skipper --repository <registry-repo-prefix>markpollack/spring-cloud-skipper-server
+./bin/relocate-image.sh --app skipper --repository <registry-repo-prefix>/spring-cloud-skipper-server
 ```
 
 The relocation script will update the `kustomization.yaml` files to match the new relocated image repository locations.
