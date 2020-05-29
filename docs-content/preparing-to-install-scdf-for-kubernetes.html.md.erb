@@ -21,12 +21,49 @@ Download the Spring Cloud Data Flow for Kubernetes installation resources from [
 $ tar xzvf data-flow-0.1.0.tgz
 ```
 
+## <a id='image-relocation'></a> Re-locate App Images to another Container Registry [optional]
 
-## <a id='app-container-registry'></a> Container Registry for App Images
-
-Spring Cloud Data Flow for Kubernetes depends on a container image registry that contains the container images that will be deployed to the Kubernetes cluster.  Supported registries include Harbor, Google Container Registry (GCR), and Dockerhub.
+You have the option of re-locating the container images that Spring Cloud Data Flow for Kubernetes depends on to a different container image registry. Supported registries include Harbor, Google Container Registry (GCR), and DockerHub.
 
 If you are using Harbor as your container registry, ensure that it is deployed in your environment and is accessible at a domain name of your choice. The [VMware Harbor Registry tile](https://network.pivotal.io/products/harbor-container-registry) is one option to deploy it when using Ops Manager.
+
+Before proceeding to relocate images for Spring Cloud Data Flow for Kubernetes download the Spring Cloud Data Flow for Kubernetes installation images from [VMware Tanzu Network](https://network.pivotal.io/products/p-scdf-for-kubernetes).
+
+1. Log into [VMware Tanzu Network](https://network.pivotal.io).
+
+1. Navigate to the [Spring Cloud Data Flow for Kubernetes product listing](https://network.pivotal.io/products/p-scdf-for-kubernetes).
+
+1. Download the "SCDF for Kubernetes installation images" file to  to the same directory where you downloaded the "SCDF for Kubernetes installation files" archive file above.
+
+1. Extract the contents of `data-flow-images-0.1.0.tgz`
+
+```bash
+$ tar xzvf data-flow-images-0.1.0.tgz
+```
+
+Then cd to the extracted `spring-cloud-data-flow directory`. In the `bin` directory is a script `relocate-image.sh`.
+It takes two arguments `--app` and `--repository`. The usage is
+
+```bash
+Usage: ./bin/relocate-image.sh [-r|--repository <arg>] [-a|--app <arg>] [-h|--help]
+	-r, --repository: Import images into given image repository (no default)
+	-a, --app: Application to relocate, data-flow or skipper (default: data-flow)
+    -h, --help: Prints help
+```
+
+To relocate the Data Flow server, use the Docker CLI to authenticate to your reistry and execute
+
+```bash
+./bin/relocate-image.sh --app data-flow --repository <registry-repo-prefix>/spring-cloud-dataflow-server
+```
+
+For Skipper image relocation execute
+
+```bash
+./bin/relocate-image.sh --app skipper --repository <registry-repo-prefix>/spring-cloud-skipper-server
+```
+
+The relocation script will update the `kustomization.yaml` files to match the new relocated image repository locations.
 
 ## <a id='command-line-tools'></a> Command-Line Tools
 
