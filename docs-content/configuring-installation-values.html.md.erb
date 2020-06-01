@@ -37,7 +37,7 @@ The installation directory structure contains the following directories.
 
 * `bin` - scripts for installing and installing to the development environment as well as a script for performing image relocation.
 * `apps` - Kubernetes resource files and application configuration files to support deployment to multiple environments
-* `services` - Kubernetes resources for deploying RabbitMQ and Postgresql fur use with the development environment
+* `services` - Kubernetes resources for deploying RabbitMQ and PostgreSQL fur use with the development environment
 
 The apps directory contains the following folder structure based on Kustomize namving conventions
 
@@ -112,11 +112,197 @@ The `deployment-patch.yaml` and `service-patch.yaml` files are where you will pa
 Examples of these fields are memory/cpu allocations and ingress configuration.
 
 
+### <a id='database-configuration'></a> Database
+
+You can customize the database configuration settings in the `application.yaml` and the `deployment-path.yaml` files.
+These files are preconfigured to connect to a PostgreSQL database that can be installed either using the manifests provided in `services/dev/postgresql` or by installing the `bitnami/postgresql` Helm chart.
+
+#### <a id='database-connection'></a> Database Connections Settings
+
+To use a different database you would need to replace or remove the secret `volume` and `volumeMount` in the `deployment-patch.yaml` file.
+If you replace the secret we recommned to provide `database-password` as the path for the password key since that simplifies the changes needed for the `application.yaml` file.
+
+You need to change the database settings for both the `skipper` and `data-flow` apps.
+Here is an example of using a secret named `production-db` with a `password` key (You can specify additional keys if they are available in the secret and refrence the path you specify in `application.yaml`):
+
+```yaml
+      containers:
+      - name: skipper
+        volumeMounts:
+          - name: database
+            mountPath: /etc/secrets/database
+            readOnly: true
+  ...
+
+      volumes:
+        - name: database
+          secret:
+            secretName: postgresql
+            items:
+            - key: postgresql-password
+              path: database-password 
+
+```
+
+The settings in `application.yaml` that you need to consider are under `spring.datasource`, modify the `url`, `username`, `password` and `driverClassName` values to match you detabase settings:
+
+```yaml
+spring:
+
+  ...
+
+  datasource:
+    url: jdbc:postgresql://database-host:5432/dataflow-db
+    username: postgres
+    password: ${database-password}
+    driverClassName: org.postgresql.Driver
+    testOnBorrow: true
+    validationQuery: "SELECT 1"
+```
+
+#### <a id='database-connection'></a> Initializing Database Schema
+
+You can initialize you database schema using the DDL scripts available under `apps/skipper/schemas` and `apps/data-flow/schemas`.
+We provide DDL for DB2, MySQL, Oracle, PostgreSQL and MS SQL Server.
+If there are multiple files they must be applied in the correct order starting with `V1-` followed by `V2-` and `V3-` etc.
+
+If you initialize the schema for the database you can turn off the database initialization of the skipper and data-flow apps by adding the follwowing settings to the resective `application.yaml` files:
+
+```yaml
+spring:
+
+  ...
+
+  jpa:
+    hibernate:
+      ddlAuto: none
+  flyway:
+    enabled: false
+```
+
+
+#### <a id='database-connection'></a> Adding JDBC Driver
+
+It is possibe to add your own JDBC driver if you do not want to use the JDBC drivers that are provided.
+JDBC drivers for DB2, MySQL, Oracle, PostgreSQL and MS SQL Server are provided in the published app artifacts.
+
+I order to add a JDBC driver you need to perform the following steps:
+
+1. Download the server jars for data-flow and skipper
+
+    ```bash
+    wget https://repo1.maven.org/maven2/org/springframework/cloud/spring-cloud-skipper-server/2.4.1.RELEASE/spring-cloud-skipper-server-2.4.1.RELEASE.jar
+    wget https://repo1.maven.org/maven2/org/springframework/cloud/spring-cloud-dataflow-server/2.5.1.RELEASE/spring-cloud-dataflow-server-2.5.1.RELEASE.jar
+    ```
+
+1. Create a directory containing the JDBC driver to be added
+
+    ```bash
+    mkdir -p BOOT-INF/lib
+    ```
+
+1. Add the driver to the downloaded jars
+
+    ```bash
+    jar -u0f spring-cloud-skipper-server-2.4.1.RELEASE.jar BOOT-INF/lib/*.jar
+    jar -u0f spring-cloud-dataflow-server-2.5.1.RELEASE.jar BOOT-INF/lib/*.jar
+    ```
+
+1. Create Dockerfiles for adding the updated server jars as new container images
+
+    Create two docker files:
+
+    _Dockerfile-skipper-server_
+    ```bash
+    FROM springcloud/openjdk:2.0.1.RELEASE
+    COPY spring-cloud-skipper-server-2.4.1.RELEASE.jar /maven/spring-cloud-skipper-server.jar
+    ENTRYPOINT ["java", "-jar","/maven/spring-cloud-skipper-server.jar"]
+    ```
+
+    _Dockerfile-dataflow-server_
+    ```bash
+    FROM springcloud/openjdk:2.0.1.RELEASE
+    COPY spring-cloud-dataflow-server-2.5.1.RELEASE.jar /maven/spring-cloud-dataflow-server.jar
+    ENTRYPOINT ["java", "-jar","/maven/spring-cloud-dataflow-server.jar"]
+    ```
+
+1. Build the container images and push them to you registry
+
+    Set the `REGISTRY` variable to the registry prefix you want to use.
+
+    ```bash
+    REGISTRY=registry.example.com
+    docker build -t springdeveloper/spring-cloud-skipper-server:2.4.1.RELEASE-jdbc -f Dockerfile-skipper-server .
+    docker push springdeveloper/spring-cloud-skipper-server:2.4.1.RELEASE-jdbc
+    docker build -t springdeveloper/spring-cloud-dataflow-server:2.5.1.RELEASE-jdbc -f Dockerfile-dataflow-server .
+    docker push springdeveloper/spring-cloud-dataflow-server:2.5.1.RELEASE-jdbc
+    ```
+
+1. Update your app kustomization manifests with the new image locations
+
+    For skipper app modify `newName` and `newTag` values in _apps/skipper/kustomize/overlays/production/kustomization.yaml_
+
+    ```bash
+    images:
+    - name: springcloud/spring-cloud-skipper-server  # used for Kustomize matching
+      newName: registry.example.com/spring-cloud-skipper-server
+      newTag: 2.4.1.RELEASE-jdbc
+    configMapGenerator:
+    - name: skipper
+      files:
+        - bootstrap.yaml
+        - application.yaml
+    bases:
+      - ../../base
+    patches:
+    - deployment-patch.yaml
+    - service-patch.yaml
+    ```
+
+    For data-flow app modify `newName` and `newTag` values in _apps/data-flow/kustomize/overlays/production/kustomization.yaml_
+
+    ```bash
+    images:
+    - name: springcloud/spring-cloud-dataflow-server  # used for Kustomize matching
+      newName: registry.example.com/spring-cloud-dataflow-server
+      newTag: 2.5.1.RELEASE-jdbc
+      configMapGenerator:
+      - name: scdf-server
+        files:
+          - bootstrap.yaml
+          - application.yaml
+      bases:
+        - ../../base
+      patches:
+      - deployment-patch.yaml
+      - service-patch.yaml
+    ```
+
+If you add your own JDBC driver then you should initialize the schema for the database and turn off the database initialization of the skipper and data-flow apps as documented in the previous section.
+
+
 ### <a id='ingress-resource-configuration'></a> Ingress Resource
 
-You can modify the `ingress-patch.yaml` in `apps/ingress/kustomize/overlays/dev/` directory.
+You can modify the `ingress-patch.yaml` in the `apps/ingress/kustomize/overlays/dev/` or the `apps/ingress/kustomize/overlays/production/` directory.
 Modify the host field to provide the DNS name required for your Ingress Controller configuration.
 
+If your DNS name is `data-flow.example.com` then add that DNS name as the host for the entry under `spec.rules`:
+
+```yaml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: scdf-ingress
+spec:
+  rules:
+  - host: data-flow.example.com
+    http:
+      paths:
+      - backend:
+          serviceName: scdf-server
+          servicePort: 80
+        path: /
+```
 
 ### <a id='loadbalancer-configuration'></a> Load Balancer
 
