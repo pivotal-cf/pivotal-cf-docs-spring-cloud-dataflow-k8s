@@ -7,9 +7,8 @@ This topic describes how to configure the Spring Cloud Data Flow for Kubernetes 
 
 Before proceeding, review the [Preparing to Install SCDF for Kubernetes](preparing-to-install-scdf-for-kubernetes.html) topic for details about:
 
-* Preparing the Spring Cloud Data Flow for Kubernetes installation resources on your local workstation,
-* Installing required command-line tools, and
-* Preparing the Kubernetes cluster and application-image registry dependencies.
+* Preparing the Spring Cloud Data Flow for Kubernetes installation resources on your local workstation, and
+* Installing required command-line tools
 
 ## <a id='overview'></a> Overview
 
@@ -128,6 +127,72 @@ If your Kubernetes cluster supports Kubernetes Services of type LoadBalancer, yo
 <p class="note warning">
   This option is <strong>not compatible</strong> with VMware Enterprise PKS to vSphere with Flannel container networking.
 </p>
+
+### <a id='security-configuration'></a> Security
+
+Spring Cloud Data Flow and Skipper servers use the Spring Security library to configure Authentication and Authorization using OAuth 2.0 and OpenID Connect.
+This lets you integrate Spring Cloud Data Flow into Single Sign On (SSO) environments.
+To configure the servers changes must be made to each server's `application.yaml` configuration file.
+The [Spring Cloud Data Flow Reference Guide's Security section](https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#configuration-local-security) provides the overall introduction of how to configure the Data Flow Server and the [Spring Cloud Data Flow Reference Gude's Azure section](https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#appendix-identity-provider-azure) provides the instructions for configuration with Azure AD.
+While the documentation is in the Spring Cloud Data Flow reference guide, the same steps must be take for the configuration of Skipper's `application.yaml` file.
+
+### <a id='container-registry'></a> Container Registry
+
+The Data Flow server displays Spring Boot application metadata that is stored as a label in the container image.
+To retrieve that metadata configure the Data Flow server to access the container registry for the application images you will be deploying.
+The section in the `application.yaml` file where this configuration goes is under the root
+
+```
+spring:
+  cloud:
+    dataflow:
+      container:
+        registry-configurations:
+```
+The examples of how to configure this section for Docker Hub, Artifactory/JFrog, Amazon Elastic Container Registry, Azure Container Registry, and the Harbor registry are in [Spring Cloud Data Flow Reference Guide's Container Metadata section](https://dataflow.spring.io/docs/feature-guides/general/application-metadata/#using-metadata-container-image-labels)
+
+
+### <a id='monitoring'></a> Monitoring
+In order to support both short live and long lived application monitoring, task and stream applications deployed Data Flow and Skipper can use the [Prometheus RSocket Proxy](https://github.com/micrometer-metrics/prometheus-rsocket-proxy).
+Other monitoring technologies that use the Micrometer library are supported as well but their configuration will be different than the example shown below.
+The Data Flow Dashboard provides a convenient link to custom [Stream and Task Grafana dashboards](https://github.com/spring-cloud/spring-cloud-dataflow/tree/master/src/grafana/prometheus/docker/grafana) that you can install into your Grafana server.
+
+
+As an example of configuring monitoring for all deployed tasks and stream applications using Prometheus via an RSocket gateway, the following section in Data Flow's `application.yaml` should be configured.
+
+```
+spring:
+  cloud:
+    dataflow:
+      applicationProperties:
+        stream:
+          management:
+            metrics:
+              export:
+                prometheus:
+                  enabled: true
+                  rsocket:
+                    enabled: true
+                    host: prometheus-proxy
+                    port: 7001
+        task:
+          management:
+            metrics:
+              export:
+                prometheus:
+                  enabled: true
+                  rsocket:
+                    enabled: true
+                    host: prometheus-proxy
+                    port: 7001
+      grafana-info:
+        url: 'https://grafana:3000'
+```
+
+The Grafana `url` should and Prometheus host/port values should be changed for you specific environment.
+The Data Flow microsite contains more information on [stream monitoring](https://dataflow.spring.io/docs/feature-guides/streams/monitoring/#kubernetes) and [task monitoring](https://dataflow.spring.io/docs/feature-guides/batch/monitoring/#prometheus-1).
+
+Since these common application properties are passed to the deployed task and stream applications, if you are using a different monitoring infrastrure that is supported by the micrometer library, you can set the appropriate Spring Boot configuration values for yoru monitoring infrastructure underneath the `applicationProperties.stream` and `applicationProperties.task` sections above.
 
 
 ## <a id='configure-app-registry-values'></a> Next: Configure App Registry Values
