@@ -352,6 +352,10 @@ The <code>SPRING_CLOUD_CONFIG_ENABLED=false</code> setting avoids having each st
 
 ### <a id='ingress-resource-configuration'></a> Ingress Resource
 
+If your Kubernetes cluster supports Kubernetes Services of type LoadBalancer, you may use that type of service to provision a load balancer using an Ingress Controller such as NGINX or Contour.
+
+If your cluster has an Ingress COntroller configred then you can use an Ingress resource to manages external access to the Data Flow server service.
+
 You can modify the `ingress-patch.yaml` in the `apps/ingress/kustomize/overlays/dev/` or the `apps/ingress/kustomize/overlays/production/` directory.
 Modify the host field to provide the DNS name required for your Ingress Controller configuration.
 
@@ -372,17 +376,6 @@ spec:
           servicePort: 80
         path: /
 ```
-
-### <a id='loadbalancer-configuration'></a> Load Balancer
-
-If your Kubernetes cluster supports Kubernetes Services of type LoadBalancer, you may use that type of service to provision a load balancer using an Ingress Controller such as NGINX or Contour.
-
-<p class="note">
-  This option is recommended when deploying Spring Cloud Data Flow for Kubernetes to VMware Enterprise PKS on AWS, Azure, or GCP, or on vSphere with NSX-T container networking.
-</p>
-<p class="note warning">
-  This option is <strong>not compatible</strong> with VMware Enterprise PKS to vSphere with Flannel container networking.
-</p>
 
 ### <a id='security-configuration'></a> Security
 
