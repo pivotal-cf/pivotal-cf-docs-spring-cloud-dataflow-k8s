@@ -111,7 +111,7 @@ The `deployment-patch.yaml` and `service-patch.yaml` files are where you will pa
 Examples of these fields are memory/cpu allocations and ingress configuration.
 
 
-### <a id='database-configuration'></a> Database
+### <a id='database-configuration'></a> Database Configuration
 
 You can customize the database configuration settings in the `application.yaml` and the `deployment-path.yaml` files.
 These files are preconfigured to connect to a PostgreSQL database that can be installed either using the manifests provided in `services/dev/postgresql` or by installing the `bitnami/postgresql` Helm chart.
@@ -179,7 +179,6 @@ spring:
     enabled: false
 ```
 
-
 #### <a id='database-connection'></a> Adding JDBC Driver
 
 It is possibe to add your own JDBC driver if you do not want to use the JDBC drivers that are provided.
@@ -222,7 +221,7 @@ In order to add a JDBC driver you need to perform the following steps:
     ```
 
     _Dockerfile-dataflow-server_
-    
+
     ```bash
     FROM springcloud/openjdk:2.0.1.RELEASE
     COPY spring-cloud-dataflow-server-2.5.1.RELEASE.jar /maven/spring-cloud-dataflow-server.jar
@@ -283,6 +282,73 @@ In order to add a JDBC driver you need to perform the following steps:
 
 If you add your own JDBC driver then you should initialize the schema for the database and turn off the database initialization of the skipper and data-flow apps as documented in the previous section.
 
+
+### <a id='message-broker-configuration'></a> Message Broker Configuration
+
+You can customize the configuration settings for the message broker in the `application.yaml` and the `deployment-path.yaml` files.
+These files are preconfigured to connect to a RabbitMQ broker that can be installed either using the manifests provided in `services/dev/rabbitmq` or by installing the `bitnami/rabbitmq` Helm chart.
+
+#### <a id='rabbit-broker-configuration'></a> Using RabbitMQ as the Message Broker
+
+To use RabbitMQ as the message broker you need to review the settings for the `skipper` app provided in the Kustomization overlays for `dev` and `production`.
+
+As mentioned above, the configuration is preconfigured to connect to a RabbitMQ broker running in the same namespace where you install Spring Cloud Data Flow for Kubernetes.
+
+If you RabbitMQ broker runs in a different namespace or if you use an external broker then you need to remove references for the `rabbitmq` secret from `volume` and `container.volumeMounts` sections in the `deployment-patch.yaml` file in `dev` or `production` overlays.
+
+The settings for connecting to the RabbitMQ broker are located in the `application.yaml` file for the `skipper` app in both `dev` and `production` overlays.
+What is specified on the `environmentVariables` line will be passed to the Spring Cloud Stream apps that will be deployed. 
+
+The configuration needs to include `SPRING_RABBITMQ_HOST`, `SPRING_RABBITMQ_PORT`, `SPRING_RABBITMQ_USERNAME` and `SPRING_RABBITMQ_PASSWORD` variables.
+If the RabbitMQ cluster is running in the same namespace where you install Spring Cloud Data Flow for Kubernetes then you can reference the service environment variables provided by Kubernetes.
+If not, then you would have to replace these references with the actual values.
+
+```yaml
+spring:
+  cloud:
+    skipper:
+      server:
+        platform:
+          kubernetes:
+            accounts:
+              default:
+                environmentVariables: 'SPRING_CLOUD_CONFIG_ENABLED=false,SPRING_RABBITMQ_HOST=${RABBITMQ_SERVICE_HOST},SPRING_RABBITMQ_PORT=${RABBITMQ_SERVICE_PORT_AMQP},SPRING_RABBITMQ_USERNAME=user,SPRING_RABBITMQ_PASSWORD=${rabbitmq-password}'
+```
+
+<div class="note">
+The <code>SPRING_CLOUD_CONFIG_ENABLED=false</code> setting avoids having each stream app attempting to look up a Spring Cloud Configuration Server instance.</div>
+
+#### <a id='kafka-broker-configuration'></a> Using Kafka as the Message Broker
+
+To use Kafka as the message broker you need to modify the settings for the `skipper` app provided in the Kustomization overlays for `dev` and `production`.
+Remove references for the `rabbitmq` secret from `volume` and `container.volumeMounts` sections in the `deployment-patch.yaml` file.
+
+The settings for connecting to the Kafka broker are located in the `application.yaml` file for the `skipper` app in both `dev` and `production` overlays.
+
+You can provide your own Kafka cluster or install one using the `bitnami/kafka` Helm chart. In the following example we assume that Kafka was installed using the Helm chart mentioned. If you use a different Kafka installation you need to adjust the environment variables specified in the `application.yaml` file.
+
+Remove or comment out the line with `environmentVariables` for RabbitMQ settings and uncomment the line with corresponding Kafka settings.
+What is specified on the `environmentVariables` line will be passed to the Spring Cloud Stream apps that will be deployed. 
+
+The configuration needs to include `SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS` and `SPRING_CLOUD_STREAM_KAFKA_BINDER_ZK_NODES` variables with values for host and port for Kafka broker and Zookeeper respectivly.
+
+If the Kafka cluster is running in the same namespace where you install Spring Cloud Data Flow for Kubernetes then you can reference the service environment variables provided by Kubernetes.
+If not, then you would have to replace these references with the actual values.
+
+```yaml
+spring:
+  cloud:
+    skipper:
+      server:
+        platform:
+          kubernetes:
+            accounts:
+              default:
+                environmentVariables: 'SPRING_CLOUD_CONFIG_ENABLED=false,SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS=${KAFKA_SERVICE_HOST}:${KAFKA_SERVICE_PORT},SPRING_CLOUD_STREAM_KAFKA_BINDER_ZK_NODES=${KAFKA_ZOOKEEPER_SERVICE_HOST}:${KAFKA_ZOOKEEPER_SERVICE_PORT}'
+```
+
+<div class="note">
+The <code>SPRING_CLOUD_CONFIG_ENABLED=false</code> setting avoids having each stream app attempting to look up a Spring Cloud Configuration Server instance.</div>
 
 ### <a id='ingress-resource-configuration'></a> Ingress Resource
 
