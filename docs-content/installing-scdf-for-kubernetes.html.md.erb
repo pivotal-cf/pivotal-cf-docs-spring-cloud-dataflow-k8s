@@ -44,10 +44,13 @@ To uninstall, execute the script `bin/uninstall-dev.sh`
 ## <a id='install-scdf-for-k8s-prod'></a> Installing Spring Cloud Data Flow for Kubernetes to the production environment
 
 Before running the following command ensure that the database Skipper and Data Flow will be using has been provisioned and properly configured in each `application.yaml` configuration file.
+
 ```bash
 $ kubectl kustomize ./apps/skipper/kustomize/overlays/prod/ | kapp deploy -y -a skipper -f -
 ```
+
 and
+
 ```bash
 $ kubectl kustomize ./apps/data-flow/kustomize/overlays/prod/ | kapp deploy -y -a data-flow -f -
 ```
