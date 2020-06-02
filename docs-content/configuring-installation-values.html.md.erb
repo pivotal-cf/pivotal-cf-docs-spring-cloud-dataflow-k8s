@@ -242,7 +242,7 @@ In order to add a JDBC driver you need to perform the following steps:
 
 1. Update your app kustomization manifests with the new image locations
 
-    For skipper app modify `newName` and `newTag` values in `apps/skipper/kustomize/overlays/production/kustomization.yaml`
+    For skipper app modify `newName` and `newTag` values in `apps/skipper/kustomize/overlays/production/kustomization.yaml`. Also, either remove the `digest` or update it with the new image digest.
 
     ```bash
     images:
@@ -261,7 +261,7 @@ In order to add a JDBC driver you need to perform the following steps:
     - service-patch.yaml
     ```
 
-    For data-flow app modify `newName` and `newTag` values in `apps/data-flow/kustomize/overlays/production/kustomization.yaml`
+    For data-flow app modify `newName` and `newTag` values in `apps/data-flow/kustomize/overlays/production/kustomization.yaml`. Also, either remove the `digest` or update it with the new image digest.
 
     ```bash
     images:

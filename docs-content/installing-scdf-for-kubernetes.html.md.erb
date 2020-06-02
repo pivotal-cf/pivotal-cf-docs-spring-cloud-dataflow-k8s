@@ -46,13 +46,13 @@ To uninstall, execute the script `bin/uninstall-dev.sh`
 Before running the following command ensure that the database Skipper and Data Flow will be using has been provisioned and properly configured in each `application.yaml` configuration file.
 
 ```bash
-$ kubectl kustomize ./apps/skipper/kustomize/overlays/prod/ | kapp deploy -y -a skipper -f -
+$ kubectl kustomize ./apps/skipper/kustomize/overlays/production/ | kapp deploy -y -a skipper -f -
 ```
 
 and
 
 ```bash
-$ kubectl kustomize ./apps/data-flow/kustomize/overlays/prod/ | kapp deploy -y -a data-flow -f -
+$ kubectl kustomize ./apps/data-flow/kustomize/overlays/production/ | kapp deploy -y -a data-flow -f -
 ```
 
 Alternatively, instead of piping the output of `kubectl kustomize` to kapp you can pipe it to a file and then manage that file in a manner that fits into existing company deployment procedures for Kubernetes applications.
