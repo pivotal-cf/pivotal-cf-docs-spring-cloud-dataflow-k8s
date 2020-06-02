@@ -39,20 +39,40 @@ The install script is located in `bin/install-dev.sh` automates the following st
 * Skipper Server
 * Data Flow server
 
+If you want to use an Ingress resource then execute:
+
+```bash
+$ kubectl kustomize ./apps/ingress/kustomize/overlays/production/ | kapp deploy -y -a ingress -f -
+```
+
 To uninstall, execute the script `bin/uninstall-dev.sh`
+
+To uninstall the Ingress execute:
+
+```bash
+kapp delete -y -a ingress
+```
 
 ## <a id='install-scdf-for-k8s-prod'></a> Installing Spring Cloud Data Flow for Kubernetes to the production environment
 
 Before running the following command ensure that the database Skipper and Data Flow will be using has been provisioned and properly configured in each `application.yaml` configuration file.
 
+To install `skipper` app execute:
+
 ```bash
 $ kubectl kustomize ./apps/skipper/kustomize/overlays/production/ | kapp deploy -y -a skipper -f -
 ```
 
-and
+To install `data-flow` app execute:
 
 ```bash
 $ kubectl kustomize ./apps/data-flow/kustomize/overlays/production/ | kapp deploy -y -a data-flow -f -
+```
+
+If you want to use an Ingress resource then execute:
+
+```bash
+$ kubectl kustomize ./apps/ingress/kustomize/overlays/production/ | kapp deploy -y -a ingress -f -
 ```
 
 Alternatively, instead of piping the output of `kubectl kustomize` to kapp you can pipe it to a file and then manage that file in a manner that fits into existing company deployment procedures for Kubernetes applications.
