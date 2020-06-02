@@ -139,7 +139,7 @@ Here is an example of using a secret named `production-db` with a `password` key
             secretName: postgresql
             items:
             - key: postgresql-password
-              path: database-password 
+              path: database-password
 
 ```
 
@@ -297,7 +297,7 @@ As mentioned above, the configuration is preconfigured to connect to a RabbitMQ 
 If you RabbitMQ broker runs in a different namespace or if you use an external broker then you need to remove references for the `rabbitmq` secret from `volume` and `container.volumeMounts` sections in the `deployment-patch.yaml` file in `dev` or `production` overlays.
 
 The settings for connecting to the RabbitMQ broker are located in the `application.yaml` file for the `skipper` app in both `dev` and `production` overlays.
-What is specified on the `environmentVariables` line will be passed to the Spring Cloud Stream apps that will be deployed. 
+What is specified on the `environmentVariables` line will be passed to the Spring Cloud Stream apps that will be deployed.
 
 The configuration needs to include `SPRING_RABBITMQ_HOST`, `SPRING_RABBITMQ_PORT`, `SPRING_RABBITMQ_USERNAME` and `SPRING_RABBITMQ_PASSWORD` variables.
 If the RabbitMQ cluster is running in the same namespace where you install Spring Cloud Data Flow for Kubernetes then you can reference the service environment variables provided by Kubernetes.
@@ -328,7 +328,7 @@ The settings for connecting to the Kafka broker are located in the `application.
 You can provide your own Kafka cluster or install one using the `bitnami/kafka` Helm chart. In the following example we assume that Kafka was installed using the Helm chart mentioned. If you use a different Kafka installation you need to adjust the environment variables specified in the `application.yaml` file.
 
 Remove or comment out the line with `environmentVariables` for RabbitMQ settings and uncomment the line with corresponding Kafka settings.
-What is specified on the `environmentVariables` line will be passed to the Spring Cloud Stream apps that will be deployed. 
+What is specified on the `environmentVariables` line will be passed to the Spring Cloud Stream apps that will be deployed.
 
 The configuration needs to include `SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS` and `SPRING_CLOUD_STREAM_KAFKA_BINDER_ZK_NODES` variables with values for host and port for Kafka broker and Zookeeper respectivly.
 
@@ -450,6 +450,116 @@ The Data Flow microsite contains more information on [stream monitoring](https:/
 
 Since these common application properties are passed to the deployed task and stream applications, if you are using a different monitoring infrastrure that is supported by the micrometer library, you can set the appropriate Spring Boot configuration values for yoru monitoring infrastructure underneath the `applicationProperties.stream` and `applicationProperties.task` sections above.
 
+
+### <a id='Multiple Platforms'></a> Multiple Platforms
+
+Data Flow supports deploying streaming and batch appplications to differenet Kubernetes namespaces or clusters.
+You can read more about the scenarios where this approach is useful in the Spring Cloud Data Flow Referenece Documentation section on the [Role of Multiple Platform Deployments](https://dataflow.spring.io/docs/recipes/multi-platform-deployment/multiple-platform-accounts/#role-of-multiple-platform-deployments).
+
+Task applications are deployed by the Data Flow server and streaming applications are deployed through the Skipper server.
+
+The section in Data Flow's `application.yaml` configuration file that you need to modify to configure one or more deployment platforms is under the section `spring.cloud.dataflow.task.platform.kubernetes.accounts`.
+The `accounts` element is a map that contains the account name as a key and the value are the properties of the Java object [KubernetesDeployerProperties](https://github.com/spring-cloud/spring-cloud-deployer-kubernetes/blob/master/src/main/java/org/springframework/cloud/deployer/spi/kubernetes/KubernetesDeployerProperties.java).
+The [Data Flow Reference Documentation section for Kubernetes Deployer Properties](https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#configuration-kubernetes-deployer) contains the list of properties and their descriptions.
+
+The following is an example of havings two accounts, one is a `default` account that targets the `default` namespace with a memory limit of 1024Mi and a `highmemory` account that targets the `highmemory-namespace` namespace with a memory limit of 4096Mi.
+
+```
+spring:
+  cloud:
+    dataflow:
+      task:
+        platform:
+          kubernetes:
+            accounts:
+              default:
+                namespace: default
+                limits:
+                  memory: 1024Mi
+              highmemory:
+                namespace: highmemory-namespace
+                limits:
+                  memory: 4096Mi
+```
+The Fabric8 Kubernetes client library is used to connect to Kubernetes.
+`KubernetesDeployerProperties` contains a property named `fabric8` that exposes the [Fabric8 client configuration properties](https://github.com/fabric8io/kubernetes-client#configuring-the-client) which allows you to configure connection properties such as kubernetes master location and and certificates.
+
+For example here is a configuration that has an account where another cluster is referenced that contains GPU resources.
+
+```
+spring:
+  cloud:
+    dataflow:
+      task:
+        platform:
+          kubernetes:
+            accounts:
+              default:
+                namespace: default
+                limits:
+                  memory: 1024Mi
+              gpuzone:
+                fabric8:
+                  masterUrl: <k8s-master-api-url>
+                  namespace: gpuzone-namespace
+                  trustCerts: true
+```
+
+For stream applications the configuration is similar but is done in the `spring.cloud.dataflow.stream.platform.kubernetes.accounts` section of the Skipper server's `application.yaml` file.
+
+In the following example, two accounts are created that reference a default namespace and a namespace where a Kafka Broker is available.
+By setting the environment variables at the account level, all Spring Cloud Stream applications deployed to the `kafkazone` will be configured to use the Kafka Broker made available in that namespace.
+
+```
+spring:
+  cloud:
+    skipper:
+      server:
+        platform:
+          kubernetes:
+            accounts:
+              default:
+                namespace: default
+                limits:
+                  memory: 1024Mi
+                  cpu: 500m
+                readinessProbeDelay: 120
+                livenessProbeDelay: 90
+              kafkazone:
+                namespace: kafka-namespace
+                environmentVariables: 'SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS=${KAFKA_SERVICE_HOST}:${KAFKA_SERVICE_PORT},SPRING_CLOUD_STREAM_KAFKA_BINDER_ZK_NODES=${KAFKA_ZK_SERVICE_HOST}:${KAFKA_ZK_SERVICE_PORT}'
+                limits:
+                  memory: 2048Mi
+                  cpu: 500m
+                readinessProbeDelay: 180
+                livenessProbeDelay: 120
+```
+
+### <a id='task-limiting'></a> Task Limiting
+
+Spring Cloud Data Flow allows a user to limit the maximum number of concurrently running tasks to prevent the saturation of IaaS/hardware resources.
+The default limit is set to 20.
+If the number of concurrently running tasks on a platform instance is greater or equal to the limit, the next task launch request will fail and an error message will be returned via the RESTful API, Shell or UI.
+This limit can be configured by setting the `maximumConcurrentTasks` property in the account as shown below.
+
+```
+spring:
+  cloud:
+    dataflow:
+      task:
+        platform:
+          kubernetes:
+            accounts:
+              default:
+                namespace: default
+                maximumConcurrentTasks: 40
+                limits:
+                  memory: 1024Mi
+```
+
+Launching a task, if successful, results in a running pod which we expect to eventually complete or fail.
+As there is no easy way to identify pods that correspond to a task we only count pods that were launched by the Data Flow Server.
+Since the task launcher provides task's  as label in the pod’s metadata, we filter all running pods for the presence of this label.
 
 ## <a id='next-installing-scdf'></a> Next: Installing SCDF for Kubernetes
 
