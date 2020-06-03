@@ -4,7 +4,7 @@ owner: Spring Cloud Data Flow Release Engineering
 ---
 
 This topic describes how to get started using Spring Cloud Data Flow for Kubernetes.
-The examples below use Spring Cloud Data Flow for Kubernetes to quickly create a data pipeline.
+The examples below show how to quickly create a data pipeline.
 
 ## <a id='start-shell'></a> Start the Spring Cloud Data Flow Shell
 
@@ -34,7 +34,7 @@ dataflow:>
 
 Import the stream app starters using the Data Flow shell’s `app import` command:
 
-Depending on the message bvroker that you are using, there are two versions of these apps that you can register.
+Depending on the message broker that you are using, there are two versions of these apps that you can register.
 One version is for "RabbitMQ + Docker" and the other version is for "Apache Kafka + Docker".
 See the [Register Supported Applications and Tasks](https://docs.spring.io/spring-cloud-dataflow/docs/2.5.1.RELEASE/reference/htmlsingle/#supported-apps-and-tasks) page for more detail.
 
@@ -54,7 +54,7 @@ Successfully registered 66 applications from [source.sftp.metadata, sink.through
 
 ## <a id='create-stream'></a> Create the Stream Definition
 
-With the app starters imported, you can use three (the `http` source, the `split` processor, and the `log` sink) to create a stream that consumes data via an HTTP POST request, processes it by splitting it into words, and outputs the results in logs.
+With the app starters imported, you can use three apps (the `http` source, the `split` processor, and the `log` sink) to create a stream that consumes data via an HTTP POST request, processes it by splitting it into words, and outputs the results in logs.
 
 Create the stream using the Data Flow shell’s `stream create` command:
 
@@ -74,7 +74,7 @@ Deployment request has been sent for stream 'words'
 
 In order to be able to post HTTP requests to the `http` app, we need to specify a deployment property requesting a `LoadBalancer` for the apps service.
 
-You can run the `kubectl get pods` command from a different terminal window to see the applications deployed as part of the stream:
+You can run the `kubectl get pods` command from a different terminal window to see the application pods deployed as part of the stream:
 
 ```bash
 $ kubectl get pods -l role=spring-app
@@ -111,7 +111,7 @@ words-http-v1   LoadBalancer   10.47.244.113   104.197.218.242   8080:31383/TCP 
 ```
 
 We use the IP address listed as the `EXTERNAL-IP` and the port `8080` to access the app.
-From the Data Flow shell send a POST request to the `words-http-v1` application using the IUP address we just looked up:
+From the Data Flow shell send a POST request to the `words-http-v1` application using the EXTERNAL-IP address we just looked up:
 
 ```
 dataflow:>http post --target http://104.197.218.242:8080 --data "This is a test"
