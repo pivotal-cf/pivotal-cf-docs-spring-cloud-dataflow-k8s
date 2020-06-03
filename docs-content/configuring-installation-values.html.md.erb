@@ -62,13 +62,13 @@ The apps directory contains the following folder structure based on Kustomize na
 </pre>
 
 There are two directories, one for each application that is part of Spring Cloud Data Flow for Kubernetes.
-The first directory, `data-flow`, contains the Data Flow Server and the second directory, `skipper` contains the Skipper server.
+The first directory, `data-flow`, contains the Data Flow Server, and the second directory, `skipper`, contains the Skipper server.
 There is also an `ingress` directory that contains configuration files for an Ingress resource.
 Within each application directory there is the following directory structure
 
-* `images` - location for container images (only present if "SCDF for Kubernetes installation images" archive was downloaded and extracted)
-* `kustomize` - the directory containing Kubernetes and application configuration files for use with Kustomize.
-* `schemas` - database schemas that you can install manually if you do not want each server to install them upon startup.
+* `images`: The location for container images (only present if "SCDF for Kubernetes installation images" archive was downloaded and extracted)
+* `kustomize`: Directory containing Kubernetes and application configuration files for use with Kustomize.
+* `schemas`: Database schemas that you can install manually if you do not want each server to install them upon startup.
 
 The contents of the kustomize directory is shown below.
 Edit files in this directory to configure the application and Kubernetes resources.
