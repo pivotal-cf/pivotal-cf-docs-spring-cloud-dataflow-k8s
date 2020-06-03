@@ -21,19 +21,19 @@ Download the Spring Cloud Data Flow for Kubernetes installation resources from [
 $ tar xzvf data-flow-0.1.0.tgz
 ```
 
-## <a id='image-relocation'></a> Re-locate App Images to another Container Registry [optional]
+## <a id='image-relocation'></a> Re-locate App Images to Another Container Registry (Optional)
 
 You have the option of re-locating the container images that Spring Cloud Data Flow for Kubernetes depends on to a different container image registry. Supported registries include Harbor, Google Container Registry (GCR), and DockerHub.
 
-If you are using Harbor as your container registry, ensure that it is deployed in your environment and is accessible at a domain name of your choice. The [VMware Harbor Registry tile](https://network.pivotal.io/products/harbor-container-registry) is one option to deploy it when using Ops Manager.
+If you use Harbor as your container registry, ensure that it is deployed in your environment and is accessible at a domain name of your choice. The [VMware Harbor Registry tile](https://network.pivotal.io/products/harbor-container-registry) is one option to deploy it when using Ops Manager.
 
-Before proceeding to relocate images for Spring Cloud Data Flow for Kubernetes download the Spring Cloud Data Flow for Kubernetes installation images from [VMware Tanzu Network](https://network.pivotal.io/products/p-scdf-for-kubernetes).
+Before proceeding to relocate images for Spring Cloud Data Flow for Kubernetes, download the Spring Cloud Data Flow for Kubernetes installation images from [VMware Tanzu Network](https://network.pivotal.io/products/p-scdf-for-kubernetes).
 
 1. Log into [VMware Tanzu Network](https://network.pivotal.io).
 
 1. Navigate to the [Spring Cloud Data Flow for Kubernetes product listing](https://network.pivotal.io/products/p-scdf-for-kubernetes).
 
-1. Download the "SCDF for Kubernetes installation images" file to  to the same directory where you downloaded the "SCDF for Kubernetes installation files" archive file above.
+1. Download the "SCDF for Kubernetes installation images" file to  to the same directory where you downloaded the "SCDF for Kubernetes installation files" archive file described earlier.
 
 1. Extract the contents of `data-flow-images-0.1.0.tgz`
 
@@ -41,8 +41,8 @@ Before proceeding to relocate images for Spring Cloud Data Flow for Kubernetes d
 $ tar xzvf data-flow-images-0.1.0.tgz
 ```
 
-Then cd to the extracted `spring-cloud-data-flow directory`. In the `bin` directory is a script `relocate-image.sh`.
-It takes two arguments `--app` and `--repository`. The usage is
+Then `cd` to the extracted `spring-cloud-data-flow directory`. In the `bin` directory is a script named `relocate-image.sh`.
+It takes two arguments: `--app` and `--repository`. The usage is:
 
 ```bash
 Usage: ./bin/relocate-image.sh [-r|--repository <arg>] [-a|--app <arg>] [-h|--help]
@@ -51,32 +51,32 @@ Usage: ./bin/relocate-image.sh [-r|--repository <arg>] [-a|--app <arg>] [-h|--he
     -h, --help: Prints help
 ```
 
-To relocate the Data Flow server, use the Docker CLI to authenticate to your reistry and execute
+To relocate the Data Flow server, use the Docker CLI to authenticate to your reistry and run:
 
 ```bash
 ./bin/relocate-image.sh --app data-flow --repository <registry-repo-prefix>/spring-cloud-dataflow-server
 ```
 
-For Skipper image relocation execute
+For Skipper image relocation, run:
 
 ```bash
 ./bin/relocate-image.sh --app skipper --repository <registry-repo-prefix>/spring-cloud-skipper-server
 ```
 
-The relocation script will update the `kustomization.yaml` files to match the new relocated image repository locations.
+The relocation script updates the `kustomization.yaml` files to match the new relocated image repository locations.
 
 ## <a id='command-line-tools'></a> Command-Line Tools
 
-The installation procedure for Spring Cloud Data Flow for Kubernetes requires a Linux or macOS workstation with the following command-line tools installed.
-
-For more information about installing the `kapp` and `kbld` tools from VMware Tanzu Network, see the [Installing Command-Line Tools](installing-command-line-tools.html) topic.
+The installation procedure for Spring Cloud Data Flow for Kubernetes requires a Linux or MacOS workstation with the following command-line tools installed:
 
 * The Kubernetes CLI, `kubectl`. For more information, see the [Installing the Kubernetes CLI](https://docs.pivotal.io/pks/installing-kubectl-cli.html) topic.
 * The `kapp` utility, version v0.22.0 or later.
 * The `kbld` utility, version v0.19.0 or later.
 * The `yq` utility, version v3.0 or later.
-* The `sed` utility.  Should already be installed on your workstation.
+* The `sed` utility.  It should already be installed on your workstation.
+
+For more information about installing the `kapp` and `kbld` tools from VMware Tanzu Network, see the [Installing Command-Line Tools](installing-command-line-tools.html) topic.
 
 ## <a id='installing-command-line-tools'></a> Next: Installing Command-Line Tools
 
-Spring Cloud Data Flow for Kubernetes installation process requires that some command line utilities are available. Proceed to the [Installing Command-Line Tools](installing-command-line-tools.html) topic for more details.
+The Spring Cloud Data Flow for Kubernetes installation process requires that some command-line utilities be available. Proceed to the [Installing Command-Line Tools](installing-command-line-tools.html) topic for more details.
