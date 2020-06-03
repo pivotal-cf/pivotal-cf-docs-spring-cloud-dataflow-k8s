@@ -111,7 +111,7 @@ words-http-v1   LoadBalancer   10.47.244.113   104.197.218.242   8080:31383/TCP 
 ```
 
 We use the IP address listed as the `EXTERNAL-IP` and the port `8080` to access the app.
-From the Data Flow shell send a POST request to the `words-http-v1` application using the EXTERNAL-IP address we just looked up:
+From the Data Flow shell send a POST request to the `words-http-v1` application using the IP address we just looked up:
 
 ```
 dataflow:>http post --target http://104.197.218.242:8080 --data "This is a test"
