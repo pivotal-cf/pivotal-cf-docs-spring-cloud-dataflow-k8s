@@ -4,11 +4,11 @@ owner: Spring Cloud Data Flow Release Engineering
 ---
 
 This topic describes how to get started using Spring Cloud Data Flow for Kubernetes.
-The examples below show how to quickly create a data pipeline.
+The examples in this section show how to quickly create a data pipeline.
 
 ## <a id='start-shell'></a> Start the Spring Cloud Data Flow Shell
 
-Before continuing with this topic, you need to download and connect the Spring Cloud Data Flow Shell as described in the [Connecting to SCDF for Kubernetes](connecting-scdf-for-kubernetes.html) topic.
+Before continuing with this topic, you need to download and connect the Spring Cloud Data Flow Shell, as described in the [Connecting to SCDF for Kubernetes](connecting-scdf-for-kubernetes.html) topic.
 
 ```bash
 $ java -jar spring-cloud-dataflow-shell-2.5.1.RELEASE.jar --dataflow.uri=http://data-flow.example.com
@@ -32,20 +32,20 @@ dataflow:>
 
 ## <a id='import-stream-apps'></a> Import the Spring Cloud Stream Applications
 
-Import the stream app starters using the Data Flow shell’s `app import` command:
+Import the stream app starters using the Data Flow shell’s `app import` command.
 
 Depending on the message broker that you are using, there are two versions of these apps that you can register.
-One version is for "RabbitMQ + Docker" and the other version is for "Apache Kafka + Docker".
+One version is for "RabbitMQ + Docker", and the other version is for "Apache Kafka + Docker".
 See the [Register Supported Applications and Tasks](https://docs.spring.io/spring-cloud-dataflow/docs/2.5.1.RELEASE/reference/htmlsingle/#supported-apps-and-tasks) page for more detail.
 
-For RabbitMQ use:
+For RabbitMQ, use:
 
 ```bash
 dataflow:>app import https://dataflow.spring.io/rabbitmq-docker-latest
 Successfully registered 66 applications from [source.sftp.metadata, sink.throughput.metadata, processor.object-detection.metadata, sink.cassandra.metadata, source.loggregator.metadata, source.s3, processor.aggregator.metadata, sink.hdfs, sink.rabbit, sink.ftp.metadata, processor.tasklaunchrequest-transform.metadata, sink.pgcopy, processor.httpclient, sink.jdbc, source.tcp, source.s3.metadata, sink.jdbc.metadata, sink.mongodb.metadata, sink.tcp.metadata, source.mqtt, source.gemfire.metadata, sink.gemfire.metadata, source.load-generator.metadata, sink.log, sink.redis-pubsub, sink.task-launcher-dataflow, sink.pgcopy.metadata, processor.python-http.metadata, sink.counter.metadata, processor.grpc, processor.twitter-sentiment, sink.file.metadata, sink.s3.metadata, processor.python-http, processor.tcp-client, sink.hdfs.metadata, source.cdc-debezium.metadata, sink.sftp.metadata, sink.tcp, source.sftp, source.cdc-debezium, source.http, processor.groovy-filter.metadata, processor.splitter.metadata, source.syslog.metadata, processor.image-recognition, source.file, processor.bridge, processor.tensorflow, processor.tensorflow.metadata, sink.cassandra, processor.twitter-sentiment.metadata, processor.python-jython.metadata, source.time.metadata, source.tcp.metadata, source.sftp-dataflow.metadata, processor.transform.metadata, source.ftp.metadata, processor.scriptable-transform, source.triggertask.metadata, source.mqtt.metadata, processor.grpc.metadata, source.jms.metadata, source.syslog, source.file.metadata, processor.transform, source.time, processor.bridge.metadata, sink.s3, source.triggertask, source.gemfire-cq.metadata, source.trigger.metadata, source.jms, source.sftp-dataflow, source.mail, sink.mqtt.metadata, source.mongodb, source.rabbit, sink.router, source.ftp, sink.file, processor.groovy-transform.metadata, processor.counter.metadata, source.tcp-client, processor.scriptable-transform.metadata, processor.pose-estimation, processor.splitter, source.gemfire, sink.redis-pubsub.metadata, source.load-generator, source.loggregator, processor.aggregator, processor.groovy-transform, processor.object-detection, processor.python-jython, sink.throughput, processor.pose-estimation.metadata, sink.ftp, processor.filter.metadata, sink.mqtt, source.trigger, sink.gemfire, processor.header-enricher.metadata, sink.sftp, processor.filter, source.jdbc, source.gemfire-cq, source.twitterstream, sink.rabbit.metadata, sink.websocket.metadata, processor.httpclient.metadata, sink.log.metadata, processor.tasklaunchrequest-transform, processor.tcp-client.metadata, sink.websocket, processor.image-recognition.metadata, source.jdbc.metadata, source.mail.metadata, source.rabbit.metadata, source.tcp-client.metadata, processor.counter, processor.pmml, source.http.metadata, processor.groovy-filter, sink.counter, source.twitterstream.metadata, processor.header-enricher, sink.task-launcher-dataflow.metadata, source.mongodb.metadata, processor.pmml.metadata, sink.router.metadata, sink.mongodb]
 ```
 
-For Apache Kafka use:
+For Apache Kafka, use:
 
 ```bash
 dataflow:>app import https://dataflow.spring.io/kafka-docker-latest
@@ -54,9 +54,9 @@ Successfully registered 66 applications from [source.sftp.metadata, sink.through
 
 ## <a id='create-stream'></a> Create the Stream Definition
 
-With the app starters imported, you can use three apps (the `http` source, the `split` processor, and the `log` sink) to create a stream that consumes data via an HTTP POST request, processes it by splitting it into words, and outputs the results in logs.
+With the app starters imported, you can use three apps (the `http` source, the `split` processor, and the `log` sink) to create a stream that consumes data through an HTTP POST request, processes it by splitting it into words, and outputs the results in logs.
 
-Create the stream using the Data Flow shell’s `stream create` command:
+Create the stream by using the Data Flow shell’s `stream create` command:
 
 ```bash
 dataflow:>stream create --name words --definition "http | splitter --expression=payload.split(' ') | log"
@@ -65,7 +65,7 @@ Created new stream 'words'
 
 ## <a id='deploy-stream'></a> Deploy the Stream
 
-Next, deploy the stream, using the `stream deploy` command:
+Next, deploy the stream by using the `stream deploy` command:
 
 ```bash
 dataflow:>stream deploy words --properties deployer.http.kubernetes.createLoadBalancer=true
@@ -84,7 +84,7 @@ words-log-v1-855f6ddd69-slmnn        1/1     Running   0          5m8s
 words-splitter-v1-5466fdf6d4-lrz2c   1/1     Running   0          5m8s
 ```
 
-You can also check the stream status from the shell using the `stream list` command:
+You can also check the stream status from the shell by using the `stream list` command:
 
 ```bash
 dataflow:>stream list
