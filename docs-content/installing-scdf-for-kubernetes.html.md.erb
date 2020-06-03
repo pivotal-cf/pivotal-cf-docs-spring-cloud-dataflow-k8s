@@ -7,12 +7,12 @@ This topic describes how to install Spring Cloud Data Flow for Kubernetes.
 
 Before proceeding, review the [Configuring Installation Values](configuring-installation-values.html) topic to ensure that you have configured all of the required or recommended installation resources.
 
-## <a id='install-scdf-create-imagpe-pull-secret'></a> Creating image pull secret for Spring Cloud Data Flow for Kubernetes
+## <a id='install-scdf-create-imagpe-pull-secret'></a> Creating an Image Pull Secret for Spring Cloud Data Flow for Kubernetes
 
-Before installing Spring Cloud Data Flow for Kubernetes you must create a Kubernetes Secret that allows the Spring Cloud Data Flow for Kubernetes service accounts to pull images from the Tanzu Network Registry or from the registry where you optionally have relocated the images.
-In the namespace where you intend to install, create a Secret as shown below.
+Before installing Spring Cloud Data Flow for Kubernetes, you must create a Kubernetes secret that lets the Spring Cloud Data Flow for Kubernetes service accounts pull images from the Tanzu Network Registry or from the registry where you optionally have relocated the images.
+In the namespace where you intend to install, create a secret, as shown in the next example.
 
-First set the username and password variables based on your Tanzu Network login credentials or to the credentials for the registry where you optionally have relocated the images.
+First, set the username and password variables based on your Tanzu Network login credentials or to the credentials for the registry where you have optionally relocated the images.
 
 ```bash
 registry=registry.pivotal.io
@@ -20,7 +20,7 @@ username=<your user name>
 password=<your password>
 ```
 
-Then create the secret using the values set above.
+Then create the secret using the values you set in the preceding example:
 
 ```bash
 kubectl create secret \
@@ -32,22 +32,22 @@ docker-registry scdf-image-regcred \
 
 ## <a id='install-scdf-for-k8s-dev'></a> Installing Spring Cloud Data Flow for Kubernetes to the dev environment
 
-The install script is located in `bin/install-dev.sh` automates the following steps of installing into an existing Kubernetes cluster.
+The install script located in `bin/install-dev.sh` automates the following steps of installing into an existing Kubernetes cluster.
 
 * PostgreSQL
 * RabbitMQ
 * Skipper Server
 * Data Flow server
 
-If you want to use an Ingress resource then execute:
+If you want to use an Ingress resource, run the following command:
 
 ```bash
 $ kubectl kustomize ./apps/ingress/kustomize/overlays/production/ | kapp deploy -y -a ingress -f -
 ```
 
-To uninstall, execute the script `bin/uninstall-dev.sh`
+To uninstall, run the `bin/uninstall-dev.sh` script.
 
-To uninstall the Ingress execute:
+To uninstall the Ingress, run the following command:
 
 ```bash
 kapp delete -y -a ingress
@@ -55,27 +55,27 @@ kapp delete -y -a ingress
 
 ## <a id='install-scdf-for-k8s-prod'></a> Installing Spring Cloud Data Flow for Kubernetes to the production environment
 
-Before running the following command ensure that the database Skipper and Data Flow will be using has been provisioned and properly configured in each `application.yaml` configuration file.
+Before running the following command ensure, that the database that Skipper and Data Flow need to use has been provisioned and properly configured in each `application.yaml` configuration file.
 
-To install `skipper` app execute:
+To install `skipper` app, run the following command:
 
 ```bash
 $ kubectl kustomize ./apps/skipper/kustomize/overlays/production/ | kapp deploy -y -a skipper -f -
 ```
 
-To install `data-flow` app execute:
+To install `data-flow` app, run the following command:
 
 ```bash
 $ kubectl kustomize ./apps/data-flow/kustomize/overlays/production/ | kapp deploy -y -a data-flow -f -
 ```
 
-If you want to use an Ingress resource then execute:
+If you want to use an Ingress resource, run the following command:
 
 ```bash
 $ kubectl kustomize ./apps/ingress/kustomize/overlays/production/ | kapp deploy -y -a ingress -f -
 ```
 
-Alternatively, instead of piping the output of `kubectl kustomize` to kapp you can pipe it to a file and then manage that file in a manner that fits into existing company deployment procedures for Kubernetes applications.
+Alternatively, instead of piping the output of `kubectl kustomize` to kapp, you can pipe it to a file and then manage that file in a manner that fits into existing company deployment procedures for Kubernetes applications.
 
 ## <a id='next-connecting-scdf'></a> Next: Connecting to SCDF for Kubernetes
 
