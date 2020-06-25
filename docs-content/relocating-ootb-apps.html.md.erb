@@ -1,0 +1,114 @@
+---
+title: Relocating the Spring Cloud Stream and Task Applications
+owner: Spring Cloud Data Flow Release Engineering
+---
+
+This topic describes how to relocate select Spring Cloud Stream and Spring Cloud Task applications.
+To use as examples for this topic, we have selected three stream applications: the `http` source app, the `split` processor app and the `log` sink app.
+
+## <a id='install-irel'></a> Install Image Relocation CLI utility
+
+In order to relocate images we need a tool that can help us create an OCI image layout that can be moved to an air-gapped environment.
+
+For this topic we will be using a CLI tool called `irel` that is available from the `pivotal/image-relocation` project.
+
+Download the latest `irel` CLI utility release from the <a href="https://github.com/pivotal/image-relocation/releases">project release page</a>.
+Select the download that matches your operating system, extract the archive and move the program file to a location on your PATH.
+
+## <a id='create-layout'></a> Create an OCI Image Layout for Selected Applications
+
+Before we create an OCI image layout for the three selected app images we need to select the versions we should relocate.
+We will use the latest available images for the selected apps based on the content of the <a href="https://dataflow.spring.io/rabbitmq-docker-latest">Stream Apps (RabbitMQ/Docker)</a> property file.
+
+The images we will relocate are:
+
+* source.http=docker:springcloudstream/http-source-rabbit:2.1.2.RELEASE
+
+* processor.splitter=docker:springcloudstream/splitter-processor-rabbit:2.1.2.RELEASE
+
+* sink.log=docker:springcloudstream/log-sink-rabbit:2.1.3.RELEASE
+
+Next, we add each image to the OCI image layout we will use for the relocation.
+
+For `http` source run:
+
+```bash
+irel layout add ./apps springcloudstream/http-source-rabbit:2.1.2.RELEASE
+```
+
+For the `splitter` processor run:
+
+```bash
+irel layout add ./apps springcloudstream/splitter-processor-rabbit:2.1.2.RELEASE
+```
+
+For `log` sink run:
+
+```bash
+irel layout add ./apps springcloudstream/log-sink-rabbit:2.1.3.RELEASE
+```
+
+We will also need the image digest for each of the images in order to relocate them in a later step.
+Run the following commands and record the digest for each image:
+
+```bash
+$ irel digest springcloudstream/http-source-rabbit:2.1.2.RELEASE
+sha256:ee2ed3c928aabe255cd3758ddc128d386783e3f3c088b5eefcba1bce006be2e0
+$ irel digest springcloudstream/splitter-processor-rabbit:2.1.2.RELEASE
+sha256:19fffc2d3d5125ce16bb41a305e20e9c82327ba744a3971a4f0dae314dd1b1dd
+$ irel digest springcloudstream/log-sink-rabbit:2.1.3.RELEASE
+sha256:6a1a978572871688d78f15bb159323bfed27d1c8b4e1ec5c9ff289db2842860d
+```
+
+## <a id='create-apps-archive'></a> Create an Image Archive File
+
+With the OCI image layout complete for our three apps, we can now create an archive that can be moved to an air-gapped environment.
+
+Create the archive using:
+
+```bash
+tar cvf apps-oci-layout.tar ./apps
+```
+
+## <a id='push-images'></a> Push Selected Applications to a Registry
+
+We are now ready to push the images to a new registry.
+
+First, extarct the OCI layout archive:
+
+```bash
+tar xvf apps-oci-layout.tar
+```
+
+Next, define an environment variable for the registry prefix (substitute with the prefix to use for your target registry ):
+
+```bash
+export TARGET_REGISTRY_PREFIX=registry.example.com/my-project/apps
+```
+
+Using the digest we recored in an earlier step, we can now push each image to the target registry.
+
+For `http` source run:
+
+```bash
+irel layout push ./apps \
+  'sha256:ee2ed3c928aabe255cd3758ddc128d386783e3f3c088b5eefcba1bce006be2e0' \
+  ${TARGET_REGISTRY_PREFIX}/http-source-rabbit:2.1.2.RELEASE
+```
+
+For the `splitter` processor run:
+
+```bash
+irel layout push ./apps \
+  'sha256:19fffc2d3d5125ce16bb41a305e20e9c82327ba744a3971a4f0dae314dd1b1dd' \
+  ${TARGET_REGISTRY_PREFIX}/splitter-processor-rabbit:2.1.2.RELEASE
+```
+
+For `log` sink run:
+
+```bash
+irel layout push ./apps \
+  'sha256:6a1a978572871688d78f15bb159323bfed27d1c8b4e1ec5c9ff289db2842860d' \
+  ${TARGET_REGISTRY_PREFIX}/log-sink-rabbit:2.1.3.RELEASE
+```
+
