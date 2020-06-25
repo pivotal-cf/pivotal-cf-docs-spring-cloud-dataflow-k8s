@@ -65,6 +65,64 @@ For Skipper image relocation, run:
 
 The relocation script updates the `kustomization.yaml` files to match the new relocated image repository locations.
 
+## <a id='custom-image'></a> Using Custom Built Images for Data Flow and Skipper Servers (Optional)
+
+You have the option of replacing the container images that Spring Cloud Data Flow for Kubernetes depends on with custom built images that you provide.
+
+In order to use these custom build images you need to replace the image references in some of the configuration files.
+
+### Data Flow Server
+
+For the Data Flow server you need to modify the `apps/data-flow/kustomize/overlays/production/kustomization.yaml` for the production environment and `apps/data-flow/kustomize/overlays/dev/kustomization.yaml` for the development environment.
+
+In both files, change the `newName`, `newTag` and `digest` entries under `images` to match your custom image. Here is an example:
+
+```yaml
+images:
+- name: springcloud/spring-cloud-dataflow-server # used for Kustomize matching
+  newName: registry.example.com/my-project/spring-cloud-dataflow-server
+  newTag: my-2.5.1
+  digest: sha256:c63d57e7f70130c97aaf605f17130a28a658f7cc29ea37a2bd1c5b21e59c6c74
+configMapGenerator:
+- name: scdf-server
+  files:
+  - bootstrap.yaml
+  - application.yaml
+bases:
+- ../../base
+patches:
+- deployment-patch.yaml
+- service-patch.yaml
+```
+
+The `digest` must match the digest of your custom image. If you would prefer to have the image pulled by the tag, then you can remove the `digest` line.
+
+### Skipper Server
+
+For the Skipper server you need to modify the `apps/skipper/kustomize/overlays/production/kustomization.yaml` for the production environment and `apps/skipper/kustomize/overlays/dev/kustomization.yaml` for the development environment.
+
+In both files, change the `newName`, `newTag` and `digest` entries under `images` to match your custom image. Here is an example:
+
+```yaml
+images:
+- name: springcloud/spring-cloud-skipper-server # used for Kustomize matching
+  newName: registry.example.com/my-project/spring-cloud-skipper-server
+  newTag: my-2.4.1
+  digest: sha256:327181e455b869dce61e05b53cec493e054a3bfb1788576eab39a7ca3eebfe5e
+configMapGenerator:
+- name: skipper
+  files:
+  - bootstrap.yaml
+  - application.yaml
+bases:
+- ../../base
+patches:
+- deployment-patch.yaml
+- service-patch.yaml
+```
+
+The `digest` must match the digest of your custom image. If you would prefer to have the image pulled by the tag, then you can remove the `digest` line.
+
 ## <a id='command-line-tools'></a> Command-Line Tools
 
 The installation procedure for Spring Cloud Data Flow for Kubernetes requires a Linux or MacOS workstation with the following command-line tools installed:
