@@ -401,6 +401,59 @@ spring:
 ```
 The examples of how to configure this section for Docker Hub, Artifactory/JFrog, Amazon Elastic Container Registry, Azure Container Registry, and the Harbor registry are in the Spring Cloud Data Flow Reference Guide's [Container Metadata](https://dataflow.spring.io/docs/feature-guides/general/application-metadata/#using-metadata-container-image-labels) section.
 
+### <a id='imagePullSecrets'></a> Adding ImagePullSecrets for Apps
+
+When launching task and stream apps the Kubernetes nodes need to be able to pull the corresponding container image.
+If the image is stored in a private repository we need to provide authentication information for the nodes to pull images from a registry.
+
+This authentication information is provided using a secret.
+In the namespace where you intend to install, create a secret, as shown in the next example.
+
+First, set the username and password variables based on your login credentials for the registry containig the images for the apps.
+
+```bash
+registry=<your registry host>
+username=<your user name>
+password=<your password>
+```
+
+Then create the secret using the values you set in the preceding example:
+
+```bash
+kubectl create secret \
+docker-registry scdf-apps-regcred \
+--docker-server=${registry} \
+--docker-username=${username} \
+--docker-password=${password}
+```
+
+For stream apps we add the name of this secret to the `application.yaml` file for the `skipper` application:
+
+```yaml
+spring:
+  cloud:
+    skipper:
+      server:
+        platform:
+          kubernetes:
+            accounts:
+              default:
+                imagePullSecret: scdf-apps-regcred
+```
+
+For task apps we add the name of this secret to the `application.yaml` file for the `data-flow` application:
+
+```yaml
+spring:
+  cloud:
+    dataflow:
+      task:
+        platform:
+          kubernetes:
+            accounts:
+              default:
+                imagePullSecret: scdf-apps-regcred
+```
 
 ### <a id='monitoring'></a> Monitoring
 In order to support both short-lived and long-lived application monitoring, the task and stream applications deployed by Data Flow and Skipper can use the [Prometheus RSocket Proxy](https://github.com/micrometer-metrics/prometheus-rsocket-proxy).
