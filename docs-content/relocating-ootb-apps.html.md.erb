@@ -17,14 +17,16 @@ Select the download that matches your operating system, extract the archive and 
 
 ## <a id='create-layout'></a> Create an OCI Image Layout for Selected Applications
 
-Befor we create an OCI image layout for the three selected app images we need to select the versions we should relocate.
+Before we create an OCI image layout for the three selected app images we need to select the versions we should relocate.
 We will use the latest available images for these apps based on the content of the <a href="https://dataflow.spring.io/rabbitmq-docker-latest">Stream Apps (RabbitMQ/Docker)</a> property file.
 
 The images we will relocate are:
 
-- source.http=docker:springcloudstream/http-source-rabbit:2.1.2.RELEASE
-- processor.splitter=docker:springcloudstream/splitter-processor-rabbit:2.1.2.RELEASE
-- sink.log=docker:springcloudstream/log-sink-rabbit:2.1.3.RELEASE
+* source.http=docker:springcloudstream/http-source-rabbit:2.1.2.RELEASE
+
+* processor.splitter=docker:springcloudstream/splitter-processor-rabbit:2.1.2.RELEASE
+
+* sink.log=docker:springcloudstream/log-sink-rabbit:2.1.3.RELEASE
 
 Next, we add each image to the OCI image layout we will use for the relocation.
 
