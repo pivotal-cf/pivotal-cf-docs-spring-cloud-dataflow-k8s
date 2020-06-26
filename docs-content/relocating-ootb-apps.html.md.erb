@@ -1,9 +1,11 @@
 ---
-title: Relocating the Spring Cloud Stream and Task Applications
+title: Relocating Spring Cloud Stream and Task Applications
 owner: Spring Cloud Data Flow Release Engineering
 ---
 
 This topic describes how to relocate select Spring Cloud Stream and Spring Cloud Task applications.
+This can be useful when the Spring Cloud Data Flow for Kubernetes server is deployed in an air-gapped environment.
+
 To use as examples for this topic, we have selected three stream applications: the `http` source app, the `split` processor app and the `log` sink app.
 
 <div class="note">Before you can use the relocated images with Spring Cloud Data Flow for Kubernetes, you would need to configure access to the registry where you relocate the images to.</div>
