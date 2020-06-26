@@ -6,6 +6,8 @@ owner: Spring Cloud Data Flow Release Engineering
 This topic describes how to relocate select Spring Cloud Stream and Spring Cloud Task applications.
 To use as examples for this topic, we have selected three stream applications: the `http` source app, the `split` processor app and the `log` sink app.
 
+<div class="note">Before you can use the relocated images with Spring Cloud Data Flow for Kubernetes, you would need to configure the [Container Registry](configuring-installation-values.html#container-registry) and [ImagePullSecrets for Apps](configuring-installation-values.html#imagePullSecrets).</div>
+
 ## <a id='install-irel'></a> Install Image Relocation CLI utility
 
 In order to relocate images we need a tool that can help us create an OCI image layout that can be moved to an air-gapped environment.

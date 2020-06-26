@@ -401,7 +401,7 @@ spring:
 ```
 The examples of how to configure this section for Docker Hub, Artifactory/JFrog, Amazon Elastic Container Registry, Azure Container Registry, and the Harbor registry are in the Spring Cloud Data Flow Reference Guide's [Container Metadata](https://dataflow.spring.io/docs/feature-guides/general/application-metadata/#using-metadata-container-image-labels) section.
 
-### <a id='imagePullSecrets'></a> Adding ImagePullSecrets for Apps
+### <a id='imagePullSecrets'></a> ImagePullSecrets for Apps
 
 When launching task and stream apps the Kubernetes nodes need to be able to pull the corresponding container image.
 If the image is stored in a private repository we need to provide authentication information for the nodes to pull images from a registry.
