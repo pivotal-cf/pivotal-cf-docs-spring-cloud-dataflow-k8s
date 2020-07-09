@@ -15,14 +15,14 @@ To upgrade the product, follow these steps
 
 1. Look for differences using a `diff` tool of your choice, in particular paying attention to
 
-* `appliation.yaml` and `bootstrap.yaml` files where new features added to the Data Flow or Skipper server will have new configuration values.
-* `kustomization.yaml` files where the container image tag, the `newTag` property, of the new version will have been updated.
-* Kubernetes resource files in `base` directories.  Suggested resource limits or other improvements that take advantage of Kuberentes features will be located here.
+    * `appliation.yaml` and `bootstrap.yaml` files where new features added to the Data Flow or Skipper server will have new configuration values.
+    * `kustomization.yaml` files where the container image tag, the `newTag` property, of the new version will have been updated.
+    * Kubernetes resource files in `base` directories.  Suggested resource limits or other improvements that take advantage of Kuberentes features will be located here.
 
 1. Once the `diff`s from the new version have been merged into files in your existing directory structure, apply the changes using the Kubernetes tool of your choice.  This can be
 
-* `kubectl kustomize [SKIPPER-OVERLAY-DIRECTORY] | kapp -y deploy -a skipper -f -
-* `kubectl kustomize [DATA-FLOW-OVERLAY-DIRECTORY] | kapp -y deploy -a data-flow -f -
+    * `kubectl kustomize [SKIPPER-OVERLAY-DIRECTORY] | kapp -y deploy -a skipper -f -
+    * `kubectl kustomize [DATA-FLOW-OVERLAY-DIRECTORY] | kapp -y deploy -a data-flow -f -
 
 or whatever other tool you use to apply changes of Kuberenetes resources to your cluster.
 
