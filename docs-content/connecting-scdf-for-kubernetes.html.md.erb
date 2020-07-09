@@ -43,7 +43,7 @@ You can then connect to the dashboard at `http://localhost:8080/dashboard`
 
 ## <a id='download-scdf-shell'></a> Downloading Spring Cloud Data Flow Shell
 
-You can download the Spring Cloud Data Flow Shell by using the following [link](https://repo.spring.io/libs-release/org/springframework/cloud/spring-cloud-dataflow-shell/2.5.1.RELEASE/spring-cloud-dataflow-shell-2.5.1.RELEASE.jar).
+You can download the Spring Cloud Data Flow Shell by using the following [link](https://repo.spring.io/libs-release/org/springframework/cloud/spring-cloud-dataflow-shell/2.5.2.RELEASE/spring-cloud-dataflow-shell-2.5.2.RELEASE.jar).
 
 <div class="note">This link is also available on the <em>About</em> page of the Spring Cloud Data Flow dashboard.</div>
 
@@ -54,7 +54,7 @@ To run the Spring Cloud Data Flow Shell, you need to have Java version 8 or late
 Start the shell and examine the available help options by running the following command (shown with its output):
 
 ```bash
-$ java -jar spring-cloud-dataflow-shell-2.5.1.RELEASE.jar --help
+$ java -jar spring-cloud-dataflow-shell-2.5.2.RELEASE.jar --help
 Data Flow Options:
   --dataflow.uri=<uri>                              Address of the Data Flow Server [default: http://localhost:9393].
   --dataflow.username=<USER>                        Username of the Data Flow Server [no default].
@@ -88,7 +88,7 @@ scdf-ingress   data-flow.35.232.203.79.xip.io   35.225.206.207   80      23h
 To connect the shell to the DNS name listed above, use the following command:
 
 ```bash
-$ java -jar spring-cloud-dataflow-shell-2.5.1.RELEASE.jar --dataflow.uri=http://data-flow.35.232.203.79.xip.io
+$ java -jar spring-cloud-dataflow-shell-2.5.2.RELEASE.jar --dataflow.uri=http://data-flow.35.232.203.79.xip.io
   ____                              ____ _                __
  / ___| _ __  _ __(_)_ __   __ _   / ___| | ___  _   _  __| |
  \___ \| '_ \| '__| | '_ \ / _` | | |   | |/ _ \| | | |/ _` |
@@ -100,7 +100,7 @@ $ java -jar spring-cloud-dataflow-shell-2.5.1.RELEASE.jar --dataflow.uri=http://
  | |_| | (_| | || (_| | |  _| | | (_) \ V  V /    / / / / / /
  |____/ \__,_|\__\__,_| |_|   |_|\___/ \_/\_/    /_/_/_/_/_/
 
-2.5.1.RELEASE
+2.5.2.RELEASE
 
 Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
 Successfully targeted http://data-flow.35.232.203.79.xip.io
@@ -130,7 +130,7 @@ Handling connection for 8080
 You can then connect to the shell by using `localhost:8080` in the URI:
 
 ```bash
-$ java -jar spring-cloud-dataflow-shell-2.5.1.RELEASE.jar --dataflow.uri=http://localhost:8080
+$ java -jar spring-cloud-dataflow-shell-2.5.2.RELEASE.jar --dataflow.uri=http://localhost:8080
   ____                              ____ _                __
  / ___| _ __  _ __(_)_ __   __ _   / ___| | ___  _   _  __| |
  \___ \| '_ \| '__| | '_ \ / _` | | |   | |/ _ \| | | |/ _` |
@@ -142,7 +142,7 @@ $ java -jar spring-cloud-dataflow-shell-2.5.1.RELEASE.jar --dataflow.uri=http://
  | |_| | (_| | || (_| | |  _| | | (_) \ V  V /    / / / / / /
  |____/ \__,_|\__\__,_| |_|   |_|\___/ \_/\_/    /_/_/_/_/_/
 
-2.5.1.RELEASE
+2.5.2.RELEASE
 
 Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or type "help".
 Successfully targeted http://localhost:8080
@@ -150,7 +150,7 @@ dataflow:>
 ```
 
 Once the shell is up and running, you can issue any of the available commands.
-For a guide to using the shell, see the Spring Cloud Data Flow Reference Guide's [Shell] section(https://docs.spring.io/spring-cloud-dataflow/docs/2.5.1.RELEASE/reference/htmlsingle/#shell).
+For a guide to using the shell, see the Spring Cloud Data Flow Reference Guide's [Shell section](https://docs.spring.io/spring-cloud-dataflow/docs/2.5.2.RELEASE/reference/htmlsingle/#shell).
 
 ## <a id='next-pipeline'></a> Next: Creating a Data Pipeline with Spring Cloud Data Flow for Kubernetes
 

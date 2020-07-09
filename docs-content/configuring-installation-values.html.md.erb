@@ -193,8 +193,8 @@ In order to add a JDBC driver, you need to perform the following steps:
 1. Download the server jars for `data-flow` and `skipper`:
 
     ```bash
-    wget https://repo1.maven.org/maven2/org/springframework/cloud/spring-cloud-skipper-server/2.4.1.RELEASE/spring-cloud-skipper-server-2.4.1.RELEASE.jar
-    wget https://repo1.maven.org/maven2/org/springframework/cloud/spring-cloud-dataflow-server/2.5.1.RELEASE/spring-cloud-dataflow-server-2.5.1.RELEASE.jar
+    wget https://repo1.maven.org/maven2/org/springframework/cloud/spring-cloud-skipper-server/2.4.2.RELEASE/spring-cloud-skipper-server-2.4.2.RELEASE.jar
+    wget https://repo1.maven.org/maven2/org/springframework/cloud/spring-cloud-dataflow-server/2.5.2.RELEASE/spring-cloud-dataflow-server-2.5.2.RELEASE.jar
     ```
 
 1. Create a directory containing the JDBC driver to be added:
@@ -208,8 +208,8 @@ In order to add a JDBC driver, you need to perform the following steps:
 1. Add the driver to the downloaded jars:
 
     ```bash
-    jar -u0f spring-cloud-skipper-server-2.4.1.RELEASE.jar BOOT-INF/lib/*.jar
-    jar -u0f spring-cloud-dataflow-server-2.5.1.RELEASE.jar BOOT-INF/lib/*.jar
+    jar -u0f spring-cloud-skipper-server-2.4.2.RELEASE.jar BOOT-INF/lib/*.jar
+    jar -u0f spring-cloud-dataflow-server-2.5.2.RELEASE.jar BOOT-INF/lib/*.jar
     ```
 
 1. Create two docker files to add the updated server jars as new container images:
@@ -218,7 +218,7 @@ In order to add a JDBC driver, you need to perform the following steps:
 
     ```bash
     FROM springcloud/openjdk:2.0.1.RELEASE
-    COPY spring-cloud-skipper-server-2.4.1.RELEASE.jar /maven/spring-cloud-skipper-server.jar
+    COPY spring-cloud-skipper-server-2.4.2.RELEASE.jar /maven/spring-cloud-skipper-server.jar
     ENTRYPOINT ["java", "-jar","/maven/spring-cloud-skipper-server.jar"]
     ```
 
@@ -226,7 +226,7 @@ In order to add a JDBC driver, you need to perform the following steps:
 
     ```bash
     FROM springcloud/openjdk:2.0.1.RELEASE
-    COPY spring-cloud-dataflow-server-2.5.1.RELEASE.jar /maven/spring-cloud-dataflow-server.jar
+    COPY spring-cloud-dataflow-server-2.5.2.RELEASE.jar /maven/spring-cloud-dataflow-server.jar
     ENTRYPOINT ["java", "-jar","/maven/spring-cloud-dataflow-server.jar"]
     ```
 
@@ -234,10 +234,10 @@ In order to add a JDBC driver, you need to perform the following steps:
 
     ```bash
     registry_prefix=registry.example.com/example
-    docker build -t ${registry_prefix}/spring-cloud-skipper-server:2.4.1.RELEASE-jdbc -f Dockerfile-skipper-server .
-    docker push ${registry_prefix}/spring-cloud-skipper-server:2.4.1.RELEASE-jdbc
-    docker build -t ${registry_prefix}/spring-cloud-dataflow-server:2.5.1.RELEASE-jdbc -f Dockerfile-dataflow-server .
-    docker push ${registry_prefix}/spring-cloud-dataflow-server:2.5.1.RELEASE-jdbc
+    docker build -t ${registry_prefix}/spring-cloud-skipper-server:2.4.2.RELEASE-jdbc -f Dockerfile-skipper-server .
+    docker push ${registry_prefix}/spring-cloud-skipper-server:2.4.2.RELEASE-jdbc
+    docker build -t ${registry_prefix}/spring-cloud-dataflow-server:2.5.2.RELEASE-jdbc -f Dockerfile-dataflow-server .
+    docker push ${registry_prefix}/spring-cloud-dataflow-server:2.5.2.RELEASE-jdbc
     ```
 
 1. Update your application kustomization manifests with the new image locations:
@@ -248,7 +248,7 @@ In order to add a JDBC driver, you need to perform the following steps:
     images:
     - name: springcloud/spring-cloud-skipper-server  # used for Kustomize matching
       newName: registry.example.com/example/spring-cloud-skipper-server
-      newTag: 2.4.1.RELEASE-jdbc
+      newTag: 2.4.2.RELEASE-jdbc
     configMapGenerator:
     - name: skipper
       files:
@@ -267,7 +267,7 @@ In order to add a JDBC driver, you need to perform the following steps:
     images:
     - name: springcloud/spring-cloud-dataflow-server  # used for Kustomize matching
       newName: registry.example.com/example/spring-cloud-dataflow-server
-      newTag: 2.5.1.RELEASE-jdbc
+      newTag: 2.5.2.RELEASE-jdbc
       configMapGenerator:
       - name: scdf-server
         files:
@@ -389,7 +389,7 @@ While the documentation is in the Spring Cloud Data Flow reference guide, the sa
 
 The Data Flow server displays Spring Boot application metadata that is stored as a label in the container image.
 To retrieve that metadata, configure the Data Flow server to access the container registry for the application images you will be deploying.
-This configuration goes under the rootThe section in the `application.yaml` file:
+This configuration goes under the following section in the `application.yaml` file:
 
 ```
 spring:
