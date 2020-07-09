@@ -42,7 +42,7 @@ The install script located in `bin/install-dev.sh` automates the following steps
 If you want to use an Ingress resource, run the following command:
 
 ```bash
-$ kubectl kustomize ./apps/ingress/kustomize/overlays/production/ | kapp deploy -y -a ingress -f -
+$ kubectl kustomize ./apps/ingress/kustomize/overlays/dev/ | kapp deploy -y -a ingress -f -
 ```
 
 To uninstall, run the `bin/uninstall-dev.sh` script.
