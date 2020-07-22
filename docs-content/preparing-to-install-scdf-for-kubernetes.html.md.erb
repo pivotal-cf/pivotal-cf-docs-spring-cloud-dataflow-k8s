@@ -35,10 +35,10 @@ Before proceeding to relocate images for Spring Cloud Data Flow for Kubernetes, 
 
 1. Download the "SCDF for Kubernetes installation images" file to  to the same directory where you downloaded the "SCDF for Kubernetes installation files" archive file described earlier.
 
-1. Extract the contents of `data-flow-images-1.0.0.tgz`
+1. Extract the contents of `data-flow-images-1.0.1.tgz`
 
 ```bash
-$ tar xzvf data-flow-images-1.0.0.tgz
+$ tar xzvf data-flow-images-1.0.1.tgz
 ```
 
 Then `cd` to the extracted `spring-cloud-data-flow directory`. In the `bin` directory is a script named `relocate-image.sh`.
@@ -81,7 +81,7 @@ In both files, change the `newName`, `newTag` and `digest` entries under `images
 images:
 - name: springcloud/spring-cloud-dataflow-server # used for Kustomize matching
   newName: registry.example.com/my-project/spring-cloud-dataflow-server
-  newTag: my-2.5.2
+  newTag: my-2.5.1
   digest: sha256:c63d57e7f70130c97aaf605f17130a28a658f7cc29ea37a2bd1c5b21e59c6c74
 configMapGenerator:
 - name: scdf-server
@@ -107,7 +107,7 @@ In both files, change the `newName`, `newTag` and `digest` entries under `images
 images:
 - name: springcloud/spring-cloud-skipper-server # used for Kustomize matching
   newName: registry.example.com/my-project/spring-cloud-skipper-server
-  newTag: my-2.4.2
+  newTag: my-2.4.3
   digest: sha256:327181e455b869dce61e05b53cec493e054a3bfb1788576eab39a7ca3eebfe5e
 configMapGenerator:
 - name: skipper
