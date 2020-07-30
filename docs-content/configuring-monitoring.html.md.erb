@@ -4,7 +4,7 @@ owner: Spring Cloud Data Flow Release Engineering
 ---
 
 This topic describes how to configure the Spring Cloud Data Flow for monitoring.
-You can configure Spring Cloud Data Flow for Kuberntes to use either [Prometheus](#prometheus-monitoring) or [Wavefront](#wavefront-monitoring).
+You can configure Spring Cloud Data Flow for Kuberntes to use either [Wavefront](#wavefront-monitoring) or [Prometheus](#prometheus-monitoring).
 
 ## <a id='wavefront-monitoring'></a> Monitoring with Wavefront
 
@@ -27,8 +27,8 @@ To create the secret you can run the following command replacing the `<Wavefront
 kubectl create secret generic wavefront-api --from-literal=wavefront-api-token=<Wavefront API token>
 ```
 
-We also need to mount this secret so it is avaiable for the Datan Flow server.
-You need to add secret mount settings for the `data-flow` applications.
+We also need to mount this secret so it is avaiable for the Data Flow server configuration.
+You need to add secret mount settings for the `data-flow` application.
 The following example shows the secret mount changes in `application.yaml`:
 
 ```yaml
@@ -53,7 +53,7 @@ Wavefront can be enabled for Spring Cloud Data Flow server, streams, or tasks ba
 
 #### <a id='wavefront-enable-server'></a> Enable Wavefront for Server
 
-To enable Wavefront for Spring Cloud Data Flow Server, modify the file `application.yaml` for the data-flow app making the following additions:
+To enable Wavefront for Spring Cloud Data Flow Server, modify the file `application.yaml` for the `data-flow` application making the following additions:
 
 ```
 management:
@@ -77,7 +77,7 @@ The `api-token` value will be automatically resolves from the secret.
 
 #### <a id='wavefront-enable-streams'></a> Enable Wavefront for Streams
 
-To enable Wavefront for deployed streams, modify the file `application.yaml` for the data-flow app making the following additions:
+To enable Wavefront for deployed streams, modify the file `application.yaml` for the `data-flow` application making the following additions:
 
 ```yaml
 spring:
@@ -100,7 +100,7 @@ The `api-token` value will be automatically resolves from the secret.
 
 #### <a id='wavefront-enable-tasks'></a> Enable Wavefront for Tasks
 
-To enable Wavefront for deployed tasks, modify the file `application.yaml` for the data-flow app making the following additions:
+To enable Wavefront for deployed tasks, modify the file `application.yaml` for the `data-flow` application making the following additions:
 
 ```yaml
 spring:
