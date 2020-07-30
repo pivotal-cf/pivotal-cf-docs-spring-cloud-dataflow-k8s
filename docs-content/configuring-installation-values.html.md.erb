@@ -133,7 +133,7 @@ The following example uses a secret named `production-db` with a `password` key 
       - name: skipper
         volumeMounts:
           - name: database
-            mountPath: /etc/secrets/database
+            mountPath: /workspace/runtime/secrets/database
             readOnly: true
   ...
 
@@ -144,7 +144,6 @@ The following example uses a secret named `production-db` with a `password` key 
             items:
             - key: postgresql-password
               path: database-password
-
 ```
 
 The settings in `application.yaml` that you need to consider are under `spring.datasource`.
@@ -456,46 +455,6 @@ spring:
 ```
 
 ### <a id='monitoring'></a> Monitoring
-In order to support both short-lived and long-lived application monitoring, the task and stream applications deployed by Data Flow and Skipper can use the [Prometheus RSocket Proxy](https://github.com/micrometer-metrics/prometheus-rsocket-proxy).
-Other monitoring technologies that use the Micrometer library are also supported, but their configuration differs from the example shown in the next listing.
-The Data Flow Dashboard provides a convenient link to custom [Stream and Task Grafana dashboards](https://github.com/spring-cloud/spring-cloud-dataflow/tree/master/src/grafana/prometheus/docker/grafana) that you can install into your Grafana server.
-
-
-The following example shows how to configure monitoring for all deployed tasks and stream applications that use Prometheus over an RSocket gateway by configuring the following section in Data Flow's `application.yaml`:
-
-```
-spring:
-  cloud:
-    dataflow:
-      applicationProperties:
-        stream:
-          management:
-            metrics:
-              export:
-                prometheus:
-                  enabled: true
-                  rsocket:
-                    enabled: true
-                    host: prometheus-proxy
-                    port: 7001
-        task:
-          management:
-            metrics:
-              export:
-                prometheus:
-                  enabled: true
-                  rsocket:
-                    enabled: true
-                    host: prometheus-proxy
-                    port: 7001
-      grafana-info:
-        url: 'https://grafana:3000'
-```
-
-You should change the Grafana `url` and Prometheus host/port values should be changed for your specific environment.
-The Data Flow microsite contains more information on [stream monitoring](https://dataflow.spring.io/docs/feature-guides/streams/monitoring/#kubernetes) and [task monitoring](https://dataflow.spring.io/docs/feature-guides/batch/monitoring/#prometheus-1).
-
-Since these common application properties are passed to the deployed task and stream applications, if you are using a different monitoring infrastrure that is supported by the micrometer library, you can set the appropriate Spring Boot configuration values for your monitoring infrastructure underneath the `applicationProperties.stream` and `applicationProperties.task` sections described earlier.
 
 
 ### <a id='Multiple Platforms'></a> Multiple Platforms
@@ -608,6 +567,6 @@ Launching a task, if successful, results in a running pod that we expect to even
 As there is no easy way to identify pods that correspond to a task, we count only pods that were launched by the Data Flow Server.
 Since the task launcher provides the task's ID as a label in the pod’s metadata, we filter all running pods for the presence of this label.
 
-## <a id='next-installing-scdf'></a> Next: Installing SCDF for Kubernetes
+## <a id='next-installing-scdf'></a> Next: Configuring Monitoring for SCDF for Kubernetes
 
-Proceed to the [Installing SCDF for Kubernetes](installing-scdf-for-kubernetes.html) topic for installation instructions.
+Proceed to the [Configuring Monitoring for SCDF for Kubernetes](configuring-monitoring.html) topic for monitoring configuration instructions.
