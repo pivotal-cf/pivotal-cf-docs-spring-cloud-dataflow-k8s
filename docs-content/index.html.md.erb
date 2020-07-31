@@ -3,6 +3,8 @@ title: Spring Cloud Data Flow for Kubernetes
 owner: Spring Cloud Data Flow Release Engineering
 ---
 
+<div class="note warning">VMware recommends Spring Cloud Data Flow for Kubernetes v1.1.0-beta-1 only for evaluation environments. Please use Spring Cloud Data Flow for Kubernetes v1.0.1 for production deployments.</div>
+
 This topic provides an overview of Spring Cloud Data Flow for Kubernetes.
 
 ## <a id='overview'></a> Overview
@@ -23,30 +25,34 @@ The table also provides information about the OSS versions used.
     <th>Details</th>
     <tr>
         <td>Version</td>
-        <td>v1.0.1</td>
+        <td>v1.1.0-beta-1</td>
     </tr>
     <tr>
         <td>Release date</td>
-        <td>July 22, 2020</td>
+        <td>July 31, 2020</td>
     </tr>
     <tr>
         <td>Software component versions:</td>
         <td></td>
     </tr>
     <tr>
-      <td>&nbsp;&nbsp;Spring Cloud Data Flow OSS</td>
-      <td>v2.5.3.RELEASE</td>
+      <td>&nbsp;&nbsp;Spring Cloud Data Flow PRO</td>
+      <td>v1.0.0-RC1</td>
     </tr>
     <tr>
       <td>&nbsp;&nbsp;Spring Cloud Skipper OSS</td>
-      <td>v2.4.3.RELEASE</td>
+      <td>v2.5.0-RC1</td>
+    </tr>
+    <tr>
+      <td>&nbsp;&nbsp;Composed Task Runner OSS</td>
+      <td>v2.6.0-RC1</td>
     </tr>
 </table>
 
 ## <a id="features"></a> Features
 
 * Operationally simplifies the provisioning of Spring Cloud Data Flow OSS and the ecosystem of projects on Kubernetes
-* Includes certified container images for Spring Cloud Data Flow and Spring Cloud Skipper applications
+* Includes certified container images for Spring Cloud Data Flow Pro, Spring Cloud Skipper and Composed Task Runner
 * Includes image-relocation capabilities for air-gapped deployments
 * Includes support for plugging relational-databases, message brokers, and identity providers of choice
 * Gives you the option to explore the provisioned software components in a Dev environment, and promoting it to Production
