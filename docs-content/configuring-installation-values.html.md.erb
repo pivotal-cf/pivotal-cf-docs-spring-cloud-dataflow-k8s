@@ -117,7 +117,7 @@ Examples of these fields are memory/cpu allocations and ingress configuration.
 
 ### <a id='database-configuration'></a> Database Configuration
 
-You can customize the database configuration settings in the `application.yaml` and `deployment-path.yaml` files.
+You can customize the database configuration settings in the `application.yaml` and `deployment-patch.yaml` files.
 These files are preconfigured to connect to a PostgreSQL database that can be installed either by using the manifests provided in `services/dev/postgresql` or by installing the `bitnami/postgresql` Helm chart.
 
 #### <a id='database-connection'></a> Database Connections Settings
@@ -286,7 +286,7 @@ If you add your own JDBC driver, you should initialize the schema for the databa
 
 ### <a id='message-broker-configuration'></a> Message Broker Configuration
 
-You can customize the configuration settings for the message broker in the `application.yaml` and the `deployment-path.yaml` files.
+You can customize the configuration settings for the message broker in the `application.yaml` and the `deployment-patch.yaml` files.
 These files are preconfigured to connect to a RabbitMQ broker that can be installed either by using the manifests provided in `services/dev/rabbitmq` or by installing the `bitnami/rabbitmq` Helm chart.
 
 #### <a id='rabbit-broker-configuration'></a> Using RabbitMQ as the Message Broker
