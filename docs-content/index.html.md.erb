@@ -23,11 +23,11 @@ The table also provides information about the OSS versions used.
     <th>Details</th>
     <tr>
         <td>Version</td>
-        <td>v1.0.0</td>
+        <td>v1.0.1</td>
     </tr>
     <tr>
         <td>Release date</td>
-        <td>July 7, 2020</td>
+        <td>July 22, 2020</td>
     </tr>
     <tr>
         <td>Software component versions:</td>
@@ -35,14 +35,21 @@ The table also provides information about the OSS versions used.
     </tr>
     <tr>
       <td>&nbsp;&nbsp;Spring Cloud Data Flow OSS</td>
-      <td>v2.5.2.RELEASE</td>
+      <td>v2.5.3.RELEASE</td>
     </tr>
     <tr>
       <td>&nbsp;&nbsp;Spring Cloud Skipper OSS</td>
-      <td>v2.4.2.RELEASE</td>
+      <td>v2.4.3.RELEASE</td>
     </tr>
 </table>
 
+## <a id="features"></a> Features
+
+* Operationally simplifies the provisioning of Spring Cloud Data Flow OSS and the ecosystem of projects on Kubernetes
+* Includes certified container images for Spring Cloud Data Flow and Spring Cloud Skipper applications
+* Includes image-relocation capabilities for air-gapped deployments
+* Includes support for plugging relational-databases, message brokers, and identity providers of choice
+* Gives you the option to explore the provisioned software components in a Dev environment, and promoting it to Production
 
 ## <a id="limitations"></a> Limitations
 
@@ -52,11 +59,11 @@ The following section lists limitations of Spring Cloud Data Flow for Kubernetes
 
 * This product is compatible with the following Kubernetes release versions:
 
+    * v1.18.x
+    * v1.17.x
     * v1.16.x
     * v1.15.x
     * v1.14.x
-
-    Future releases of Spring Cloud Data Flow for Kubernetes will be compatible with newer Kubernetes release versions, like v1.17.x and v1.18.x.
 
 * This product is intended to be used with any Kubernetes distribution.
   However, given the number of Kubernetes vendors, and configurations,
