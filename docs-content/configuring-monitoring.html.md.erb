@@ -64,12 +64,12 @@ management:
           autotime:
             enabled: true
         metric-name: spring.cloud.dataflow.http.server.requests
-  export:
-    wavefront:
-      enabled: true
-      api-token: ${wavefront-api-token}
-      uri: https://<your-wavefront-uri>.wavefront.com
-      source: <your-source-name>
+    export:
+      wavefront:
+        enabled: true
+        api-token: ${wavefront-api-token}
+        uri: https://<your-wavefront-uri>.wavefront.com
+        source: <your-source-name>
 ```
 
 Change the values of `<your-wavefront-uri>` and `<your-source-name>` to those matching your setup.
