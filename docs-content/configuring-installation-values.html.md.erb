@@ -279,8 +279,8 @@ In order to add a JDBC driver, you need to perform the following steps:
     ```bash
     images:
     - name: springcloud/spring-cloud-dataflow-server  # used for Kustomize matching
-      newName: registry.example.com/example/spring-cloud-dataflow-server
-      newTag: 2.6.0-jdbc
+      newName: registry.example.com/example/scdf-pro-server
+      newTag: 1.0.0-jdbc
       configMapGenerator:
       - name: scdf-server
         files:
@@ -298,9 +298,7 @@ In order to add a JDBC driver, you need to perform the following steps:
     You can either provide a tag or a digest that matches your new image. Here is an example:
 
     ```yaml
-    server:
-      port: 8080
-    spring:
+     spring:
       cloud:
         config:
           enabled: false

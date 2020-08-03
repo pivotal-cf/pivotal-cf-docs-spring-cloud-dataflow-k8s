@@ -86,8 +86,8 @@ In both files, change the `newName`, `newTag` and `digest` entries under `images
 ```yaml
 images:
 - name: springcloud/spring-cloud-dataflow-server # used for Kustomize matching
-  newName: registry.example.com/my-project/spring-cloud-dataflow-server
-  newTag: my-2.6.0
+  newName: registry.example.com/my-project/scdf-pro-server
+  newTag: my-1.0.0
   digest: sha256:c63d57e7f70130c97aaf605f17130a28a658f7cc29ea37a2bd1c5b21e59c6c74
 configMapGenerator:
 - name: scdf-server
@@ -110,8 +110,6 @@ For the Composed Task Runner image you need to modify the `apps/data-flow/kustom
 In both files, change the `spring.cloud.dataflow.task.composedTaskRunnerUri` entry to match your custom image. The value should be prefixed with `docker://`. Here is an example:
 
 ```yaml
-server:
-  port: 8080
 spring:
   cloud:
     config:
