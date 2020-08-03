@@ -21,7 +21,7 @@ Download the Spring Cloud Data Flow for Kubernetes installation resources from [
 $ tar xzvf data-flow-1.1.0-beta-1.tgz
 ```
 
-## <a id='image-relocation'></a> Re-locate App Images to Another Container Registry (Optional)
+## <a id='image-relocation'></a> Re-locate Distribution Container Images to Another Registry (Optional)
 
 You have the option of re-locating the container images that Spring Cloud Data Flow for Kubernetes depends on to a different container image registry. Supported registries include Harbor, Google Container Registry (GCR), and DockerHub.
 
@@ -51,13 +51,19 @@ Usage: ./bin/relocate-image.sh [-r|--repository <arg>] [-a|--app <arg>] [-h|--he
     -h, --help: Prints help
 ```
 
-To relocate the Data Flow server, use the Docker CLI to authenticate to your reistry and run:
+To relocate the Data Flow server image, use the Docker CLI to authenticate to your reistry and then run:
 
 ```bash
 ./bin/relocate-image.sh --app data-flow --repository <registry-repo-prefix>/spring-cloud-dataflow-server
 ```
 
-For Skipper image relocation, run:
+For the Composed Task Runner image relocation, run:
+
+```bash
+./bin/relocate-image.sh --app composed-task-runner --repository <registry-repo-prefix>/spring-cloud-dataflow-composed-task-runner
+```
+
+For Skipper server image relocation, run:
 
 ```bash
 ./bin/relocate-image.sh --app skipper --repository <registry-repo-prefix>/spring-cloud-skipper-server
@@ -81,7 +87,7 @@ In both files, change the `newName`, `newTag` and `digest` entries under `images
 images:
 - name: springcloud/spring-cloud-dataflow-server # used for Kustomize matching
   newName: registry.example.com/my-project/spring-cloud-dataflow-server
-  newTag: my-2.6.0-RC1
+  newTag: my-2.6.0
   digest: sha256:c63d57e7f70130c97aaf605f17130a28a658f7cc29ea37a2bd1c5b21e59c6c74
 configMapGenerator:
 - name: scdf-server
@@ -97,6 +103,33 @@ patches:
 
 The `digest` must match the digest of your custom image. If you would prefer to have the image pulled by the tag, then you can remove the `digest` line.
 
+### Composed Task Runner
+
+For the Composed Task Runner image you need to modify the `apps/data-flow/kustomize/overlays/production/application.yaml` file for the production environment and the `apps/data-flow/kustomize/overlays/dev/application.yaml` file for the development environment.
+
+In both files, change the `spring.cloud.dataflow.task.composedTaskRunnerUri` entry to match your custom image. The value should be prefixed with `docker://`. Here is an example:
+
+```yaml
+server:
+  port: 8080
+spring:
+  cloud:
+    config:
+      enabled: false
+    dataflow:
+      server:
+        uri: http://${SCDF_SERVER_SERVICE_HOST}:${SCDF_SERVER_SERVICE_PORT}
+      features:
+        schedules-enabled: true
+      task:
+        composedTaskRunnerUri: docker://registry.example.com/my-project/spring-cloud-dataflow-composed-task-runner:my-2.6.0
+
+...
+
+```
+
+You can either provide a tag or a digest that matches your custom image.
+
 ### Skipper Server
 
 For the Skipper server you need to modify the `apps/skipper/kustomize/overlays/production/kustomization.yaml` file for the production environment and the `apps/skipper/kustomize/overlays/dev/kustomization.yaml` file for the development environment.
@@ -107,7 +140,7 @@ In both files, change the `newName`, `newTag` and `digest` entries under `images
 images:
 - name: springcloud/spring-cloud-skipper-server # used for Kustomize matching
   newName: registry.example.com/my-project/spring-cloud-skipper-server
-  newTag: my-2.5.0-RC1
+  newTag: my-2.5.0
   digest: sha256:327181e455b869dce61e05b53cec493e054a3bfb1788576eab39a7ca3eebfe5e
 configMapGenerator:
 - name: skipper
