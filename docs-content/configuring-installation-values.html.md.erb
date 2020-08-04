@@ -474,7 +474,7 @@ spring:
                 imagePullSecret: scdf-apps-regcred
 ```
 
-<div class="note">If you want to use the Composed Task Launcher then you must create a secret with the credentials for the Tanzu Net Registry or, if you relocated the image for the Composed Task Runner, to the registry where it was relocated.</div>
+<div class="note">If you want to use the Composed Task Runner then you must create a secret with the credentials for the Tanzu Net Registry or, if you relocated the image for the Composed Task Runner, to the registry where it was relocated.</div>
 
 For task apps we add the name of this secret to the `application.yaml` file for the `data-flow` application:
 
