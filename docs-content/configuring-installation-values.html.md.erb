@@ -215,42 +215,45 @@ In order to add a JDBC driver, you need to perform the following steps:
     jar -u0f spring-cloud-dataflow-composed-task-runner-2.6.0.jar BOOT-INF/lib/*.jar
     ```
 
-1. Create three docker files to add the updated server jars as new container images:
+1. Create new container images using the updated server jars. 
 
-    _Dockerfile-skipper-server_
+    You should use a base image based on JDK 8.
+    The easiest way to accomplish this is to use the [pack CLI utility](https://buildpacks.io/docs/install-pack/).
+    Create a `registry_prefix` environment variable containing the prefix you want to use.
 
-    ```bash
-    FROM springcloud/openjdk:2.0.1.RELEASE
-    COPY spring-cloud-skipper-server-2.5.0.jar /maven/spring-cloud-skipper-server.jar
-    ENTRYPOINT ["java", "-jar","/maven/spring-cloud-skipper-server.jar"]
+    Here is an example:
+
+    ```
+    export registry_prefix=registry.example.com/example
     ```
 
-    _Dockerfile-dataflow-server_
+    Now, build the three container images.
 
-    ```bash
-    FROM springcloud/openjdk:2.0.1.RELEASE
-    COPY scdf-pro-server-1.0.0.jar /maven/scdf-pro-server.jar
-    ENTRYPOINT ["java", "-jar","/maven/scdf-pro-server.jar"]
+    For the `skipper` app run:
+
+    ```
+    pack build --env BP_JVM_VERSION=8 \
+      --path spring-cloud-skipper-server-2.5.0.jar \
+      --builder gcr.io/paketo-buildpacks/builder:base \
+      --publish ${registry_prefix}/spring-cloud-skipper-server:2.5.0-jdbc
     ```
 
-    _Dockerfile-composed-task-runner_
-
-    ```bash
-    FROM springcloud/openjdk:2.0.1.RELEASE
-    COPY spring-cloud-dataflow-composed-task-runner-2.6.0.jar /maven/spring-cloud-dataflow-composed-task-runner.jar
-    ENTRYPOINT ["java", "-jar","/maven/spring-cloud-dataflow-composed-task-runner.jar"]
+    For the `data-flow` app run:
+    
+    ```
+    pack build --env BP_JVM_VERSION=8 \
+      --path scdf-pro-server-1.0.0.jar \
+      --builder gcr.io/paketo-buildpacks/builder:base \
+      --publish ${registry_prefix}/scdf-pro-server:1.0.0-jdbc
     ```
 
-1. Build the container images and push them to your registry by setting the `REGISTRY` variable to the registry prefix you want to use:
-
-    ```bash
-    registry_prefix=registry.example.com/example
-    docker build -t ${registry_prefix}/spring-cloud-skipper-server:2.5.0-jdbc -f Dockerfile-skipper-server .
-    docker push ${registry_prefix}/spring-cloud-skipper-server:2.5.0-jdbc
-    docker build -t ${registry_prefix}/scdf-pro-server:1.0.0-jdbc -f Dockerfile-dataflow-server .
-    docker push ${registry_prefix}/scdf-pro-server:1.0.0-jdbc
-    docker build -t ${registry_prefix}/spring-cloud-dataflow-composed-task-runner:2.6.0-jdbc -f Dockerfile-composed-task-runner .
-    docker push ${registry_prefix}/spring-cloud-dataflow-composed-task-runner:2.6.0-jdbc
+    For the `composed-task-runner` app run:
+    
+    ```
+    pack build --env BP_JVM_VERSION=8 \
+      --path spring-cloud-dataflow-composed-task-runner-2.6.0.jar \
+      --builder gcr.io/paketo-buildpacks/builder:base \
+      --publish ${registry_prefix}/spring-cloud-dataflow-composed-task-runner:2.6.0-jdbc
     ```
 
 1. Update your application kustomization manifests with the new image locations:
@@ -293,7 +296,7 @@ In order to add a JDBC driver, you need to perform the following steps:
       - service-patch.yaml
     ```
 
-    For the Composed Task Runner image you need to modify the `apps/data-flow/kustomize/overlays/production/application.yaml` file.
+    For the `composed-task-runner` image you need to modify the `apps/data-flow/kustomize/overlays/production/application.yaml` file.
     Change the `spring.cloud.dataflow.task.composedTaskRunnerUri` entry to match your new image. The value should be prefixed with `docker://`.
     You can either provide a tag or a digest that matches your new image. Here is an example:
 
