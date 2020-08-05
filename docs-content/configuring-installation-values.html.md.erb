@@ -187,7 +187,7 @@ spring:
 #### <a id='database-connection'></a> Adding JDBC Driver
 
 It is possibe to add your own JDBC driver if you do not want to use the JDBC drivers that are provided.
-JDBC drivers for DB2, MySQL, Oracle, PostgreSQL, and MS SQL Server are provided in the published application artifacts.
+JDBC drivers for MySQL (via MariaDB driver), HSQLDB, PostgreSQL along with embedded H2 are provided in the published application artifacts.
 
 In order to add a JDBC driver, you need to perform the following steps:
 
@@ -213,12 +213,14 @@ In order to add a JDBC driver, you need to perform the following steps:
     jar -u0f spring-cloud-dataflow-server-2.5.3.RELEASE.jar BOOT-INF/lib/*.jar
     ```
 
-1. Create two docker files to add the updated server jars as new container images:
+1. Create two docker files to add the updated server jars as new container images.
+
+   The following Dockerfiles are examples, please adjust them to your preferred configuration.
 
     _Dockerfile-skipper-server_
 
     ```bash
-    FROM springcloud/openjdk:2.0.1.RELEASE
+    FROM openjdk:8-jdk
     COPY spring-cloud-skipper-server-2.4.3.RELEASE.jar /maven/spring-cloud-skipper-server.jar
     ENTRYPOINT ["java", "-jar","/maven/spring-cloud-skipper-server.jar"]
     ```
@@ -226,7 +228,7 @@ In order to add a JDBC driver, you need to perform the following steps:
     _Dockerfile-dataflow-server_
 
     ```bash
-    FROM springcloud/openjdk:2.0.1.RELEASE
+    FROM openjdk:8-jdk
     COPY spring-cloud-dataflow-server-2.5.3.RELEASE.jar /maven/spring-cloud-dataflow-server.jar
     ENTRYPOINT ["java", "-jar","/maven/spring-cloud-dataflow-server.jar"]
     ```
