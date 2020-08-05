@@ -215,8 +215,8 @@ In order to add a JDBC driver, you need to perform the following steps:
 
 1. Create two docker files to add the updated server jars as new container images.
 
-   The following Dockerfiles are examples, please adjust them to your preferred configuration.
-
+    The following Dockerfiles are examples, please adjust them to your preferred configuration.
+    
     _Dockerfile-skipper-server_
 
     ```bash
@@ -224,7 +224,7 @@ In order to add a JDBC driver, you need to perform the following steps:
     COPY spring-cloud-skipper-server-2.4.3.RELEASE.jar /maven/spring-cloud-skipper-server.jar
     ENTRYPOINT ["java", "-jar","/maven/spring-cloud-skipper-server.jar"]
     ```
-
+    
     _Dockerfile-dataflow-server_
 
     ```bash
