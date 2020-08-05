@@ -107,8 +107,8 @@ clicks-ingest --server.port=9001 || regions-ingest --server.port=9000 || clicks-
 As you can see the `clicks-per-region` is a KStream application with two inputs and one output.
 
 <div class="note">
-In order to post the HTTP events, you might either need to port-forward your pods (on minikube) or use the service endpoints(if you have a Service endpoint available) of `click-ingest` and `regions-ingest` deployments.
-Since this sample is now set up on `minikube`, the following sample data is posted to `http://localhost:9000`  and `http://localhost:9001` after port-forwarding the associated pods.
+In order to post the HTTP events, you might either need to port-forward your pods (on minikube) or use the service endpoints(if you have a Service endpoint available) of <code>click-ingest</code> and <code>regions-ingest</code> deployments.
+Since this sample is now set up on <code>minikube</code>, the following sample data is posted to <code>http://localhost:9000</code>  and <code>http://localhost:9001</code> after port-forwarding the associated pods.
 </div>
 
 Post some HTTP events as user region events:
