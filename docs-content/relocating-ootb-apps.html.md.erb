@@ -86,10 +86,10 @@ First, extarct the OCI layout archive:
 tar xvf apps-oci-layout.tar
 ```
 
-Next, define an environment variable for the registry prefix (substitute with the prefix to use for your target registry ):
+Next, define an environment variable for the repository prefix (substitute with the prefix to use for your target registry and account or project):
 
 ```bash
-export TARGET_REGISTRY_PREFIX=registry.example.com/my-project/apps
+export TARGET_REPOSITORY_PREFIX=registry.example.com/my-project/apps
 ```
 
 Using the digest we recorded in an earlier step, we can now push each image to the target registry.
@@ -99,7 +99,7 @@ For `http` source run:
 ```bash
 irel layout push ./apps \
   'sha256:13ba48d79c54f86efc1f0ed4d3043490d83b4c8da6908eaefbce1fa1c69c8dad' \
-  ${TARGET_REGISTRY_PREFIX}/http-source-rabbit:2.1.4.RELEASE
+  ${TARGET_REPOSITORY_PREFIX}/http-source-rabbit:2.1.4.RELEASE
 ```
 
 For the `splitter` processor run:
@@ -107,7 +107,7 @@ For the `splitter` processor run:
 ```bash
 irel layout push ./apps \
   'sha256:a00ea5669f604804daaa0e63514a974bdd7a9c80141ce3e2cc8eb97f6ce2526e' \
-  ${TARGET_REGISTRY_PREFIX}/splitter-processor-rabbit:2.1.3.RELEASE
+  ${TARGET_REPOSITORY_PREFIX}/splitter-processor-rabbit:2.1.3.RELEASE
 ```
 
 For `log` sink run:
@@ -115,7 +115,7 @@ For `log` sink run:
 ```bash
 irel layout push ./apps \
   'sha256:45ffe67c5541e5fd234b488c499a77418e3c9244370898e49a8506ff7b246172' \
-  ${TARGET_REGISTRY_PREFIX}/log-sink-rabbit:2.1.4.RELEASE
+  ${TARGET_REPOSITORY_PREFIX}/log-sink-rabbit:2.1.4.RELEASE
 ```
 
 ## <a id='register-stream-apps'></a> Register the Relocated Applications
