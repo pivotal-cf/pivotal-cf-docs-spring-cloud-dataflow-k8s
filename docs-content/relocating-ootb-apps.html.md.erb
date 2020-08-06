@@ -12,12 +12,14 @@ To use as examples for this topic, we have selected three stream applications: t
 
 Review the following configuration sections: configuring the [Container Registry](configuring-installation-values.html#container-registry), and configuring [ImagePullSecrets for Apps](configuring-installation-values.html#imagePullSecrets)
 
-## <a id='install-irel'></a> Install Image Relocation CLI utility
+## <a id='install-prel'></a> Install Image Relocation CLI utility
 
 In order to relocate images we need a utility program that can help us create an OCI image layout that can be moved to an air-gapped environment.
 
-For this topic we will be using a CLI utility called `prel` that is available for download from [VMware Tanzu Network](https://network.pivotal.io/products/p-scdf-for-kubernetes).
-Download the `SCDF for Kubernetes prel CLI` release artifact. Select the download that matches your operating system, extract the archive and move the program file to a location on your PATH.
+For this topic we will be using a CLI utility called `prel` that is available from the `pivotal/scdf-k8s-prel` project.
+
+Download the latest `prel` CLI utility release from the <a href="https://github.com/pivotal/scdf-k8s-prel/releases">project release page</a>.
+Select the download that matches your operating system, extract the archive and move the program file to a location on your PATH.
 
 ## <a id='create-layout'></a> Create an Image Archive File containing the OCI Image Layout for Selected Applications
 
@@ -27,7 +29,7 @@ We will use the latest available images for the selected apps based on the conte
 The images we will relocate are added to a new `rabbitmq-docker-example.properties` file:
 
 ```
-source.http=docker:springcloudstream/http-source-rabbit:2.1.3.RELEASE
+source.http=docker:springcloudstream/http-source-rabbit:2.1.4.RELEASE
 processor.splitter=docker:springcloudstream/splitter-processor-rabbit:2.1.3.RELEASE
 sink.log=docker:springcloudstream/log-sink-rabbit:2.1.4.RELEASE
 ```
@@ -44,7 +46,6 @@ This creates an archive containing the OCI image layout that can be moved to an 
 ## <a id='push-images'></a> Push Selected Applications to a Registry
 
 We are now ready to push the images to a new registry.
-
 
 First, define an environment variable for the registry prefix (substitute with the prefix to use for your target registry ):
 
@@ -64,6 +65,7 @@ prel relocate --repository-prefix $TARGET_REPOSITORY_PREFIX \
 ## <a id='register-stream-apps'></a> Register the Relocated Applications
 
 We can now register the apps using the the Spring Cloud Data Flow Shell.
+See the [Connecting to SCDF for Kubernetes](connecting-scdf-for-kubernetes.html) topic for connection instructions.
 
 ```bash
 dataflow:>app import --uri file:rabbitmq-docker-example-relocated.properties
