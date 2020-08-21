@@ -195,8 +195,8 @@ In order to add a JDBC driver, you need to perform the following steps:
 1. Download the server jars for `skipper` and `composed-task-runner`:
 
     ```bash
-    wget https://repo1.maven.org/maven2/org/springframework/cloud/spring-cloud-skipper-server/2.5.0/spring-cloud-skipper-server-2.5.0.jar
-    wget https://repo1.maven.org/maven2/org/springframework/cloud/spring-cloud-dataflow-composed-task-runner/2.6.0/spring-cloud-dataflow-composed-task-runner-2.6.0.jar
+    wget https://repo1.maven.org/maven2/org/springframework/cloud/spring-cloud-skipper-server/2.5.1/spring-cloud-skipper-server-2.5.1.jar
+    wget https://repo1.maven.org/maven2/org/springframework/cloud/spring-cloud-dataflow-composed-task-runner/2.6.1/spring-cloud-dataflow-composed-task-runner-2.6.1.jar
     ```
 
 1. Create a directory containing the JDBC driver to be added:
@@ -210,9 +210,9 @@ In order to add a JDBC driver, you need to perform the following steps:
 1. Add the driver to the downloaded jars:
 
     ```bash
-    jar -u0f spring-cloud-skipper-server-2.5.0.jar BOOT-INF/lib/*.jar
-    jar -u0f scdf-pro-server-1.0.0.jar BOOT-INF/lib/*.jar
-    jar -u0f spring-cloud-dataflow-composed-task-runner-2.6.0.jar BOOT-INF/lib/*.jar
+    jar -u0f spring-cloud-skipper-server-2.5.1.jar BOOT-INF/lib/*.jar
+    jar -u0f scdf-pro-server-1.0.1.jar BOOT-INF/lib/*.jar
+    jar -u0f spring-cloud-dataflow-composed-task-runner-2.6.1.jar BOOT-INF/lib/*.jar
     ```
 
 1. Create new container images using the updated server jars. 
@@ -233,27 +233,27 @@ In order to add a JDBC driver, you need to perform the following steps:
 
     ```
     pack build --env BP_JVM_VERSION=8 \
-      --path spring-cloud-skipper-server-2.5.0.jar \
+      --path spring-cloud-skipper-server-2.5.1.jar \
       --builder gcr.io/paketo-buildpacks/builder:base \
-      --publish ${registry_prefix}/spring-cloud-skipper-server:2.5.0-jdbc
+      --publish ${registry_prefix}/spring-cloud-skipper-server:2.5.1-jdbc
     ```
 
     For the `data-flow` app run:
     
     ```
     pack build --env BP_JVM_VERSION=8 \
-      --path scdf-pro-server-1.0.0.jar \
+      --path scdf-pro-server-1.0.1.jar \
       --builder gcr.io/paketo-buildpacks/builder:base \
-      --publish ${registry_prefix}/scdf-pro-server:1.0.0-jdbc
+      --publish ${registry_prefix}/scdf-pro-server:1.0.1-jdbc
     ```
 
     For the `composed-task-runner` app run:
     
     ```
     pack build --env BP_JVM_VERSION=8 \
-      --path spring-cloud-dataflow-composed-task-runner-2.6.0.jar \
+      --path spring-cloud-dataflow-composed-task-runner-2.6.1.jar \
       --builder gcr.io/paketo-buildpacks/builder:base \
-      --publish ${registry_prefix}/spring-cloud-dataflow-composed-task-runner:2.6.0-jdbc
+      --publish ${registry_prefix}/spring-cloud-dataflow-composed-task-runner:2.6.1-jdbc
     ```
 
 1. Update your application kustomization manifests with the new image locations:
@@ -264,7 +264,7 @@ In order to add a JDBC driver, you need to perform the following steps:
     images:
     - name: springcloud/spring-cloud-skipper-server  # used for Kustomize matching
       newName: registry.example.com/example/spring-cloud-skipper-server
-      newTag: 2.5.0-jdbc
+      newTag: 2.5.1-jdbc
     configMapGenerator:
     - name: skipper
       files:
@@ -283,7 +283,7 @@ In order to add a JDBC driver, you need to perform the following steps:
     images:
     - name: springcloud/spring-cloud-dataflow-server  # used for Kustomize matching
       newName: registry.example.com/example/scdf-pro-server
-      newTag: 1.0.0-jdbc
+      newTag: 1.0.1-jdbc
       configMapGenerator:
       - name: scdf-server
         files:
@@ -311,7 +311,7 @@ In order to add a JDBC driver, you need to perform the following steps:
           features:
             schedules-enabled: true
           task:
-            composedTaskRunnerUri: docker://registry.example.com/my-project/spring-cloud-dataflow-composed-task-runner:2.6.0-jdbc
+            composedTaskRunnerUri: docker://registry.example.com/my-project/spring-cloud-dataflow-composed-task-runner:2.6.1-jdbc
 
     ...
 
