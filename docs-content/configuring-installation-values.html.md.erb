@@ -196,7 +196,7 @@ In order to add a JDBC driver, you need to perform the following steps:
 
     ```bash
     wget https://repo1.maven.org/maven2/org/springframework/cloud/spring-cloud-skipper-server/2.5.2/spring-cloud-skipper-server-2.5.2.jar
-    wget https://repo1.maven.org/maven2/org/springframework/cloud/spring-cloud-dataflow-composed-task-runner/2.6.2/spring-cloud-dataflow-composed-task-runner-2.6.2.jar
+    wget https://repo1.maven.org/maven2/org/springframework/cloud/spring-cloud-dataflow-composed-task-runner/2.6.3/spring-cloud-dataflow-composed-task-runner-2.6.3.jar
     ```
 
 1. Create a directory containing the JDBC driver to be added:
@@ -211,8 +211,8 @@ In order to add a JDBC driver, you need to perform the following steps:
 
     ```bash
     jar -u0f spring-cloud-skipper-server-2.5.2.jar BOOT-INF/lib/*.jar
-    jar -u0f scdf-pro-server-1.0.3.jar BOOT-INF/lib/*.jar
-    jar -u0f spring-cloud-dataflow-composed-task-runner-2.6.2.jar BOOT-INF/lib/*.jar
+    jar -u0f scdf-pro-server-1.0.4.jar BOOT-INF/lib/*.jar
+    jar -u0f spring-cloud-dataflow-composed-task-runner-2.6.3.jar BOOT-INF/lib/*.jar
     ```
 
 1. Create new container images using the updated server jars. 
@@ -242,18 +242,18 @@ In order to add a JDBC driver, you need to perform the following steps:
     
     ```
     pack build --env BP_JVM_VERSION=8 \
-      --path scdf-pro-server-1.0.3.jar \
+      --path scdf-pro-server-1.0.4.jar \
       --builder gcr.io/paketo-buildpacks/builder:base \
-      --publish ${registry_prefix}/scdf-pro-server:1.0.3-jdbc
+      --publish ${registry_prefix}/scdf-pro-server:1.0.4-jdbc
     ```
 
     For the `composed-task-runner` app run:
     
     ```
     pack build --env BP_JVM_VERSION=8 \
-      --path spring-cloud-dataflow-composed-task-runner-2.6.2.jar \
+      --path spring-cloud-dataflow-composed-task-runner-2.6.3.jar \
       --builder gcr.io/paketo-buildpacks/builder:base \
-      --publish ${registry_prefix}/spring-cloud-dataflow-composed-task-runner:2.6.2-jdbc
+      --publish ${registry_prefix}/spring-cloud-dataflow-composed-task-runner:2.6.3-jdbc
     ```
 
 1. Update your application kustomization manifests with the new image locations:
@@ -283,7 +283,7 @@ In order to add a JDBC driver, you need to perform the following steps:
     images:
     - name: springcloud/spring-cloud-dataflow-server  # used for Kustomize matching
       newName: registry.example.com/example/scdf-pro-server
-      newTag: 1.0.3-jdbc
+      newTag: 1.0.4-jdbc
       configMapGenerator:
       - name: scdf-server
         files:
@@ -311,7 +311,7 @@ In order to add a JDBC driver, you need to perform the following steps:
           features:
             schedules-enabled: true
           task:
-            composedTaskRunnerUri: docker://registry.example.com/my-project/spring-cloud-dataflow-composed-task-runner:2.6.2-jdbc
+            composedTaskRunnerUri: docker://registry.example.com/my-project/spring-cloud-dataflow-composed-task-runner:2.6.3-jdbc
 
     ...
 
