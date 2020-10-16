@@ -3,20 +3,20 @@ title: Configuring Multiple Platforms Support for Spring Cloud Data Flow for Kub
 owner: Spring Cloud Data Flow Release Engineering
 ---
 
-This topic describes how to configure Multiple Platforms Support for Spring Cloud Data Flow for Kubernetes.
+This topic describes how to configure the multiple platform support in Spring Cloud Data Flow for Kubernetes (SCDF for Kubernetes).
 
 ## <a id='Multiple Platforms'></a> Multiple Platforms
 
-Data Flow supports deploying streaming and batch appplications to differenet Kubernetes namespaces or clusters.
-You can read more about the scenarios where this approach is useful in the Spring Cloud Data Flow Referenece Documentation section on the [Role of Multiple Platform Deployments](https://dataflow.spring.io/docs/recipes/multi-platform-deployment/multiple-platform-accounts/#role-of-multiple-platform-deployments).
+SCDF for Kubernetes can deploy streaming and batch appplications to different Kubernetes namespaces or clusters.
+For information about scenarios that benefit from this approach, see the Spring Cloud Data Flow documentation about the [Role of Multiple Platform Deployments](https://dataflow.spring.io/docs/recipes/multi-platform-deployment/multiple-platform-accounts/#role-of-multiple-platform-deployments).
 
-Task applications are deployed by the Data Flow server, and streaming applications are deployed through the Skipper server.
+To configure multiple platform support, you must edit the relevant SCDF for Kubernetes application's `application.yaml` file. The Data Flow server deploys Spring Cloud Task applications, and the Skipper server deploys Spring Cloud Stream applications.
 
-The section in Data Flow's `application.yaml` configuration file that you need to modify to configure one or more deployment platforms is under the section `spring.cloud.dataflow.task.platform.kubernetes.accounts`.
-The `accounts` element is a map that contains the account name as a key, and the value are the properties of the Java object [KubernetesDeployerProperties](https://github.com/spring-cloud/spring-cloud-deployer-kubernetes/blob/master/src/main/java/org/springframework/cloud/deployer/spi/kubernetes/KubernetesDeployerProperties.java).
-The [Data Flow Reference Documentation section for Kubernetes Deployer Properties](https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#configuration-kubernetes-deployer) contains the list of properties and their descriptions.
+To configure one or more deployment platforms for Spring Cloud Task applications, you must edit the Data Flow application's `application.yaml` file.
+In the `spring.cloud.dataflow.task.platform.kubernetes` section, the `accounts` element is a map, where a key is an account name and a value is the properties of the [KubernetesDeployerProperties](https://github.com/spring-cloud/spring-cloud-deployer-kubernetes/blob/master/src/main/java/org/springframework/cloud/deployer/spi/kubernetes/KubernetesDeployerProperties.java) Java object.
+For a list of this object's properties, with descriptions, see the [Deployer Properties](https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#configuration-kubernetes-deployer) section of the [Spring Cloud Data Flow Reference Documentation](https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/).
 
-The following is an example of havings two accounts. One is a `default` account that targets the `default` namespace with a memory limit of 1024Mi and a `highmemory` account that targets the `highmemory-namespace` namespace with a memory limit of 4096Mi.
+The following example configures two accounts: a `default` account that targets the `default` namespace and has a memory limit of 1024Mi, and a `highmemory` account that targets the `highmemory-namespace` namespace and has a memory limit of 4096Mi.
 
 ```
 spring:
@@ -35,10 +35,11 @@ spring:
                 limits:
                   memory: 4096Mi
 ```
-The Fabric8 Kubernetes client library is used to connect to Kubernetes.
-`KubernetesDeployerProperties` contains a property named `fabric8` that exposes the [Fabric8 client configuration properties](https://github.com/fabric8io/kubernetes-client#configuring-the-client), which lets you configure connection properties, such as kubernetes master location and and certificates.
 
-The following example shows a configuration that has an account where another cluster is referenced that contains GPU resources:
+SCDF for Kubernetes uses the Fabric8 Kubernetes client library to connect to Kubernetes.
+The `KubernetesDeployerProperties` object contains a property named `fabric8`, which exposes the [Fabric8 client configuration properties](https://github.com/fabric8io/kubernetes-client#configuring-the-client). You can use this to configure connection properties, such as the Kubernetes master location and certificate information.
+
+The following example configures an account that references another cluster, which contains GPU resources.
 
 ```
 spring:
@@ -59,10 +60,11 @@ spring:
                   trustCerts: true
 ```
 
-For stream applications the configuration is similar but is done in the `spring.cloud.dataflow.stream.platform.kubernetes.accounts` section of the Skipper server's `application.yaml` file.
+To configure one or more deployment platforms for Spring Cloud Stream applications, you must edit the Skipper application's `application.yaml` file.
+Add similar configuration to the `accounts` map in the `spring.cloud.dataflow.stream.platform.kubernetes` section.
 
-In the following example, two accounts are created that reference a default namespace and a namespace where a Kafka Broker is available.
-By setting the environment variables at the account level, all Spring Cloud Stream applications deployed to the `kafkazone` are configured to use the Kafka Broker made available in that namespace.
+The following example configures two accounts that reference both a default namespace and a namespace where a Kafka broker is available.
+Because this configuration sets environment variables at the account level, all Spring Cloud Stream applications deployed to the `kafkazone` account will be configured to use the Kafka broker available in the `kafka-namespace` namespace.
 
 ```
 spring:
@@ -91,4 +93,4 @@ spring:
 
 ## <a id='next-installing-scdf'></a> Next: Installing SCDF for Kubernetes
 
-Proceed to the [Installing SCDF for Kubernetes](installing-scdf-for-kubernetes.html) topic for installation instructions.
+After completing the configuration steps, you can install SCDF for Kubernetes. For installation instructions, see [Installing SCDF for Kubernetes](installing-scdf-for-kubernetes.html).

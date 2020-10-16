@@ -3,147 +3,172 @@ title: Installing Command-Line Tools
 owner: Spring Cloud Data Flow Release Engineering
 ---
 
-This topic describes how to install the command-line tools that are required to install Spring Cloud Data Flow for Kubernetes.
+This topic describes how to install the command-line tools that are required to install Spring Cloud Data Flow for Kubernetes (SCDF for Kubernetes).
 
 ## <a id='overview'></a> Overview
 
-The command-line tools required to install Spring Cloud Data Flow for Kubernetes include the k14s utilities `kapp` and `kbld` as well as the `yq` utility.
+Command-line tools required to install SCDF for Kubernetes include the following:
 
-* The `kapp` utility is a deployment tool with the concept of a "Kubernetes application": a set of resources with the same label.
-  For more information about `kapp`, see [get-kapp.io](https://get-kapp.io/).
+* `kubectl`, the Kubernetes CLI (for more information about installing `kubectl`, see [Installing the Kubernetes CLI](https://docs.pivotal.io/pks/installing-kubectl-cli.html) in the VMware Enterprise PKS documentation)
+* `sed` (should already be installed on your machine)
+* `yq`, a command-line YAML processing utility that aims to be the `jq` or `sed` of YAML files (for more information about `yq`, see the [project home page](https://github.com/mikefarah/yq) on GitHub)
+* The following [Carvel](https://carvel.dev/) utilities:
+  * `kapp`, a deployment utility that includes the concept of a "Kubernetes application": a set of resources with the same label (for more information about `kapp`, see [get-kapp.io](https://get-kapp.io/))
+  * The `kbld` utility manipulates and replaces container images used in Kubernetes configuration files (for more information about `kbld`, see [get-kbld.io](https://get-kbld.io/))
 
-* The `kbld` utility manipulates and replaces container images used in Kubernetes configuration files.
-  For more information about `kbld`, see [get-kbld.io](https://get-kbld.io/).
+For steps to install `kapp`, `kbld`, and `yq`, see the following sections. Follow the relevant procedures for your operating system.
 
-* The `yq` utility is a command-line YAML processor. The aim of the project is to be the `jq` or `sed` of YAML files.
-  For more information, see (https://github.com/mikefarah/yq).
+<p class="note"><strong>Note</strong>: <code>kapp</code> and <code>kbld</code> are available from <a href="https://network.pivotal.io/products/p-scdf-for-kubernetes">VMware Tanzu Network</a>. Binaries are provided only for 64-bit architectures.</p>
 
-For more information about the k14s utilities, see [k14s.io](https://k14s.io).
+## <a id='installation-instructions'></a> Installation Instructions
 
-To install the `kapp` and `kbld` tools, follow the procedures in the next section for your operating system to obtain them from the [VMware Tanzu Network](https://network.pivotal.io/products/p-scdf-for-kubernetes). Binaries are provided only for 64-bit architectures.
+See the following sections for information about installing the required command-line tools depending on your operating system.
 
-
-## <a id='macos'></a> macOS
+### <a id='macos'></a> For macOS
 
 This section describes how to install `kapp`, `kbld`, and `yq` on macOS.
 
-
-### <a id='macos-kapp'></a> kapp
+#### <a id='macos-kapp'></a> kapp
 
 This section describes how to install the `kapp` utility on macOS.
 
-
 1. Navigate to <a href="https://network.pivotal.io/">VMware Tanzu Network</a> and log in.
 
-1. Click **kapp**.
+1. Locate the [product listing for kapp](https://network.pivotal.io/products/kapp/).
 
-1. Click **kapp - macOS** to download the <code>kapp</code> binary.
+1. Click **kapp - Mac** to download the `kapp` binary file.
 
-1. Rename the downloaded binary to <code>kapp</code>.
+1. Rename the downloaded binary file to `kapp`.
 
-1. On the command line, run the following command to make the <code>kapp</code> binary executable:
-  <pre>$ chmod +x kapp</pre>
+1. On the command line, make the `kapp` binary file executable:
 
-1. Move the binary into your <code>PATH</code>, as the following example shows:
-  <pre>$ mv kapp /usr/local/bin/kapp</pre>
+    ```
+    $ chmod +x kapp
+    ```
 
+1. Move the binary file into a directory that is on your `PATH`:
 
-### <a id='macos-kbld'></a> kbld
+    ```
+    $ mv kapp /usr/local/bin/kapp
+    ```
+
+#### <a id='macos-kbld'></a> kbld
 
 This section describes how to install the `kbld` utility on macOS.
 
 1. Navigate to <a href="https://network.pivotal.io/">VMware Tanzu Network</a> and log in.
 
-1. Click **kbld**.
+1. Locate the [product listing for kbld](https://network.pivotal.io/products/kbld/).
 
-1. Click **kbld - macOS** to download the <code>kbld</code> binary.
+1. Click **kbld - Mac** to download the `kbld` binary file.
 
-1. Rename the downloaded binary to <code>kbld</code>.
+1. Rename the downloaded binary file to `kbld`.
 
-1. On the command line, run the following command to make the <code>kbld</code> binary executable:
-  <pre>$ chmod +x kbld</pre>
+1. On the command line, make the `kbld` binary file executable:
 
-1. Move the binary into your <code>PATH</code>, as the following example shows:
-  <pre>$ mv kbld /usr/local/bin/kbld</pre>
+    ```
+    $ chmod +x kbld
+    ```
 
+1. Move the binary file into a directory that is on your `PATH`:
 
+    ```
+    $ mv kbld /usr/local/bin/kbld
+    ```
 
-### <a id='macos-yq'></a> yq
+#### <a id='macos-yq'></a> yq
 
 This section describes how to install the `yq` utility on macOS.
 
-1. Download the <a href="https://github.com/mikefarah/yq/releases/tag/3.3.0">3.3 binary</a>.
+1. Download the 3.3 binary file from the project's <a href="https://github.com/mikefarah/yq/releases/tag/3.3.0">Releases</a> page on GitHub.
 
-1. On the command line, run the following command to make the <code>yq</code> binary executable:
-  <pre>$ chmod +x yq</pre>
+1. On the command line, make the `yq` binary file executable:
 
-1. Move the binary into your <code>PATH</code>, as the following example shows:
-  <pre>$ mv yq /usr/local/bin/yq</pre>
+    ```
+    $ chmod +x yq
+    ```
 
+1. Move the binary file into a directory that is on your `PATH`:
 
+    ```
+    $ mv yq /usr/local/bin/yq
+    ```
 
-## <a id='linux'></a> Linux
+### <a id='linux'></a> For Linux
 
 This section describes how to install `kapp`, `kbld`, and `yq` on Linux.
 
-### <a id='linux-kapp'></a> kapp
+#### <a id='linux-kapp'></a> kapp
 
 This section describes how to install the `kapp` utility on Linux.
 
 1. Navigate to <a href="https://network.pivotal.io/">VMware Tanzu Network</a> and log in.
 
-1. Click **kapp**.
+1. Locate the [product listing for kapp](https://network.pivotal.io/products/kapp/).
 
-1. Click **kapp - Linux** to download the <code>kapp</code> binary.
+1. Click **kapp - Linux** to download the `kapp` binary file.
 
-1. Rename the downloaded binary to <code>kapp</code>.
+1. Rename the downloaded binary file to `kapp`.
 
-1. On the command line, run the following command to make the <code>kapp</code> binary executable:
-  <pre>$ chmod +x kapp</pre>
+1. On the command line, make the `kapp` binary file executable:
 
-1. Move the binary into your <code>PATH</code>, as the following example shows:
-  <pre>$ mv kapp /usr/local/bin/kapp</pre>
+    ```
+    $ chmod +x kapp
+    ```
 
+1. Move the binary file into a directory that is on your `PATH`:
 
+    ```
+    $ mv kapp /usr/local/bin/kapp
+    ```
 
-### <a id='linux-kbld'></a> kbld
+#### <a id='linux-kbld'></a> kbld
 
 This section describes how to install the `kbld` utility on Linux.
 
 1. Navigate to <a href="https://network.pivotal.io/">VMware Tanzu Network</a> and log in.
 
-1. Click **kbld**.
+1. Locate the [product listing for kbld](https://network.pivotal.io/products/kbld/).
 
-1. Click **kbld - Linux** to download the <code>kbld</code> binary.
+1. Click **kbld - Linux** to download the `kbld` binary file.
 
-1. Rename the downloaded binary to <code>kbld</code>.
+1. Rename the downloaded binary file to `kbld`.
 
-1. On the command line, run the following command to make the <code>kbld</code> binary executable:
-  <pre>$ chmod +x kbld</pre>
+1. On the command line, make the `kbld` binary file executable:
 
-1. Move the binary into your <code>PATH</code>, as the following example shows:
-  <pre>$ mv kbld /usr/local/bin/kbld</pre>
+    ```
+    $ chmod +x kbld
+    ```
 
+1. Move the binary file into a directory that is on your `PATH`:
 
-### <a id='liux-yq'></a> yq
+    ```
+    $ mv kbld /usr/local/bin/kbld
+    ```
 
-This section describes how to install the `yq` utility on macOS.
+#### <a id='linux-yq'></a> yq
 
-1. Download the <a href="https://github.com/mikefarah/yq/releases/tag/3.3.0">3.3 binary</a>.
+This section describes how to install the `yq` utility on Linux.
 
-1. On the command line, run the following command to make the <code>yq</code> binary executable:
-  <pre>$ chmod +x yq</pre>
+1. Download the 3.3 binary file from the project's <a href="https://github.com/mikefarah/yq/releases/tag/3.3.0">Releases</a> page on GitHub.
 
-1. Move the binary into your <code>PATH</code>, as the following example shows:
-  <pre>$ mv yq /usr/local/bin/yq</pre>
+1. On the command line, make the `yq` binary file executable:
 
+    ```
+    $ chmod +x yq
+    ```
+
+1. Move the binary file into a directory that is on your `PATH`:
+
+    ```
+    $ mv yq /usr/local/bin/yq
+    ```
 
 <!-- restore this section once SCDF for K8s supports a Windows installation procedure
 
-## Windows
+### Windows
 
-
-### kapp
+#### kapp
 
 This section describes how to install the `kapp` utility on Windows.
 
@@ -151,14 +176,13 @@ This section describes how to install the `kapp` utility on Windows.
 
 1. Click **kapp**.
 
-1. Click **kapp - Linux** to download the <code>kapp</code> binary.
+1. Click **kapp - Linux** to download the `kapp` binary.
 
-1. Rename the downloaded binary to <code>kapp.exe</code>.
+1. Rename the downloaded binary to `kapp.exe`.
 
-1. Move the binary into your <code>PATH</code>.
+1. Move the binary into your `PATH`.
 
-
-### kbld
+#### kbld
 
 This section describes how to install the `kbld` utility on Windows.
 
@@ -166,30 +190,28 @@ This section describes how to install the `kbld` utility on Windows.
 
 1. Click **kbld**.
 
-1. Click **kbld - Linux** to download the <code>kbld</code> binary.
+1. Click **kbld - Linux** to download the `kbld` binary.
 
-1. Rename the downloaded binary to <code>kbld.exe</code>.
+1. Rename the downloaded binary to `kbld.exe`.
 
-1. Move the binary into your <code>PATH</code>.
+1. Move the binary into your `PATH`.
 
+#### ytt
 
-### ytt
-
-This section describes how to install the `ytt` utility on Widnows.
+This section describes how to install the `ytt` utility on Windows.
 
 1. Navigate to <a href="https://network.pivotal.io/">VMware Tanzu Network</a> and log in.
 
 1. Click **ytt**.
 
-1. Click **ytt - Linux** to download the <code>ytt</code> binary.
+1. Click **ytt - Linux** to download the `ytt` binary.
 
-1. Rename the downloaded binary to <code>ytt.exe</code>.
+1. Rename the downloaded binary to `ytt.exe`.
 
-1. Move the binary into your <code>PATH</code>.
-
+1. Move the binary into your `PATH`.
 
 keep this '<' here or stuff breaks, srsly ->< -->
 
-## <a id='deploying-tas-kubernetes'></a> Next: Configuring Spring Cloud Data Flow for Kubernetes Installation Values
+## <a id='deploying-tas-kubernetes'></a> Next: Configuring Installation Values
 
-Once you have completed the preparatory steps described earlier, proceed to [configure Spring Cloud Data Flow for Kubernetes](configuring-installation-values.html) for installation to the Kubernetes cluster.
+Before installing SCDF for Kubernetes on your Kubernetes cluster, you must configure the installation resources. See [Configuring Installation Values for Spring Cloud Data Flow for Kubernetes](./configuring-installation-values.html).

@@ -3,149 +3,149 @@ title: Relocating Spring Cloud Stream and Task Applications
 owner: Spring Cloud Data Flow Release Engineering
 ---
 
-This topic describes how to relocate select Spring Cloud Stream and Spring Cloud Task applications.
-This can be useful when the Spring Cloud Data Flow for Kubernetes server is deployed in an air-gapped environment.
+This topic describes how to relocate select Spring Cloud Stream and Spring Cloud Task applications for use with Spring Cloud Data Flow for Kubernetes (SCDF for Kubernetes).
+This can be useful if the SCDF for Kubernetes server is deployed in an environment without internet access (an "air-gapped" environment).
 
-To use as examples for this topic, we have selected three stream applications: the `http` source app, the `split` processor app and the `log` sink app.
+The following sections demonstrate the relocation process using three stream applications: the `http` source application, the `split` processor application, and the `log` sink application.
 
-<div class="note">Before you can use the relocated images with Spring Cloud Data Flow for Kubernetes, you would need to configure access to the registry where you relocate the images to.</div>
+<p class="note"><strong>Important</strong>: You must configure SCDF for Kubernetes with credentials for accessing the registry that will store the relocated images. See <a href="./configuring-installation-values.html#container-registry">Container Registry</a> and <a href="./configuring-installation-values.html#imagePullSecrets">Application ImagePullSecrets</a>.</p>
 
-Review the following configuration sections: configuring the [Container Registry](configuring-installation-values.html#container-registry), and configuring [ImagePullSecrets for Apps](configuring-installation-values.html#imagePullSecrets)
+## <a id='install-irel'></a> Install Image Relocation Tool
 
-## <a id='install-irel'></a> Install Image Relocation CLI utility
+Image relocation for an air-gapped environment requires an Open Container Initiative (OCI) image layout.
+The following examples the `irel` command line utility to create this layout.
 
-In order to relocate images we need a utility program that can help us create an OCI image layout that can be moved to an air-gapped environment.
+You can find the latest `irel` release from the [pivotal/image-relocation](https://github.com/pivotal/image-relocation/releases) repository on GitHub.
+Download the appropriate download for your operating system, extract the archive file, and move the program file to a directory that is on your `PATH`.
 
-For this topic we will be using a CLI utility called `irel` that is available from the `pivotal/image-relocation` project.
+## <a id='create-layout'></a> Create OCI Image Layout
 
-Download the latest `irel` CLI utility release from the <a href="https://github.com/pivotal/image-relocation/releases">project release page</a>.
-Select the download that matches your operating system, extract the archive and move the program file to a location on your PATH.
+Before creating an OCI image layout for the application images, you must select the versions to relocate.
+In the following examples, we use the latest available images for the selected applications (based on the content of the "Stream Apps (RabbitMQ/Docker)" property file).
 
-## <a id='create-layout'></a> Create an OCI Image Layout for Selected Applications
+We will relocate the following application images:
 
-Before we create an OCI image layout for the three selected app images we need to select the versions we should relocate.
-We will use the latest available images for the selected apps based on the content of the <a href="https://dataflow.spring.io/rabbitmq-docker-latest">Stream Apps (RabbitMQ/Docker)</a> property file.
+```
+source.http=docker:springcloudstream/http-source-rabbit:2.1.4.RELEASE
 
-The images we will relocate are:
+processor.splitter=docker:springcloudstream/splitter-processor-rabbit:2.1.3.RELEASE
 
-* source.http=docker:springcloudstream/http-source-rabbit:2.1.4.RELEASE
-
-* processor.splitter=docker:springcloudstream/splitter-processor-rabbit:2.1.3.RELEASE
-
-* sink.log=docker:springcloudstream/log-sink-rabbit:2.1.4.RELEASE
-
-Next, we add each image to the OCI image layout we will use for the relocation.
-
-For `http` source run:
-
-```bash
-irel layout add ./apps springcloudstream/http-source-rabbit:2.1.4.RELEASE
+sink.log=docker:springcloudstream/log-sink-rabbit:2.1.4.RELEASE
 ```
 
-For the `splitter` processor run:
+Add each image to the OCI image layout.
 
-```bash
-irel layout add ./apps springcloudstream/splitter-processor-rabbit:2.1.3.RELEASE
+For the `http` source application image, run the following command:
+
+```
+$ irel layout add ./apps springcloudstream/http-source-rabbit:2.1.4.RELEASE
 ```
 
-For `log` sink run:
+For the `splitter` processor application image, run the following command:
 
-```bash
-irel layout add ./apps springcloudstream/log-sink-rabbit:2.1.4.RELEASE
+```
+$ irel layout add ./apps springcloudstream/splitter-processor-rabbit:2.1.3.RELEASE
 ```
 
-We will also need the image digest for each of the images in order to relocate them in a later step.
-Run the following commands and record the digest for each image:
+For the `log` sink application image, run the following command:
 
-```bash
+```
+$ irel layout add ./apps springcloudstream/log-sink-rabbit:2.1.4.RELEASE
+```
+
+The image relocation also requires an image digest for each image.
+
+To record the digest for each of the three images, run the following commands:
+
+```
 $ irel digest springcloudstream/http-source-rabbit:2.1.4.RELEASE
 sha256:13ba48d79c54f86efc1f0ed4d3043490d83b4c8da6908eaefbce1fa1c69c8dad
+
 $ irel digest springcloudstream/splitter-processor-rabbit:2.1.3.RELEASE
 sha256:a00ea5669f604804daaa0e63514a974bdd7a9c80141ce3e2cc8eb97f6ce2526e
+
 $ irel digest springcloudstream/log-sink-rabbit:2.1.4.RELEASE
 sha256:45ffe67c5541e5fd234b488c499a77418e3c9244370898e49a8506ff7b246172
 ```
 
-## <a id='create-apps-archive'></a> Create an Image Archive File
+## <a id='create-apps-archive'></a> Create Image Archive File
 
-With the OCI image layout complete for our three apps, we can now create an archive that can be moved to an air-gapped environment.
+After completing the OCI image layout, create an image archive file that can be moved into the air-gapped environment.
 
-Create the archive using:
+To create the archive file, run the following command:
 
-```bash
-tar cvf apps-oci-layout.tar ./apps
+```
+$ tar cvf apps-oci-layout.tar ./apps
 ```
 
-## <a id='push-images'></a> Push Selected Applications to a Registry
+## <a id='push-images'></a> Push Applications to Registry
 
-We are now ready to push the images to a new registry.
+Extract the OCI layout archive file:
 
-First, extarct the OCI layout archive:
-
-```bash
-tar xvf apps-oci-layout.tar
+```
+$ tar xvf apps-oci-layout.tar
 ```
 
-Next, define an environment variable for the repository prefix (substitute with the prefix to use for your target registry and account or project):
+Set a `TARGET_REPOSITORY_PREFIX` environment variable containing the prefix to use for the target registry and account or project:
 
-```bash
-export TARGET_REPOSITORY_PREFIX=registry.example.com/my-project/apps
+```
+$ export TARGET_REPOSITORY_PREFIX=registry.example.com/my-project/apps
 ```
 
-Using the digest we recorded in an earlier step, we can now push each image to the target registry.
+Now use the recorded image digests to push the images to the target registry.
 
-For `http` source run:
+For the `http` source application image, run the following command:
 
-```bash
-irel layout push ./apps \
+```
+$ irel layout push ./apps \
   'sha256:13ba48d79c54f86efc1f0ed4d3043490d83b4c8da6908eaefbce1fa1c69c8dad' \
   ${TARGET_REPOSITORY_PREFIX}/http-source-rabbit:2.1.4.RELEASE
 ```
 
-For the `splitter` processor run:
+For the `splitter` processor application image, run the following command:
 
-```bash
-irel layout push ./apps \
+```
+$ irel layout push ./apps \
   'sha256:a00ea5669f604804daaa0e63514a974bdd7a9c80141ce3e2cc8eb97f6ce2526e' \
   ${TARGET_REPOSITORY_PREFIX}/splitter-processor-rabbit:2.1.3.RELEASE
 ```
 
-For `log` sink run:
+For the `log` sink application image, run the following command:
 
-```bash
-irel layout push ./apps \
+```
+$ irel layout push ./apps \
   'sha256:45ffe67c5541e5fd234b488c499a77418e3c9244370898e49a8506ff7b246172' \
   ${TARGET_REPOSITORY_PREFIX}/log-sink-rabbit:2.1.4.RELEASE
 ```
 
-## <a id='register-stream-apps'></a> Register the Relocated Applications
+## <a id='register-stream-apps'></a> Register Relocated Applications
 
-We can now register the apps using the the Spring Cloud Data Flow Shell.
-See the [Connecting to SCDF for Kubernetes](connecting-scdf-for-kubernetes.html) topic for connection instructions.
+Finally, you can register the applications with SCDF for Kubernetes, using the the Spring Cloud Data Flow shell.
+For information about connecting to the SCDF for Kubernetes server using the shell, see [Connecting to Spring Cloud Data Flow for Kubernetes](connecting-scdf-for-kubernetes.html).
 
-Replace the `registry.example.com/my-project/apps` prefix with the one you used for the relocation.
+In the following example commands, replace the `registry.example.com/my-project/apps` prefix with the prefix that you used when relocating the images.
 
-For `http` source run:
+For the `http` source application image, run the following command:
 
-```bash
+```
 dataflow:>app register --name http --type source --uri docker:registry.example.com/my-project/apps/http-source-rabbit:2.1.4.RELEASE
 ```
 
-For the `splitter` processor run:
+For the `splitter` processor application image, run the following command:
 
-```bash
+```
 dataflow:>app register --name splitter --type processor --uri docker:registry.example.com/my-project/apps/splitter-processor-rabbit:2.1.3.RELEASE
 ```
 
-For `log` sink run:
+For the `log` sink application image, run the following command:
 
-```bash
+```
 dataflow:>app register --name log --type sink --uri docker:registry.example.com/my-project/apps/log-sink-rabbit:2.1.4.RELEASE
 ```
 
-See the [Register a Stream App](https://docs.spring.io/spring-cloud-dataflow/docs/2.6.0/reference/htmlsingle/#spring-cloud-dataflow-register-stream-apps) page for more detail.
+For more details, see the [Register a Stream Application](https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#spring-cloud-dataflow-register-stream-apps) section of the [Spring Cloud Data Flow Reference Guide](https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/).
 
-## <a id='relocate-task-apps'></a> Relocating Task Applications
+## <a id='relocate-task-apps'></a> Relocate Task Applications
 
-You can perform the same relocation steps with Spring Cloud Task apps and register them as type `task`.
-See the [Registering a Task Application](https://docs.spring.io/spring-cloud-dataflow/docs/2.6.0/reference/htmlsingle/#spring-cloud-dataflow-register-task-apps) for more details.
+To relocate Spring Cloud Task applications and use them with SCDF for Kubernetes, you can perform the steps described in the previous sections, but registering the applications with the type `task`.
+For more information, see the [Registering a Task Application](https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#spring-cloud-dataflow-register-task-apps) section of the [Spring Cloud Data Flow Reference Guide](https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/).
