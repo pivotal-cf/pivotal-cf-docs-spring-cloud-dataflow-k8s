@@ -6,7 +6,7 @@ owner: Spring Cloud Data Flow Release Engineering
 This topic describes how to configure monitoring for Spring Cloud Data Flow for Kubernetes (SCDF for Kubernetes).
 SCDF for Kubernetes can use either [Wavefront](#wavefront-monitoring) or [Prometheus](#prometheus-monitoring).
 
-## <a id='wavefront-monitoring'></a> Configuring Monitoring with Wavefront
+## <a id='wavefront-monitoring'></a> Configure Monitoring with Wavefront
 
 You can configure SCDF for Kubernetes to send metrics from the Data Flow server application, along with metrics from deployed stream and task applications, to the Wavefront service. For information about using Wavefront with SCDF for Kubernetes, see the following sections.
 
@@ -28,7 +28,7 @@ $ kubectl create secret generic wavefront-api --from-literal=wavefront-api-token
 ```
 
 Next, mount the secret, to make it available for use by the Data Flow server configuration.
-Add the secret mount settings in the Data Flow server application's `application.yaml` file:
+Add the secret mount settings in the `application.yaml` file for the Data Flow server application:
 
 ```yaml
       containers:
@@ -46,7 +46,7 @@ Add the secret mount settings in the Data Flow server application's `application
 
 ```
 
-### <a id='wavefront-enable'></a> Enabling Wavefront for Data Flow Server, Stream Applications, and Task Applications
+### <a id='wavefront-enable'></a> Enable Wavefront for Data Flow Server, Stream Applications, and Task Applications
 
 You can enable Wavefront for the Data Flow server application, for stream applications, or for task applications, based on your needs. Each is configured independently.
 
@@ -54,7 +54,7 @@ See the following sections for examples of the configuration to use when enablin
 
 #### <a id='wavefront-enable-server'></a> Enable Wavefront for the Data Flow Server
 
-To enable Wavefront for the Data Flow server, edit the Data Flow application's `application.yaml` file. Add the following configuration:
+To enable Wavefront for the Data Flow server, edit the `application.yaml` file for the Data Flow application. Add the following configuration:
 
 ```
 management:
@@ -78,7 +78,7 @@ The value of the `api-token` field will be automatically resolved from the secre
 
 #### <a id='wavefront-enable-streams'></a> Enable Wavefront for Stream Applications
 
-To enable Wavefront for deployed stream applications, edit the Data Flow application's `application.yaml` file. Add the following configuration:
+To enable Wavefront for deployed stream applications, edit the `application.yaml` file for the Data Flow application. Add the following configuration:
 
 ```yaml
 spring:
@@ -101,7 +101,7 @@ The value of the `api-token` field will be automatically resolved from the secre
 
 #### <a id='wavefront-enable-tasks'></a> Enable Wavefront for Task Applications
 
-To enable Wavefront for deployed task applications, edit the Data Flow application's `application.yaml` file. Add the following configuration:
+To enable Wavefront for deployed task applications, edit the `application.yaml` file for the Data Flow application. Add the following configuration:
 
 ```yaml
 spring:
@@ -122,7 +122,7 @@ spring:
 In this example configuration, replace the `<YOUR_WAVEFRONT_URI>` and `<YOUR_SOURCE_NAME>` placeholders with the relevant values.
 The value of the `api-token` field will be automatically resolved from the secret.
 
-## <a id='prometheus-monitoring'></a> Configuring Monitoring with Prometheus
+## <a id='prometheus-monitoring'></a> Configure Monitoring with Prometheus
 
 SCDF supports both short-lived application monitoring and long-lived application monitoring with Prometheus. Spring Cloud Task and Spring Cloud Stream applications deployed by Data Flow and Skipper can use the [Prometheus RSocket Proxy](https://github.com/micrometer-metrics/prometheus-rsocket-proxy).
 
@@ -130,7 +130,7 @@ SCDF supports both short-lived application monitoring and long-lived application
 
 The SCDF for Kubernetes dashboard provides a link to custom [Streams and Tasks dashboards](https://github.com/spring-cloud/spring-cloud-dataflow/tree/master/src/grafana/prometheus/docker/grafana) for use with [Grafana](https://grafana.com/). You can download these dashboards and install them into your Grafana server.
 
-The following example configures monitoring for all deployed Spring Cloud Task and Spring Cloud Stream applications that use Prometheus over an RSocket gateway. Add this configuration to the Data Flow application's `application.yaml` file:
+The following example configures monitoring for all deployed Spring Cloud Task and Spring Cloud Stream applications that use Prometheus over an RSocket gateway. Add this configuration to the `application.yaml` file for the Data Flow application:
 
 ```
 spring:
@@ -164,8 +164,8 @@ spring:
 In this example configuration, replace the Grafana `url` and Prometheus host and port values with the appropriate values for your specific environment.
 See the [Spring Cloud Data Flow microsite](https://dataflow.spring.io/) for more information about [stream monitoring](https://dataflow.spring.io/docs/feature-guides/streams/monitoring/#kubernetes) and [task monitoring](https://dataflow.spring.io/docs/feature-guides/batch/monitoring/#prometheus-1).
 
-These common application properties are passed to the deployed Spring Cloud Task and Spring Cloud Stream applications. If you are using an alternative monitoring tool that is also supported by Micrometer, you can set the appropriate Spring Boot configuration values for your monitoring infrastructure. Add this configuration to the `applicationProperties.stream` and `applicationProperties.task` sections of the Data Flow application's `application.yaml` file.
+These common application properties are passed to the deployed Spring Cloud Task and Spring Cloud Stream applications. If you are using an alternative monitoring tool that is also supported by Micrometer, you can set the appropriate Spring Boot configuration values for your monitoring infrastructure. Add this configuration to the `applicationProperties.stream` and `applicationProperties.task` sections of the `application.yaml` file for the Data Flow application.
 
-## <a id='next-multi-platform-scdf'></a> Next: Configuring Multiple Platforms Support
+## <a id='next-multi-platform-scdf'></a> Next: Configure Multiple Platforms Support
 
 To configure multiple platform support in SCDF for Kubernetes, see [Configuring Multiple Platforms Support for SCDF for Kubernetes](configuring-multi-platform.html).

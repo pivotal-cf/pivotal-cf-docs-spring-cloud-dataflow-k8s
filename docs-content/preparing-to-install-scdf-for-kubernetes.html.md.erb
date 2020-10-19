@@ -5,7 +5,7 @@ owner: Spring Cloud Data Flow Release Engineering
 
 This topic describes how to prepare dependencies and your local machine for the installation of Spring Cloud Data Flow for Kubernetes (SCDF for Kubernetes).
 
-## <a id='downloading-installation-resources'></a> Downloading and Extracting the Installation Resources
+## <a id='downloading-installation-resources'></a> Download and Extract the Installation Resources
 
 To download and extract the SCDF for Kubernetes installation resources, follow the steps below.
 
@@ -21,7 +21,7 @@ To download and extract the SCDF for Kubernetes installation resources, follow t
     $ tar xzvf data-flow-1.1.2.tgz
     ```
 
-## <a id='image-relocation'></a> Re-Locating Distribution Container Images to Another Registry (Optional)
+## <a id='image-relocation'></a> Relocate Distribution Container Images to Another Registry (Optional)
 
 SCDF for Kubernetes relies on several container images. If you wish, you can re-locate these images to a different container image registry. Supported registries include Harbor, Google Container Registry (GCR), and DockerHub.
 
@@ -55,19 +55,19 @@ To download and relocate the SCDF for Kubernetes installation images, follow the
       -h, --help: Prints help
     ```
 
-    To relocate the Data Flow server image, run:
+    To relocate the Data Flow server image, run the following command:
 
     ```
     $ ./bin/relocate-image.sh --app data-flow --repository <registry-repo-prefix>/spring-cloud-dataflow-server
     ```
 
-    To relocate the Composed Task Runner image, run:
+    To relocate the Composed Task Runner image, run the following command:
 
     ```
     $ ./bin/relocate-image.sh --app composed-task-runner --repository <registry-repo-prefix>/spring-cloud-dataflow-composed-task-runner
     ```
 
-    To relocate the Skipper server image, run:
+    To relocate the Skipper server image, run the following command:
 
     ```
     $ ./bin/relocate-image.sh --app skipper --repository <registry-repo-prefix>/spring-cloud-skipper-server
@@ -75,7 +75,7 @@ To download and relocate the SCDF for Kubernetes installation images, follow the
 
     The relocation script updates the `kustomization.yaml` files to match the new relocated image repository locations.
 
-## <a id='custom-image'></a> Using Custom-Built Images for Data Flow and Skipper Servers (Optional)
+## <a id='custom-image'></a> Use Custom-Built Images for Data Flow and Skipper Servers (Optional)
 
 If you wish, you can replace the SCDF for Kubernetes container images with your own custom-built images.
 
@@ -88,7 +88,7 @@ To replace the image used for the Data Flow server, you must edit:
 * The `apps/data-flow/kustomize/overlays/production/kustomization.yaml` file, for the production environment
 * The `apps/data-flow/kustomize/overlays/dev/kustomization.yaml` file, for the development environment
 
-In both files, locate the `images` section and change the `newName`, `newTag`, and `digest` entries to match your custom image. See the following example:
+In both files, locate the `images` section and change the `newName`, `newTag`, and `digest` entries to match your custom image. See the following example.
 
 ```yaml
 images:
@@ -117,7 +117,7 @@ To replace the image used for the Composed Task Runner, you must edit:
 * The `apps/data-flow/kustomize/overlays/production/application.yaml` file, for the production environment
 * The `apps/data-flow/kustomize/overlays/dev/application.yaml` file, for the development environment
 
-In both files, change the `spring.cloud.dataflow.task.composedTaskRunnerUri` entry to match your custom image. The value should be prefixed with `docker://`. See the following example:
+In both files, change the `spring.cloud.dataflow.task.composedTaskRunnerUri` entry to match your custom image. The value should be prefixed with `docker://`. See the following example.
 
 ```yaml
 spring:
@@ -144,7 +144,7 @@ To replace the image used for the Skipper server, you must edit:
 * The `apps/skipper/kustomize/overlays/production/kustomization.yaml` file, for the production environment
 * The `apps/skipper/kustomize/overlays/dev/kustomization.yaml` file, for the development environment
 
-In both files, locate the `images` section and change the `newName`, `newTag`, and `digest` entries to match your custom image. See the following example:
+In both files, locate the `images` section and change the `newName`, `newTag`, and `digest` entries to match your custom image. See the following example.
 
 ```yaml
 images:
@@ -166,7 +166,7 @@ patches:
 
 The `digest` must match the digest of your custom image. If you want the image to be pulled by the tag, remove the `digest` line.
 
-## <a id='installing-command-line-tools'></a> Next: Installing Command-Line Tools
+## <a id='installing-command-line-tools'></a> Next: Install Command-Line Tools
 
 To install SCDF for Kubernetes, your Linux or macOS machine must have the following command-line tools installed:
 

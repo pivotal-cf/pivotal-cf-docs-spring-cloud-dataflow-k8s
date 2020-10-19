@@ -38,7 +38,7 @@ dataflow:>app import https://dataflow.spring.io/kafka-docker-latest
 
 After importing the application starters, you can use three of the imported applications (the `http` source, the `split` processor, and the `log` sink) to create a stream that consumes data through an HTTP POST request, processes it by splitting it into words, and outputs the results to the log.
 
-Create the stream using the SCDF shell’s `stream create` command:
+Create the stream using the SCDF shell `stream create` command:
 
 ```
 dataflow:>stream create --name words --definition "http | splitter --expression=payload.split(' ') | log"
@@ -46,8 +46,8 @@ dataflow:>stream create --name words --definition "http | splitter --expression=
 
 ## <a id='deploy-stream'></a> Deploy the Stream
 
-Finally, deploy the stream using the SCDF shell's `stream deploy` command.
-In order to enable HTTP requests to the `http` application, you must specify a deployment property that requests a `LoadBalancer` for the application's service:
+Finally, deploy the stream using the SCDF shell `stream deploy` command.
+In order to enable HTTP requests to the `http` application, you must specify a deployment property that requests a `LoadBalancer` for the application service:
 
 ```
 dataflow:>stream deploy words --properties deployer.http.kubernetes.createLoadBalancer=true
@@ -82,7 +82,7 @@ To view the log output of the `log` sink, run the following command in a new ter
 kubectl logs -f deployment/words-log-v1
 ```
 
-Next, look up the IP address assigned to the `http` application's Service resource:
+Next, look up the IP address assigned to the `http` application Service resource:
 
 ```
 $ kubectl get service words-http-v1
@@ -98,7 +98,7 @@ At the SCDF shell, send a POST request to the `words-http-v1` application, using
 dataflow:>http post --target http://104.197.218.242:8080 --data "This is a test"
 ```
 
-In the terminal window or tab that is viewing the `log` sink application's log output, watch for the processed data to appear:
+In the terminal window or tab that is viewing the log output of the `log` sink application, watch for the processed data to appear:
 
 ```
 2020-06-03 19:56:59.163  INFO 1 --- [container-0-C-1] log-sink                                 : This

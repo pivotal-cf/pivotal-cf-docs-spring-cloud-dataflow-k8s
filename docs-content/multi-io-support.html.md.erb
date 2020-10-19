@@ -19,8 +19,8 @@ SCDF Pro adds a number of features to support multi-IO stream applications:
 
 ## <a id='multi-io-support-Q2'></a> How Do Multi-IO Applications Differ From Single-IO Applications?
 
-SCDF previously included support for registering a stream application that had a single input and output, where the application's input and output endpoints had to be configured as the `input` and `output` endpoints using the Spring Cloud Stream `@EnableBinding` annotation.
-With the new functional support added to Spring Cloud Stream, as well as configurable function bindings, you can choose named endpoints for your function’s inbound and outbound bindings.
+SCDF previously included support for registering a stream application that had a single input and output, where the application input and output endpoints had to be configured as the `input` and `output` endpoints using the Spring Cloud Stream `@EnableBinding` annotation.
+With the new functional support added to Spring Cloud Stream, as well as configurable function bindings, you can choose named endpoints for the inbound and outbound bindings of your function.
 
 For instance, consider a function that has multiple inputs and a single output:
 
@@ -78,7 +78,7 @@ Download the sample code from the [spring-cloud/spring-cloud-dataflow-samples](h
 The sample applications demonstrate how to build a streaming pipeline using a KStream processor that has multiple inputs and a single output.
 The pipeline captures user click events (the number of clicks per user) and user region events (the user region) as HTTP events.
 The KStream processor application includes a function that joins the `user-clicks` and `user-regions` and then computes the number of user clicks per region.
-Finally, a sink application logs the result of the KStream processor's output.
+Finally, a sink application logs the output of the KStream processor.
 
 Begin by registering the sample applications.
 Visit the SCDF App Registry and bulk import the following applications:
@@ -138,7 +138,7 @@ curl -X POST http://localhost:9001 -H "username: Thomas" -d 12 -H "Content-Type:
 ```
 
 After both the user click events and the user region events have been posted, the KStream processor will begin to process the user clicks per region.
-You can see the result in the logger application's logs:
+You can see the result in the logs of the logger application:
 
 ```
 2020-08-04 21:53:36.735  INFO 1 --- [container-0-C-1] user-clicks-per-region                   : europe: 139
@@ -151,12 +151,12 @@ You can see the result in the logger application's logs:
 
 ## <a id='multi-io-support-Q4'></a> How Does Multi-IO Support Differ From Adding a Tap to a Stream?
 
-When you tap a streaming application's output in order to create a parallel pipeline, the tap is added to that output of the application.
+When you tap the output of a streaming application in order to create a parallel pipeline, the tap is added to that output of the application.
 The output acts as a publisher for all pipeline consumers that tap into it, and each of the consumers belongs to a unique consumer group.
 Tapping works only for the output of a stream application.
 
 With the new multi-IO support, SCDF binds an application that has multiple inputs and outputs.
-Each input or output has its own functional binding, and SCDF maps the application's functional binding to a destination at the messaging system.
+Each input or output has its own functional binding, and SCDF maps the functional binding of the application to a destination at the messaging system.
 
 ## <a id='multi-io-support-Q5'></a> How Can I Replicate Multi-IO Support in SCDF OSS?
 

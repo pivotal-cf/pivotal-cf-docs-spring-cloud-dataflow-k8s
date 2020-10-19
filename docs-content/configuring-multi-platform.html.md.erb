@@ -10,11 +10,11 @@ This topic describes how to configure the multiple platform support in Spring Cl
 SCDF for Kubernetes can deploy streaming and batch appplications to different Kubernetes namespaces or clusters.
 For information about scenarios that benefit from this approach, see the Spring Cloud Data Flow documentation about the [Role of Multiple Platform Deployments](https://dataflow.spring.io/docs/recipes/multi-platform-deployment/multiple-platform-accounts/#role-of-multiple-platform-deployments).
 
-To configure multiple platform support, you must edit the relevant SCDF for Kubernetes application's `application.yaml` file. The Data Flow server deploys Spring Cloud Task applications, and the Skipper server deploys Spring Cloud Stream applications.
+To configure multiple platform support, you must edit the `application.yaml` file for the relevant SCDF for Kubernetes application. The Data Flow server deploys Spring Cloud Task applications, and the Skipper server deploys Spring Cloud Stream applications.
 
-To configure one or more deployment platforms for Spring Cloud Task applications, you must edit the Data Flow application's `application.yaml` file.
+To configure one or more deployment platforms for Spring Cloud Task applications, you must edit the `application.yaml` file for the Data Flow application.
 In the `spring.cloud.dataflow.task.platform.kubernetes` section, the `accounts` element is a map, where a key is an account name and a value is the properties of the [KubernetesDeployerProperties](https://github.com/spring-cloud/spring-cloud-deployer-kubernetes/blob/master/src/main/java/org/springframework/cloud/deployer/spi/kubernetes/KubernetesDeployerProperties.java) Java object.
-For a list of this object's properties, with descriptions, see the [Deployer Properties](https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#configuration-kubernetes-deployer) section of the [Spring Cloud Data Flow Reference Documentation](https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/).
+For a list of object properties, with descriptions, see the [Deployer Properties](https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#configuration-kubernetes-deployer) section of the [Spring Cloud Data Flow Reference Documentation](https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/).
 
 The following example configures two accounts: a `default` account that targets the `default` namespace and has a memory limit of 1024Mi, and a `highmemory` account that targets the `highmemory-namespace` namespace and has a memory limit of 4096Mi.
 
@@ -60,7 +60,7 @@ spring:
                   trustCerts: true
 ```
 
-To configure one or more deployment platforms for Spring Cloud Stream applications, you must edit the Skipper application's `application.yaml` file.
+To configure one or more deployment platforms for Spring Cloud Stream applications, you must edit the `application.yaml` file for the Skipper application.
 Add similar configuration to the `accounts` map in the `spring.cloud.dataflow.stream.platform.kubernetes` section.
 
 The following example configures two accounts that reference both a default namespace and a namespace where a Kafka broker is available.
@@ -91,6 +91,6 @@ spring:
                 livenessProbeDelay: 120
 ```
 
-## <a id='next-installing-scdf'></a> Next: Installing SCDF for Kubernetes
+## <a id='next-installing-scdf'></a> Next: Install SCDF for Kubernetes
 
 After completing the configuration steps, you can install SCDF for Kubernetes. For installation instructions, see [Installing SCDF for Kubernetes](installing-scdf-for-kubernetes.html).
