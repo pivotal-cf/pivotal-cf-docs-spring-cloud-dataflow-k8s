@@ -3,77 +3,73 @@ title: Configuring Installation Values for Spring Cloud Data Flow for Kubernetes
 owner: Spring Cloud Data Flow Release Engineering
 ---
 
-This topic describes how to configure the Spring Cloud Data Flow for Kubernetes installation resources before deploying to the Kubernetes cluster.
-
-Before proceeding, review the [Preparing to Install SCDF for Kubernetes](preparing-to-install-scdf-for-kubernetes.html) topic for details about:
-
-* Preparing the Spring Cloud Data Flow for Kubernetes installation resources on your local workstation
-* Installing the required command-line tools
+This topic describes how to configure the Spring Cloud Data Flow for Kubernetes (SCDF for Kubernetes) installation resources before deploying to the Kubernetes cluster.
+Before configuring the installation resources, ensure that you have followed the steps described in [Preparing to Install SCDF for Kubernetes](preparing-to-install-scdf-for-kubernetes.html) and [Installing Command-Line Tools](./installing-command-line-tools.html).
 
 ## <a id='overview'></a> Overview
 
-A few concepts drive how the configuration of Spring Cloud Data Flow for Kubernetes is performed:
+Configuration of SCDF for Kubernetes involves a number of features:
 
 * Support for multiple deployment environments
-* Configuration of application properties
-* Configuration of Kubernetes Resources
-* Support for installation in an air-gapped environment
+* Application properties configuration
+* Kubernetes resources configuration
+* Support for air-gapped environments
 
-The following sections explain these concepts and the steps you need to take to configure them.
-
+For information about these features and the steps to configure them, see the following sections.
 
 ## <a id='support-for-multiple-environments'></a> Support for Multiple Deployment Environments
 
-The installation is based on the [Kustomize](https://kustomize.io) tool, which lets you customize Kubernetes resources by providing base resources files and patch files that modify the base resources to target different deployment environments.
+The SCDF for Kubernetes installation process uses [Kustomize](https://kustomize.io), a tool for customizing Kubernetes resource configuration.
+For each resource, Kustomize takes a base configuration file and applies patch files that modify the base configuration to target different deployment environments.
 Kustomize is built into the kubectl CLI.
-The provided configuration files support a development and a production environment.
-The development environment is intended to let you quickly try Spring Cloud Data Flow for Kubernetes by provisioning a RabbitMQ message broker and a PostgreSQL database.
 
+SCDF for Kubernetes provides Kustomize configuration files for a development environment and for a production environment.
+The development environment is intended for quick exploration of SCDF for Kubernetes.
+Its configuration provisions a RabbitMQ message broker and a PostgreSQL database.
 
 ### <a id='directory-structure'></a> Directory Structure
 
-The installation directory structure contains the following directories:
+The "SCDF for Kubernetes installation files" archive, downloaded from [VMware Tanzu Network](https://network.pivotal.io/products/p-scdf-for-kubernetes/), contains the following directory structure:
 
-* `bin`: Scripts for installing to the development environment as well as a script for performing image relocation
+* `bin`: Scripts for installing to the development environment, as well as a script for performing image relocation
 * `apps`: Kubernetes resource files and application configuration files to support deployment to multiple environments
-* `services`: Kubernetes resources for deploying RabbitMQ and PostgreSQL for use with the development environment
+* `services`: Kubernetes resource files for deploying RabbitMQ and PostgreSQL to the development environment
 
-The apps directory contains the following folder structure based on Kustomize namving conventions
+The `apps` directory contains the following directory structure, based on Kustomize naming conventions.
 
-<pre>
+```
 .
-├── apps
-│   ├── data-flow
-│   │   ├── images
-│   │   ├── kustomize
-│   │   │   ├── base
-│   │   │   └── overlays
-│   │   └── schemas
-│   ├── ingress
-│   │   └── kustomize
-│   │       ├── base
-│   │       └── overlays
-│   └── skipper
-│       ├── images
-│       ├── kustomize
-│       │   ├── base
-│       │   └── overlays
-│       └── schemas
-</pre>
+├── data-flow
+│   ├── images
+│   ├── kustomize
+│   │   ├── base
+│   │   └── overlays
+│   └── schemas
+├── ingress
+│   └── kustomize
+│       ├── base
+│       └── overlays
+└── skipper
+    ├── images
+    ├── kustomize
+    │   ├── base
+    │   └── overlays
+    └── schemas
+```
 
-There are two directories, one for each application that is part of Spring Cloud Data Flow for Kubernetes.
-The first directory, `data-flow`, contains the Data Flow Server, and the second directory, `skipper`, contains the Skipper server.
-There is also an `ingress` directory that contains configuration files for an Ingress resource.
-Within each application directory there is the following directory structure
+Each application included as part of SCDF for Kubernetes has a directory: the `data-flow` directory contains the Data Flow server, and the `skipper` directory contains the Skipper server.
+The `ingress` directory contains configuration files for an Ingress resource.
 
-* `images`: The location for container images (only present if "SCDF for Kubernetes installation images" archive was downloaded and extracted)
-* `kustomize`: Directory containing Kubernetes and application configuration files for use with Kustomize.
-* `schemas`: Database schemas that you can install manually if you do not want each server to install them upon startup.
+Each of the two application directories contains the following directory structure:
 
-The contents of the kustomize directory are shown below.
-Edit files in this directory to configure the application and Kubernetes resources.
+* `images`: Container images (only present if you have downloaded and extracted the "SCDF for Kubernetes installation images" archive)
+* `kustomize`: Kubernetes and application configuration files for use with Kustomize
+* `schemas`: Database schemas (you can install these manually if you do not want each server to install them on startup)
 
-<pre>
+For each application, you can edit files in the `kustomize` directory to configure the application and Kubernetes resources.
+The contents of the directory are shown below.
+
+```
 .
 ├── base
 │   ├── deployment.yaml
@@ -93,40 +89,45 @@ Edit files in this directory to configure the application and Kubernetes resourc
         ├── deployment-patch.yaml
         ├── kustomization.yaml
         └── service-patch.yaml
-</pre>
+```
 
-**Base**
+#### The base Directory
 
-The `base` directory contains kubernetes resource files with default configuration values that are then patched by files in the overlays directory.
-The file `kustomization.yaml` references the other YAML files in that directory.
+The `base` directory contains Kubernetes resource files with default configuration values.
+These files are then patched by files in the `overlays` directory.
+The `kustomization.yaml` file references the other YAML files in the directory.
 
-**Overlays**
+#### The overlays Directory
 
-There is a directory per deployment environment -- in this case, `dev` and `production` environments.
-In each directory, a `kustomization.yaml` file references the `kustomization.yaml` file in the base and adds additional patches to modify values unique to the target deployment environment.
-You can also add additonal configuration in the `kustomization.yaml` file to set the target namespace to deploy and to add labels and name prefixes. See the [kustomization documentation](https://github.com/kubernetes-sigs/kustomize/blob/master/docs/fields.md) for additional fields that can be configured in the kustomization.yaml file.
+The `overlays` directory contains one subdirectory for each deployment environment: a `dev` subdirectory and a `production` subdirectory.
+Within each subdirectory, a `kustomization.yaml` file references the `kustomization.yaml` file in the `base` directory, and adds additional patches to modify values that are unique to the target deployment environment.
 
+You can set the target namespace to deploy, and add labels and name prefixes, by adding additional configuration fields to the `kustomization.yaml` file. See the [Kustomize documentation](https://kubernetes-sigs.github.io/kustomize/api-reference/kustomization/) for information about the additional fields that are available.
 
 ## <a id='configuration-steps'></a> Configuration Steps
 
-The `application.yaml` file is a Spring Boot configuration file that you can edit to configure the Data Flow and Skipper server.
-For example, you can configure `spring.datasource` properties or `spring.cloud.dataflow.features` properties.
-The `deployment-patch.yaml` and `service-patch.yaml` files are where you can patch the base kubernetes resources with values appropriate for your target environment.
-Examples of these fields are memory/cpu allocations and ingress configuration.
+Within each environment-specific subdirectory in the `overlays` directory, the `application.yaml` file is a Spring Boot configuration file that you can edit to configure application (the Data Flow server or Skipper server).
+For example, you can edit `application.yaml` to configure `spring.datasource` properties or `spring.cloud.dataflow.features` properties.
 
+Also within each environment-specific subdirectory, the `deployment-patch.yaml` and `service-patch.yaml` files are used to patch the `base` Kubernetes resource files, substituting values that are appropriate for the specific environment.
+For example, you might configure memory or CPU allocations and ingress configuration using one set of values for your `dev` environment and another for your `production` environment.
+
+For information about how to configure specific settings, see the following sections.
 
 ### <a id='database-configuration'></a> Database Configuration
 
-You can customize the database configuration settings in the `application.yaml` and `deployment-patch.yaml` files.
-These files are preconfigured to connect to a PostgreSQL database that can be installed either by using the manifests provided in `services/dev/postgresql` or by installing the `bitnami/postgresql` Helm chart.
+You can customize database configuration settings in the `application.yaml` and `deployment-patch.yaml` files.
+These files are preconfigured to connect to a PostgreSQL database, which can be installed either by using the manifests provided in `services/dev/postgresql` or by installing the `bitnami/postgresql` Helm chart.
 
 #### <a id='database-connection'></a> Database Connections Settings
 
-To use a different database, you need to replace or remove the secret `volume` and `volumeMount` in the `deployment-patch.yaml` file.
-If you replace the secret, we recommend that you provide `database-password` as the path for the password key, since doing so simplifies the changes needed in the `application.yaml` file.
+To use a different database, you must replace or remove the secret `volume` and `volumeMount` in the `deployment-patch.yaml` file.
+If you wish to replace the secret, VMware recommends that you provide `database-password` as the path for the password key.
+This minimizes the changes needed in the `application.yaml` file.
 
-You need to change the database settings for both the `skipper` and the `data-flow` applications.
-The following example uses a secret named `production-db` with a `password` key (you can specify additional keys if they are available in the secret and reference the paths you specify in `application.yaml`):
+You must modify database settings for both the `skipper` application and the `data-flow` application.
+The following example uses a secret named `postgresql` with a `postgresql-password` key.
+(You can specify additional keys that are available in the secret, as long as they reference the paths that you specify in the `application.yaml` file.)
 
 ```yaml
       containers:
@@ -146,8 +147,8 @@ The following example uses a secret named `production-db` with a `password` key 
               path: database-password
 ```
 
-The settings in `application.yaml` that you need to consider are under `spring.datasource`.
-Modify the `url`, `username`, `password` and `driverClassName` values to match you detabase settings:
+In the `application.yaml` file, you must edit settings under `spring.datasource`.
+Update the `url`, `username`, `password`, and `driverClassName` values to match your database settings, as shown in the example below.
 
 ```yaml
 spring:
@@ -163,13 +164,14 @@ spring:
     validationQuery: "SELECT 1"
 ```
 
-#### <a id='database-connection'></a> Initializing the Database Schema
+#### <a id='initializing-database-schema'></a> Initialize the Database Schema
 
-You can initialize your database schema by using the DDL scripts available under `apps/skipper/schemas` and `apps/data-flow/schemas`.
-We provide DDL for DB2, MySQL, Oracle, PostgreSQL, and MS SQL Server.
-If there are multiple files, they must be applied in the correct order, starting with `V1-` followed by `V2-` and `V3-` and so on.
+To initialize your database schema, you can use the DDL scripts provided in `apps/skipper/schemas` and `apps/data-flow/schemas`.
+SCDF for Kubernetes provides DDL scripts for IBM DB2, MySQL, Oracle, PostgreSQL, and Microsoft SQL Server.
+If applying multiple files, ensure that you apply them in the correct order (the `V1-` file first, then the `V2-` file, then the `V3-` file, and so on).
 
-If you initialize the schema for the database, you can turn off the database initialization of the skipper and data-flow apps by adding the following settings to the respective `application.yaml` files:
+If you manually initialize the schema for the database, you can disable automatic database initialization for the Skipper and Data Flow server applications.
+Add the following settings to the `application.yaml` files for the applications:
 
 ```yaml
 spring:
@@ -183,86 +185,91 @@ spring:
     enabled: false
 ```
 
-#### <a id='database-connection'></a> Adding JDBC Driver
+#### <a id='database-connection'></a> Add a JDBC Driver
 
-It is possibe to add your own JDBC driver if you do not want to use the JDBC drivers that are provided.
-JDBC drivers for MySQL (via MariaDB driver), HSQLDB, PostgreSQL along with embedded H2 are provided in the published application artifacts.
+The published application artifacts for SCDF for Kubernetes include JDBC drivers for MySQL (via the MariaDB driver), HSQLDB, PostgreSQL, and embedded H2.
+If you wish, you can instead use your own JDBC driver.
 
-In order to add a JDBC driver, you need to perform the following steps:
+To add a JDBC driver, perform the following steps:
 
-1. Download the `SCDF Pro Server jar file` release artifact from [VMware Tanzu Network](https://network.pivotal.io/products/p-scdf-for-kubernetes).
+1. Download the "SCDF Pro Server jar file" release artifact from [VMware Tanzu Network](https://network.pivotal.io/products/p-scdf-for-kubernetes).
 
-1. Download the server jars for `skipper` and `composed-task-runner`:
-
-    ```bash
-    wget https://repo1.maven.org/maven2/org/springframework/cloud/spring-cloud-skipper-server/2.5.2/spring-cloud-skipper-server-2.5.2.jar
-    wget https://repo1.maven.org/maven2/org/springframework/cloud/spring-cloud-dataflow-composed-task-runner/2.6.3/spring-cloud-dataflow-composed-task-runner-2.6.3.jar
-    ```
-
-1. Create a directory containing the JDBC driver to be added:
-
-    ```bash
-    mkdir -p BOOT-INF/lib
-    ```
-
-1. Copy your JDBC driver jar to this directory.
-
-1. Add the driver to the downloaded jars:
-
-    ```bash
-    jar -u0f spring-cloud-skipper-server-2.5.2.jar BOOT-INF/lib/*.jar
-    jar -u0f scdf-pro-server-1.0.4.jar BOOT-INF/lib/*.jar
-    jar -u0f spring-cloud-dataflow-composed-task-runner-2.6.3.jar BOOT-INF/lib/*.jar
-    ```
-
-1. Create new container images using the updated server jars. 
-
-    You should use a base image based on JDK 8.
-    The easiest way to build new container images is to use the [pack CLI utility](https://buildpacks.io/docs/install-pack/).
-    Create a `registry_prefix` environment variable containing the prefix you want to use.
-
-    Here is an example:
+1. Download the server JAR files for Skipper and the Composed Task Runner:
 
     ```
-    export registry_prefix=registry.example.com/example
+    $ wget https://repo1.maven.org/maven2/org/springframework/cloud/spring-cloud-skipper-server/2.5.2/spring-cloud-skipper-server-2.5.2.jar
+    $ wget https://repo1.maven.org/maven2/org/springframework/cloud/spring-cloud-dataflow-composed-task-runner/2.6.3/spring-cloud-dataflow-composed-task-runner-2.6.3.jar
     ```
 
-    Now, build the three container images.
-
-    For the `skipper` app run:
+1. Within each application directory (the `apps/data-flow` and `apps/skipper` directories), create a directory for the new JDBC driver:
 
     ```
-    pack build --env BP_JVM_VERSION=8 \
+    $ mkdir -p BOOT-INF/lib
+    ```
+
+1. Copy your JDBC driver jar to the new directories.
+
+1. Add the driver to the downloaded JAR files:
+
+    ```
+    $ jar -u0f spring-cloud-skipper-server-2.5.2.jar BOOT-INF/lib/*.jar
+    $ jar -u0f scdf-pro-server-1.0.4.jar BOOT-INF/lib/*.jar
+    $ jar -u0f spring-cloud-dataflow-composed-task-runner-2.6.3.jar BOOT-INF/lib/*.jar
+    ```
+
+1. Create new container images using the updated server JAR files.
+The easiest way to build new container images is to use the [pack](https://buildpacks.io/docs/install-pack/) CLI utility.
+Use a base image that is based on JDK 8.
+
+    &nbsp;
+
+    First, create a `registry_prefix` environment variable containing the prefix that you want to use:
+
+    ```
+    $ export registry_prefix=registry.example.com/example
+    ```
+
+    Then build the three container images.
+
+    &nbsp;
+
+    To build the container image for the `skipper` app, run the following command:
+
+    ```
+    $ pack build --env BP_JVM_VERSION=8 \
       --path spring-cloud-skipper-server-2.5.2.jar \
       --builder gcr.io/paketo-buildpacks/builder:base \
       --publish ${registry_prefix}/spring-cloud-skipper-server:2.5.2-jdbc
     ```
 
-    For the `data-flow` app run:
+    To build the container image for the `data-flow` app, run the following command:
     
     ```
-    pack build --env BP_JVM_VERSION=8 \
+    $ pack build --env BP_JVM_VERSION=8 \
       --path scdf-pro-server-1.0.4.jar \
       --builder gcr.io/paketo-buildpacks/builder:base \
       --publish ${registry_prefix}/scdf-pro-server:1.0.4-jdbc
     ```
 
-    For the `composed-task-runner` app run:
+    To build the container image for the `composed-task-runner` app, run the following command:
     
     ```
-    pack build --env BP_JVM_VERSION=8 \
+    $ pack build --env BP_JVM_VERSION=8 \
       --path spring-cloud-dataflow-composed-task-runner-2.6.3.jar \
       --builder gcr.io/paketo-buildpacks/builder:base \
       --publish ${registry_prefix}/spring-cloud-dataflow-composed-task-runner:2.6.3-jdbc
     ```
 
-1. Update your application kustomization manifests with the new image locations:
+1. Update your Kustomize manifests with the locations of the new images.
 
-    For the `skipper` application, modify `newName` and `newTag` values in `apps/skipper/kustomize/overlays/production/kustomization.yaml`. Also, either remove the `digest` or update it with the new image digest.
+    &nbsp;
+
+    For the `skipper` application, update the `newName` and `newTag` values in `apps/skipper/kustomize/overlays/production/kustomization.yaml`.
+    Update the `digest` field with the new image digest, or remove the `digest` field altogether.
 
     ```bash
     images:
-    - name: springcloud/spring-cloud-skipper-server  # used for Kustomize matching
+    - name: springcloud/spring-cloud-skipper-server  # Used for Kustomize matching
       newName: registry.example.com/example/spring-cloud-skipper-server
       newTag: 2.5.2-jdbc
     configMapGenerator:
@@ -277,11 +284,11 @@ In order to add a JDBC driver, you need to perform the following steps:
     - service-patch.yaml
     ```
 
-    For the `data-flow` application, modify `newName` and `newTag` values in `apps/data-flow/kustomize/overlays/production/kustomization.yaml`. Also, either remove the `digest` or update it with the new image digest.
+    For the `data-flow` application, update the `newName` and `newTag` values in `apps/data-flow/kustomize/overlays/production/kustomization.yaml`. Update the `digest` field with the new image digest, or remove the `digest` field altogether.
 
     ```bash
     images:
-    - name: springcloud/spring-cloud-dataflow-server  # used for Kustomize matching
+    - name: springcloud/spring-cloud-dataflow-server  # Used for Kustomize matching
       newName: registry.example.com/example/scdf-pro-server
       newTag: 1.0.4-jdbc
       configMapGenerator:
@@ -296,9 +303,9 @@ In order to add a JDBC driver, you need to perform the following steps:
       - service-patch.yaml
     ```
 
-    For the `composed-task-runner` image you need to modify the `apps/data-flow/kustomize/overlays/production/application.yaml` file.
-    Change the `spring.cloud.dataflow.task.composedTaskRunnerUri` entry to match your new image. The value should be prefixed with `docker://`.
-    You can either provide a tag or a digest that matches your new image. Here is an example:
+    For the `composed-task-runner` image, update the `apps/data-flow/kustomize/overlays/production/application.yaml` file.
+    Update the `spring.cloud.dataflow.task.composedTaskRunnerUri` entry to match your new image. The value should be prefixed with `docker://`.
+    You can provide either a tag or a digest that matches your new image. See the following example:
 
     ```yaml
      spring:
@@ -314,31 +321,36 @@ In order to add a JDBC driver, you need to perform the following steps:
             composedTaskRunnerUri: docker://registry.example.com/my-project/spring-cloud-dataflow-composed-task-runner:2.6.3-jdbc
 
     ...
-
     ```
 
-If you add your own JDBC driver, you should initialize the schema for the database and turn off the database initialization of the skipper and data-flow applications as documented in the previous section.
-
+If you add your own JDBC driver, you should manually initialize the database schema and disable automatic database initialization for the Skipper and Data Flow server applications. See [Initializing the Database Schema](#initializing-database-schema).
 
 ### <a id='message-broker-configuration'></a> Message Broker Configuration
 
-You can customize the configuration settings for the message broker in the `application.yaml` and the `deployment-patch.yaml` files.
-These files are preconfigured to connect to a RabbitMQ broker that can be installed either by using the manifests provided in `services/dev/rabbitmq` or by installing the `bitnami/rabbitmq` Helm chart.
+You can customize message broker configuration settings in the `application.yaml` and the `deployment-patch.yaml` files.
+These files are preconfigured to connect to a RabbitMQ broker, which can be installed either by using the manifests provided in `services/dev/rabbitmq` or by installing the `bitnami/rabbitmq` Helm chart.
 
-#### <a id='rabbit-broker-configuration'></a> Using RabbitMQ as the Message Broker
+#### <a id='rabbit-broker-configuration'></a> Use RabbitMQ as the Message Broker
 
-To use RabbitMQ as the message broker, you need to review the settings for the `skipper` application provided in the Kustomization overlays for `dev` and `production`.
+If you want to use RabbitMQ as the message broker, review the `skipper` application settings provided in the Kustomize overlays for the `dev` and `production` environments.
+As mentioned earlier, the default configuration connects to a RabbitMQ broker that runs in the same namespace as SCDF for Kubernetes.
 
-As mentioned earlier, the configuration is preconfigured to connect to a RabbitMQ broker running in the same namespace in which you installed Spring Cloud Data Flow for Kubernetes.
+If your RabbitMQ broker runs in a different namespace, or if you use an external broker, you must edit the `deployment-patch.yaml` file in `dev` or `production` overlays.
+In the `volume` and `container.volumeMounts` sections, remove references to the `rabbitmq` secret.
 
-If your RabbitMQ broker runs in a different namespace or if you use an external broker, you need to remove references for the `rabbitmq` secret from `volume` and `container.volumeMounts` sections in the `deployment-patch.yaml` file in `dev` or `production` overlays.
+The RabbitMQ broker connection settings are located in the `application.yaml` file for the Skipper application.
+This file is included in the `dev` and `production` overlays.
+When deploying a Spring Cloud Stream application, SCDF for Kubernetes passes the value of the `environmentVariables` field to the application.
 
-The settings for connecting to the RabbitMQ broker are located in the `application.yaml` file for the `skipper` app in both `dev` and `production` overlays.
-What is specified on the `environmentVariables` line is passed to the Spring Cloud Stream apps that are deployed.
+The configuration must include the following environment variables:
 
-The configuration needs to include the `SPRING_RABBITMQ_HOST`, `SPRING_RABBITMQ_PORT`, `SPRING_RABBITMQ_USERNAME`, and `SPRING_RABBITMQ_PASSWORD` variables.
-If the RabbitMQ cluster runs in the same namespace where you install Spring Cloud Data Flow for Kubernetes, you can reference the service environment variables provided by Kubernetes.
-If not, then you would have to replace these references with the actual values:
+* `SPRING_RABBITMQ_HOST`
+* `SPRING_RABBITMQ_PORT`
+* `SPRING_RABBITMQ_USERNAME`
+* `SPRING_RABBITMQ_PASSWORD`
+
+If the RabbitMQ cluster runs in the same namespace as SCDF for Kubernetes, you can reference the service environment variables provided by Kubernetes.
+If not, replace these references with the actual values.
 
 ```yaml
 spring:
@@ -352,25 +364,31 @@ spring:
                 environmentVariables: 'SPRING_CLOUD_CONFIG_ENABLED=false,SPRING_RABBITMQ_HOST=${RABBITMQ_SERVICE_HOST},SPRING_RABBITMQ_PORT=${RABBITMQ_SERVICE_PORT_AMQP},SPRING_RABBITMQ_USERNAME=user,SPRING_RABBITMQ_PASSWORD=${rabbitmq-password}'
 ```
 
-<div class="note">
-The <code>SPRING_CLOUD_CONFIG_ENABLED=false</code> setting avoids having each stream application try to look up a Spring Cloud Configuration Server instance.</div>
+<p class="note">Setting <code>SPRING_CLOUD_CONFIG_ENABLED</code> to <code>false</code> prevents Spring Cloud Stream applications from attempting to discover a Spring Cloud Config server instance.</p>
 
-#### <a id='kafka-broker-configuration'></a> Using Kafka as the Message Broker
+#### <a id='kafka-broker-configuration'></a> Use Kafka as the Message Broker
 
-To use Kafka as the message broker, you need to modify the settings for the `skipper` application provided in the Kustomization overlays for `dev` and `production`.
-Remove the references for the `rabbitmq` secret from `volume` and `container.volumeMounts` sections in the `deployment-patch.yaml` file.
+If you want to use Kafka as the message broker, review the `skipper` application settings provided in the Kustomize overlays for the `dev` and `production` environments.
+Edit the `deployment-patch.yaml` file.
+In the `volume` and `container.volumeMounts` sections, remove references to the `rabbitmq` secret.
 
-The settings for connecting to the Kafka broker are located in the `application.yaml` file for the `skipper` application in both the `dev` and `production` overlays.
+The Kafka broker connection settings are located in the `application.yaml` file for the Skipper application.
+This file is included in the `dev` and `production` overlays.
 
-You can provide your own Kafka cluster or install one by using the `bitnami/kafka` Helm chart. In the following example, we assume that Kafka was installed by using the Helm chart mentioned. If you use a different Kafka installation, you need to adjust the environment variables specified in the `application.yaml` file.
+You can either provide your own Kafka cluster, or use the `bitnami/kafka` Helm chart to install one.
+The following example assumes that you used the Helm chart.
+If using a different Kafka installation, adjust the environment variables specified in the `application.yaml` file.
 
 Remove or comment out the line with `environmentVariables` for RabbitMQ settings and uncomment the line with the corresponding Kafka settings.
-What is specified on the `environmentVariables` line is passed to the Spring Cloud Stream apps that are deployed.
+The value of the `environmentVariables` property is passed to the deployed Spring Cloud Stream apps.
 
-The configuration needs to include the `SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS` and `SPRING_CLOUD_STREAM_KAFKA_BINDER_ZK_NODES` variables with values for host and port for Kafka broker and Zookeeper respectivly.
+The configuration must include the following environment variables:
 
-If the Kafka cluster is running in the same namespace in which you install Spring Cloud Data Flow for Kubernetes, you can reference the service environment variables provided by Kubernetes.
-If not, you would have to replace these references with the actual values.
+* `SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS` (value: the host and port of the Kafka broker)
+* `SPRING_CLOUD_STREAM_KAFKA_BINDER_ZK_NODES` (value: the host and port for ZooKeeper)
+
+If the Kafka cluster runs in the same namespace as SCDF for Kubernetes, you can reference the service environment variables provided by Kubernetes.
+If not, replace these references with the actual values.
 
 ```yaml
 spring:
@@ -384,19 +402,18 @@ spring:
                 environmentVariables: 'SPRING_CLOUD_CONFIG_ENABLED=false,SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS=${KAFKA_SERVICE_HOST}:${KAFKA_SERVICE_PORT},SPRING_CLOUD_STREAM_KAFKA_BINDER_ZK_NODES=${KAFKA_ZOOKEEPER_SERVICE_HOST}:${KAFKA_ZOOKEEPER_SERVICE_PORT}'
 ```
 
-<div class="note">
-The <code>SPRING_CLOUD_CONFIG_ENABLED=false</code> setting avoids having each stream application try to look up a Spring Cloud Configuration Server instance.</div>
+<p class="note">Setting <code>SPRING_CLOUD_CONFIG_ENABLED</code> to <code>false</code> prevents Spring Cloud Stream applications from attempting to discover a Spring Cloud Config server instance.</p>
 
 ### <a id='ingress-resource-configuration'></a> Ingress Resource
 
-If your Kubernetes cluster supports Kubernetes Services of type `LoadBalancer`, you may use that type of service to provision a load balancer by using an Ingress Controller such as NGINX or Contour.
+If your Kubernetes cluster supports Kubernetes Services of type `LoadBalancer`, you may use that type of service to provision a load balancer via an Ingress Controller such as NGINX or Contour.
 
-If your cluster has an Ingress Controller configured, you can use an Ingress resource manager to manage external access to the Data Flow server service.
+If your cluster has an ingress controller configured, you can use an Ingress resource manager to manage external access to the Data Flow server service.
 
-You can modify the `ingress-patch.yaml` file in either `apps/ingress/kustomize/overlays/dev/` or `apps/ingress/kustomize/overlays/production/`.
-Modify the host field to provide the DNS name required for your Ingress Controller configuration.
+Edit the `ingress-patch.yaml` file in either the `dev` overlay (`apps/ingress/kustomize/overlays/dev/`) or the `production` overlay (`apps/ingress/kustomize/overlays/production/`).
+Under `spec.rules`, update the `host` entry, providing the DNS name required for your ingress controller configuration.
 
-If your DNS name is `data-flow.example.com`, add that DNS name as the host for the entry under `spec.rules`:
+If your DNS name is `data-flow.example.com`, add that DNS name as the host:
 
 ```yaml
 apiVersion: extensions/v1beta1
@@ -416,89 +433,86 @@ spec:
 
 ### <a id='security-configuration'></a> Security
 
-The Spring Cloud Data Flow and Skipper servers use the Spring Security library to configure authentication and authorization by using OAuth 2.0 and OpenID Connect.
-This lets you integrate Spring Cloud Data Flow into Single Sign On (SSO) environments.
-To configure the servers, change each server's `application.yaml` configuration file.
-The [Spring Cloud Data Flow Reference Guide's Security section](https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#configuration-local-security) describes how to configure the Data Flow Server, and the [Spring Cloud Data Flow Reference Gude's Azure section](https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#appendix-identity-provider-azure) describes configuration with Azure AD.
-While the documentation is in the Spring Cloud Data Flow reference guide, the same steps must be take for the configuration of Skipper's `application.yaml` file.
+The Spring Cloud Data Flow and Skipper servers use the [Spring Security](https://spring.io/projects/spring-security) library to configure authentication and authorization with OAuth 2.0 and OpenID Connect.
+You can use this to integrate SCDF for Kubernetes into Single Sign-On (SSO) environments.
+
+To configure the servers, edit the `application.yaml` configuration file for each server.
+In the [Spring Cloud Data Flow Reference Guide](https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/), the [Security](https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#configuration-local-security) section describes how to configure the Data Flow server, and the [Azure](https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#appendix-identity-provider-azure) section describes the configuration to use with Azure Active Directory.
+
+To configure the `application.yaml` file for the Skipper server, follow the same steps, using the same documentation from the Spring Cloud Data Flow Reference Guide.
 
 ### <a id='container-registry'></a> Container Registry
 
-The Data Flow server displays Spring Boot application metadata that is stored as a label in the container image.
-To retrieve that metadata, configure the Data Flow server to access the container registry for the application images you will be deploying.
-This configuration goes under the following section in the `application.yaml` file:
+The Data Flow server displays Spring Boot application metadata, which is stored as a label in the container image.
+To retrieve this metadata, you can configure the Data Flow server to access the container registry for the application images that you will deploy.
 
-```
-spring:
-  cloud:
-    dataflow:
-      container:
-        registry-configurations:
-```
-The examples of how to configure this section for Docker Hub, Artifactory/JFrog, Amazon Elastic Container Registry, Azure Container Registry, and the Harbor registry are in the Spring Cloud Data Flow Reference Guide's [Container Metadata](https://dataflow.spring.io/docs/feature-guides/general/application-metadata/#using-metadata-container-image-labels) section.
+Place this configuration under the `spring.cloud.dataflow.container.registry-configurations` section of the `application.yaml` file.
+For examples of how to configure this section for Docker Hub, JFrog Artifactory, Amazon Elastic Container Registry, Azure Container Registry, and Harbor, see the [Container Metadata](https://dataflow.spring.io/docs/feature-guides/general/application-metadata/#using-metadata-container-image-labels) section of the [Spring Cloud Data Flow Reference Guide](https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/).
 
-### <a id='imagePullSecrets'></a> ImagePullSecrets for Apps
+### <a id='imagePullSecrets'></a> Application ImagePullSecrets
 
-When launching task and stream apps the Kubernetes nodes need to be able to pull the corresponding container image.
-If the image is stored in a private repository we need to provide authentication information for the nodes to pull images from a registry.
+When launching a Spring Cloud Task or Spring Cloud Stream application, the Kubernetes nodes must be able to pull the corresponding container image.
+If the image is stored in a private repository, you must provide authentication information for the nodes to use in pulling the image from a registry.
 
-This authentication information is provided using a secret.
-In the namespace where you intend to install, create a secret, as shown in the next example.
+You can provide this authentication information by creating a secret in the namespace where you will install SCDF for Kubernetes.
+To create the secret and configure the SCDF for Kubernetes server applications to use it, follow the steps below.
 
-First, set the username and password variables based on your login credentials for the registry containig the images for the apps.
+1. Set `username` and `password` environment variables. These variables should contain your login credentials for the registry that stores the application images.
 
-```bash
-registry=<your registry host>
-username=<your user name>
-password=<your password>
-```
+    ```
+    $ registry=<your registry host>
+    $ username=<your user name>
+    $ password=<your password>
+    ```
 
-Then create the secret using the values you set in the preceding example:
+1. Run the `kubectl create secret` command, using the variables set in the previous step.
 
-```bash
-kubectl create secret \
-docker-registry scdf-apps-regcred \
---docker-server=${registry} \
---docker-username=${username} \
---docker-password=${password}
-```
+    ```
+    $ kubectl create secret \
+    docker-registry scdf-apps-regcred \
+    --docker-server=${registry} \
+    --docker-username=${username} \
+    --docker-password=${password}
+    ```
 
-For stream apps we add the name of this secret to the `application.yaml` file for the `skipper` application:
+1. Add the name of the secret to the `application.yaml` file for the Skipper application. This will be used for Spring Cloud Stream applications.
 
-```yaml
-spring:
-  cloud:
-    skipper:
-      server:
-        platform:
-          kubernetes:
-            accounts:
-              default:
-                imagePullSecret: scdf-apps-regcred
-```
+    ```yaml
+    spring:
+      cloud:
+        skipper:
+          server:
+            platform:
+              kubernetes:
+                accounts:
+                  default:
+                    imagePullSecret: scdf-apps-regcred
+    ```
 
-<div class="note">If you want to use the Composed Task Runner then you must create a secret with the credentials for the Tanzu Net Registry or, if you relocated the image for the Composed Task Runner, to the registry where it was relocated.</div>
+    <p class="note">If you want to use the Composed Task Runner (CTR), create a secret that contains the credentials for the appropriate registry (either the Tanzu Net registry, or if you relocated the CTR image, the registry to which you relocated the image).</p>
 
-For task apps we add the name of this secret to the `application.yaml` file for the `data-flow` application:
+1. Add the name of the secret to the `application.yaml` file for the Data Flow application. This will be used for Spring Cloud Task applications.
 
-```yaml
-spring:
-  cloud:
-    dataflow:
-      task:
-        platform:
-          kubernetes:
-            accounts:
-              default:
-                imagePullSecret: scdf-apps-regcred
-```
+    ```yaml
+    spring:
+      cloud:
+        dataflow:
+          task:
+            platform:
+              kubernetes:
+                accounts:
+                  default:
+                    imagePullSecret: scdf-apps-regcred
+    ```
 
 ### <a id='task-limiting'></a> Task Limiting
 
-Spring Cloud Data Flow lets a user limit the maximum number of concurrently running tasks to prevent the saturation of IaaS/hardware resources.
-The default limit is set to 20.
-If the number of concurrently running tasks on a platform instance is greater than or equal to the limit, the next task launch request fails, and an error message is returned through the RESTful API, Shell, or UI.
-This limit can be configured by setting the `maximumConcurrentTasks` property in the account:
+SCDF for Kubernetes provides a configurable limit for the maximum number of concurrently-running tasks.
+This limit can prevent the saturation of IaaS or hardware resources.
+If the number of concurrently running tasks on a platform instance is greater than or equal to the limit, the next task launch request fails, and SCDF for Kubernetes returns an error message through the RESTful API, the shell, or the UI.
+
+By default, the concurrent task limit is set to 20.
+You can configure the limit by setting the `maximumConcurrentTasks` property in the account:
 
 ```
 spring:
@@ -515,10 +529,10 @@ spring:
                   memory: 1024Mi
 ```
 
-Launching a task, if successful, results in a running pod that we expect to eventually complete or fail.
-As there is no easy way to identify pods that correspond to a task, we count only pods that were launched by the Data Flow Server.
-Since the task launcher provides the task's ID as a label in the pod’s metadata, we filter all running pods for the presence of this label.
+A successful task launch results in a running pod, which is expected to eventually either complete or fail.
+Because there is no convenient way to identify the pods that correspond to a task, SCDF for Kubernetes counts only pods that were launched by the Data Flow server.
+The task launcher provides the task ID as a label in the pod metadata, and SCDF for Kubernetes filters all running pods by this label.
 
-## <a id='next-installing-scdf'></a> Next: Configuring Monitoring for SCDF for Kubernetes
+## <a id='next-installing-scdf'></a> Next: Configure Monitoring for SCDF for Kubernetes
 
-Proceed to the [Configuring Monitoring for SCDF for Kubernetes](configuring-monitoring.html) topic for monitoring configuration instructions.
+For information about configuring monitoring for SCDF for Kubernetes, see [Configuring Monitoring for SCDF for Kubernetes](configuring-monitoring.html).

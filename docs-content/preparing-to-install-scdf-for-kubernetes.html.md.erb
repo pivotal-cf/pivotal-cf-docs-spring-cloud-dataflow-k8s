@@ -3,85 +3,92 @@ title: Preparing to Install Spring Cloud Data Flow for Kubernetes
 owner: Spring Cloud Data Flow Release Engineering
 ---
 
-This topic describes how to prepare dependencies and your local workstation to install Spring Cloud Data Flow for Kubernetes.
+This topic describes how to prepare dependencies and your local machine for the installation of Spring Cloud Data Flow for Kubernetes (SCDF for Kubernetes).
 
-## <a id='preparing-installation-resources'></a> Preparing the Installation Resources
+## <a id='downloading-installation-resources'></a> Download and Extract the Installation Resources
 
-Download the Spring Cloud Data Flow for Kubernetes installation resources from [VMware Tanzu Network](https://network.pivotal.io/products/p-scdf-for-kubernetes).
+To download and extract the SCDF for Kubernetes installation resources, follow the steps below.
 
-1. Log into [VMware Tanzu Network](https://network.pivotal.io).
+1. Visit [VMware Tanzu Network](https://network.pivotal.io) and log in.
 
-1. Navigate to the [Spring Cloud Data Flow for Kubernetes product listing](https://network.pivotal.io/products/p-scdf-for-kubernetes).
+1. Navigate to the [Spring Cloud Data Flow for Kubernetes](https://network.pivotal.io/products/p-scdf-for-kubernetes) product listing.
 
-1. Download the "SCDF for Kubernetes installation scripts" file to a local directory of your choice.
+1. Download "SCDF for Kubernetes installation files". Place the downloaded file in a local directory of your choice.
 
-1. Extract the contents of `data-flow-1.1.2.tgz`
+1. Extract the contents of the `data-flow-1.1.2.tgz` file:
 
-```bash
-$ tar xzvf data-flow-1.1.2.tgz
-```
+    ```
+    $ tar xzvf data-flow-1.1.2.tgz
+    ```
 
-## <a id='image-relocation'></a> Re-locate Distribution Container Images to Another Registry (Optional)
+## <a id='image-relocation'></a> Relocate Distribution Container Images to Another Registry (Optional)
 
-You have the option of re-locating the container images that Spring Cloud Data Flow for Kubernetes depends on to a different container image registry. Supported registries include Harbor, Google Container Registry (GCR), and DockerHub.
+SCDF for Kubernetes relies on several container images. If you wish, you can re-locate these images to a different container image registry. Supported registries include Harbor, Google Container Registry (GCR), and DockerHub.
 
-If you use Harbor as your container registry, ensure that it is deployed in your environment and is accessible at a domain name of your choice. The [VMware Harbor Registry tile](https://network.pivotal.io/products/harbor-container-registry) is one option to deploy it when using Ops Manager.
+If you use Harbor as your container registry, ensure that Harbor is deployed in your environment and is accessible at a domain name of your choice. To deploy Harbor using Ops Manager, you can use the [VMware Harbor Registry](https://network.pivotal.io/products/harbor-container-registry) product.
 
-Before proceeding to relocate images for Spring Cloud Data Flow for Kubernetes, download the Spring Cloud Data Flow for Kubernetes installation images from [VMware Tanzu Network](https://network.pivotal.io/products/p-scdf-for-kubernetes).
+To download and relocate the SCDF for Kubernetes installation images, follow the steps below.
 
-1. Log into [VMware Tanzu Network](https://network.pivotal.io).
+1. Visit [VMware Tanzu Network](https://network.pivotal.io) and log in.
 
-1. Navigate to the [Spring Cloud Data Flow for Kubernetes product listing](https://network.pivotal.io/products/p-scdf-for-kubernetes).
+1. Navigate to the [Spring Cloud Data Flow for Kubernetes](https://network.pivotal.io/products/p-scdf-for-kubernetes) product listing.
 
-1. Download the "SCDF for Kubernetes installation images" file to  to the same directory where you downloaded the "SCDF for Kubernetes installation files" archive file described earlier.
+1. Download "SCDF for Kubernetes installation images". Place the downloaded file in the same directory as the "SCDF for Kubernetes installation files" archive file described earlier.
 
-1. Extract the contents of `data-flow-images-1.1.2.tgz`
+1. Extract the contents of the `data-flow-images-1.1.2.tgz` file:
 
-```bash
-$ tar xzvf data-flow-images-1.1.2.tgz
-```
+    ```
+    $ tar xzvf data-flow-images-1.1.2.tgz
+    ```
 
-Then `cd` to the extracted `spring-cloud-data-flow directory`. In the `bin` directory is a script named `relocate-image.sh`.
-It takes two arguments: `--app` and `--repository`. The usage is:
+1. Use the Docker command-line interface (CLI) tool to authenticate to your registry.
 
-```bash
-Usage: ./bin/relocate-image.sh [-r|--repository <arg>] [-a|--app <arg>] [-h|--help]
-	-r, --repository: Import images into given image repository (no default)
-	-a, --app: Application to relocate, data-flow or skipper (default: data-flow)
-    -h, --help: Prints help
-```
+1. Change to the extracted `spring-cloud-data-flow` directory and run the image relocation script.
+    
+    The script is in the `bin` directory and is named `relocate-image.sh`.
+    It takes two arguments: `--app` and `--repository`. Its usage is described below.
 
-To relocate the Data Flow server image, use the Docker CLI to authenticate to your reistry and then run:
+    ```
+    Usage: ./bin/relocate-image.sh [-r|--repository <arg>] [-a|--app <arg>] [-h|--help]
+      -r, --repository: Import images into given image repository (no default)
+      -a, --app: Application to relocate, data-flow or skipper (default: data-flow)
+      -h, --help: Prints help
+    ```
 
-```bash
-./bin/relocate-image.sh --app data-flow --repository <registry-repo-prefix>/spring-cloud-dataflow-server
-```
+    To relocate the Data Flow server image, run the following command:
 
-For the Composed Task Runner image relocation, run:
+    ```
+    $ ./bin/relocate-image.sh --app data-flow --repository <registry-repo-prefix>/spring-cloud-dataflow-server
+    ```
 
-```bash
-./bin/relocate-image.sh --app composed-task-runner --repository <registry-repo-prefix>/spring-cloud-dataflow-composed-task-runner
-```
+    To relocate the Composed Task Runner image, run the following command:
 
-For Skipper server image relocation, run:
+    ```
+    $ ./bin/relocate-image.sh --app composed-task-runner --repository <registry-repo-prefix>/spring-cloud-dataflow-composed-task-runner
+    ```
 
-```bash
-./bin/relocate-image.sh --app skipper --repository <registry-repo-prefix>/spring-cloud-skipper-server
-```
+    To relocate the Skipper server image, run the following command:
 
-The relocation script updates the `kustomization.yaml` files to match the new relocated image repository locations.
+    ```
+    $ ./bin/relocate-image.sh --app skipper --repository <registry-repo-prefix>/spring-cloud-skipper-server
+    ```
 
-## <a id='custom-image'></a> Using Custom Built Images for Data Flow and Skipper Servers (Optional)
+    The relocation script updates the `kustomization.yaml` files to match the new relocated image repository locations.
 
-You have the option of replacing the container images that Spring Cloud Data Flow for Kubernetes depends on with custom built images that you provide.
+## <a id='custom-image'></a> Use Custom-Built Images for Data Flow and Skipper Servers (Optional)
 
-In order to use these custom built images you need to replace the image references in some of the configuration files.
+If you wish, you can replace the SCDF for Kubernetes container images with your own custom-built images.
+
+In order to use these custom-built images, you must replace image references in some of the configuration files. See the following sections for more information.
 
 ### Data Flow Server
 
-For the Data Flow server you need to modify the `apps/data-flow/kustomize/overlays/production/kustomization.yaml` file for the production environment and the `apps/data-flow/kustomize/overlays/dev/kustomization.yaml` file for the development environment.
+To replace the image used for the Data Flow server, you must edit:
 
-In both files, change the `newName`, `newTag` and `digest` entries under `images` to match your custom image. Here is an example:
+* The `apps/data-flow/kustomize/overlays/production/kustomization.yaml` file, for the production environment
+* The `apps/data-flow/kustomize/overlays/dev/kustomization.yaml` file, for the development environment
+
+In both files, locate the `images` section and change the `newName`, `newTag`, and `digest` entries to match your custom image. See the following example.
 
 ```yaml
 images:
@@ -101,13 +108,16 @@ patches:
 - service-patch.yaml
 ```
 
-The `digest` must match the digest of your custom image. If you would prefer to have the image pulled by the tag, then you can remove the `digest` line.
+The `digest` must match the digest of your custom image. If you want the image to be pulled by the tag, remove the `digest` line.
 
 ### Composed Task Runner
 
-For the Composed Task Runner image you need to modify the `apps/data-flow/kustomize/overlays/production/application.yaml` file for the production environment and the `apps/data-flow/kustomize/overlays/dev/application.yaml` file for the development environment.
+To replace the image used for the Composed Task Runner, you must edit:
 
-In both files, change the `spring.cloud.dataflow.task.composedTaskRunnerUri` entry to match your custom image. The value should be prefixed with `docker://`. Here is an example:
+* The `apps/data-flow/kustomize/overlays/production/application.yaml` file, for the production environment
+* The `apps/data-flow/kustomize/overlays/dev/application.yaml` file, for the development environment
+
+In both files, change the `spring.cloud.dataflow.task.composedTaskRunnerUri` entry to match your custom image. The value should be prefixed with `docker://`. See the following example.
 
 ```yaml
 spring:
@@ -123,16 +133,18 @@ spring:
         composedTaskRunnerUri: docker://registry.example.com/my-project/spring-cloud-dataflow-composed-task-runner:my-2.6.1
 
 ...
-
 ```
 
-You can either provide a tag or a digest that matches your custom image.
+You can provide either a tag or a digest that matches your custom image.
 
 ### Skipper Server
 
-For the Skipper server you need to modify the `apps/skipper/kustomize/overlays/production/kustomization.yaml` file for the production environment and the `apps/skipper/kustomize/overlays/dev/kustomization.yaml` file for the development environment.
+To replace the image used for the Skipper server, you must edit:
 
-In both files, change the `newName`, `newTag` and `digest` entries under `images` to match your custom image. Here is an example:
+* The `apps/skipper/kustomize/overlays/production/kustomization.yaml` file, for the production environment
+* The `apps/skipper/kustomize/overlays/dev/kustomization.yaml` file, for the development environment
+
+In both files, locate the `images` section and change the `newName`, `newTag`, and `digest` entries to match your custom image. See the following example.
 
 ```yaml
 images:
@@ -152,20 +164,17 @@ patches:
 - service-patch.yaml
 ```
 
-The `digest` must match the digest of your custom image. If you would prefer to have the image pulled by the tag, then you can remove the `digest` line.
+The `digest` must match the digest of your custom image. If you want the image to be pulled by the tag, remove the `digest` line.
 
-## <a id='command-line-tools'></a> Command-Line Tools
+## <a id='installing-command-line-tools'></a> Next: Install Command-Line Tools
 
-The installation procedure for Spring Cloud Data Flow for Kubernetes requires a Linux or MacOS workstation with the following command-line tools installed:
+To install SCDF for Kubernetes, your Linux or macOS machine must have the following command-line tools installed:
 
-* The Kubernetes CLI, `kubectl`. For more information, see the [Installing the Kubernetes CLI](https://docs.pivotal.io/pks/installing-kubectl-cli.html) topic.
-* The `kapp` utility, version v0.22.0 or later.
-* The `kbld` utility, version v0.19.0 or later.
-* The `yq` utility, version v3.0 or later.
-* The `sed` utility.  It should already be installed on your workstation.
+* `kubectl`, the Kubernetes CLI (for more information about installing `kubectl`, see [Installing the Kubernetes CLI](https://docs.pivotal.io/pks/installing-kubectl-cli.html) in the VMware Enterprise PKS documentation)
+* The following command-line utilities:
+  * `kapp`
+  * `kbld`
+  * `yq`
+  * `sed` (should already be installed on your machine)
 
-For more information about installing the `kapp` and `kbld` tools from VMware Tanzu Network, see the [Installing Command-Line Tools](installing-command-line-tools.html) topic.
-
-## <a id='installing-command-line-tools'></a> Next: Installing Command-Line Tools
-
-The Spring Cloud Data Flow for Kubernetes installation process requires that some command-line utilities be available. Proceed to the [Installing Command-Line Tools](installing-command-line-tools.html) topic for more details.
+To continue with the installation of SCDF for Kubernetes, see [Installing Command-Line Tools](./installing-command-line-tools.html).

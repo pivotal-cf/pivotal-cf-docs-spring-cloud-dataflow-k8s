@@ -7,11 +7,12 @@ This topic provides an overview of Spring Cloud Data Flow for Kubernetes.
 
 ## <a id='overview'></a> Overview
 
-Spring Cloud Data Flow for Kubernetes orchestrates the deployment lifecycle of streaming and batch data pipelines to Kubernetes.
-The data pipelines are composed of Spring Cloud Stream or Spring Cloud Task applications.
-A streaming pipeline DSL and UI make it easy to specify which apps to deploy and how to connect outputs and inputs.
-The composed task DSL and UI is useful when a series of task applications must be run as a directed graph.
-It is based on the Spring Cloud Data Flow open source project.
+Spring Cloud Data Flow for Kubernetes (SCDF for Kubernetes) orchestrates the deployment lifecycle of streaming and batch data pipelines deployed on Kubernetes.
+Data pipelines are composed of Spring Cloud Stream or Spring Cloud Task applications.
+You can use the streaming pipeline DSL and UI to specify which apps to deploy and how to connect outputs and inputs.
+When running a series of task applications as a directed graph, you can use the composed task DSL and UI.
+
+SCDF for Kubernetes is based on the Spring Cloud Data Flow open source project.
 
 ## <a id='snapshot'></a> Product Snapshot
 
@@ -19,41 +20,48 @@ The following table provides version and version-support information about Sprin
 The table also provides information about the OSS versions used.
 
 <table class="nice">
-    <th>Element</th>
-    <th>Details</th>
-    <tr>
-        <td>Version</td>
-        <td>v1.1.3</td>
-    </tr>
-    <tr>
-        <td>Release date</td>
-        <td>October 6, 2020</td>
-    </tr>
-    <tr>
-        <td>Software component versions:</td>
-        <td></td>
-    </tr>
-    <tr>
-      <td>&nbsp;&nbsp;Spring Cloud Data Flow PRO</td>
-      <td>v1.0.4</td>
-    </tr>
-    <tr>
-      <td>&nbsp;&nbsp;Spring Cloud Skipper OSS</td>
-      <td>v2.5.2</td>
-    </tr>
-    <tr>
-      <td>&nbsp;&nbsp;Composed Task Runner OSS</td>
-      <td>v2.6.3</td>
-    </tr>
+    <thead>
+        <tr>
+            <th>Element</th>
+            <th>Details</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Version</td>
+            <td>v1.1.3</td>
+        </tr>
+        <tr>
+            <td>Release date</td>
+            <td>October 6, 2020</td>
+        </tr>
+    </tbody>
+    <tbody>
+        <tr>
+            <th colspan="2">Software Component Versions</td>
+        </tr>
+        <tr>
+          <td>Spring Cloud Data Flow Pro</td>
+          <td>v1.0.4</td>
+        </tr>
+        <tr>
+          <td>Spring Cloud Skipper OSS</td>
+          <td>v2.5.2</td>
+        </tr>
+        <tr>
+          <td>Composed Task Runner OSS</td>
+          <td>v2.6.3</td>
+        </tr>
+    </tbody>
 </table>
 
 ## <a id="features"></a> Features
 
-* Operationally simplifies the provisioning of Spring Cloud Data Flow OSS and the ecosystem of projects on Kubernetes
-* Includes certified container images for Spring Cloud Data Flow Pro, Spring Cloud Skipper and Composed Task Runner
-* Includes image-relocation capabilities for air-gapped deployments
-* Includes support for plugging relational-databases, message brokers, and identity providers of choice
-* Gives you the option to explore the provisioned software components in a Dev environment, and promoting it to Production
+* Operational simplicity for provisioning Spring Cloud Data Flow OSS and other ecosystem projects on Kubernetes
+* Certified container images for Spring Cloud Data Flow Pro, Spring Cloud Skipper, and Composed Task Runner
+* Image-relocation capabilities for air-gapped deployments
+* Support for using the relational databases, message brokers, and identity providers of your choice
+* Easily explore the provisioned software components in a development environment before promoting to production
 
 ## <a id="limitations"></a> Limitations
 
@@ -70,9 +78,9 @@ The following section lists limitations of Spring Cloud Data Flow for Kubernetes
     * v1.14.x
 
 * This product is intended to be used with any Kubernetes distribution.
-  However, given the number of Kubernetes vendors, and configurations,
-  not all of them have been tested with Spring Cloud Data Flow for Kubernetes.
+  However, given the number of Kubernetes vendors and configurations,
+  not all of them have been tested with SCDF for Kubernetes.
 
 ## <a id='getting-started'></a> Getting Started
 
-See the [Preparing to install Spring Cloud Data Flow for Kubernetes](preparing-to-install-scdf-for-kubernetes.html) topic to set up the dependencies required to install Spring Cloud Data Flow for Kubernetes.
+To set up the dependencies required for installation, see [Preparing to Install Spring Cloud Data Flow for Kubernetes](preparing-to-install-scdf-for-kubernetes.html).
