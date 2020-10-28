@@ -37,26 +37,53 @@ These variables should contain your login credentials for the registry that stor
     --docker-password=${password}
     ```
 
-## <a id='install-scdf-for-k8s-dev'></a> Install on the Development Environment
+## <a id='install-dev-environment'></a> Install on the Development Environment
 
-Within the "SCDF for Kubernetes installation files" archive downloaded from VMware Tanzu Network, the `bin` directory contains an installation script named `install-dev.sh`. Given an existing Kubernetes cluster, the script automates installation steps for the following components:
+Within the "SCDF for Kubernetes installation files" archive downloaded from VMware Tanzu Network, the `bin` directory contains an installation script named `install-dev.sh`.
+Given an existing Kubernetes cluster, the script automates installation steps for the following components for a development environment:
 
-* PostgreSQL
-* RabbitMQ
+* Database: PostgreSQL or MySQL
+* Broker: RabbitMQ or Kafka
+* Monitoring: Prometheus with Grafana
 * The Skipper server
 * The Data Flow server
 
-To install these components, run the `install-dev.sh` script:
+### <a id='install-scdf-for-k8s-dev'></a> Install the Spring Cloud Data Flow system
+
+To install the components mentioned above, run the `install-dev.sh` script.
+This script has three option flags to specify database and broker plus whether monitoring should be included.
+
+To list all available options use the `-h` or `--help` flag:
 
 ```
-$ ./bin/install-dev.sh
+$ ./bin/install-dev.sh --help
+Install for development help
+Usage: ./bin/install-dev.sh [-d|--database <arg>] [-b|--broker <arg>] [-h|--help]
+	-d, --database: The database to use -- postgresql (default) or mysql
+	-b, --broker: The message broker to use -- rabbitmq (default) or kafka
+	-m, --monitoring: The monitoring solution to install and enable -- none (default) or prometheus
+	-o, --output-dir: The output directory for writing the config files that can be applied later
+	-h, --help: Prints help
 ```
 
-If you want to use an Ingress resource, run the following command:
+You can see that the defaults for the developer install is PostgreSQL for the database, RabbitMQ for the message broker and no monitoring (none).
+To override these defaults simply provide the option flag with the alternate choice.
+
+As an example, to install with MySQL, Kafka and Prometheus/Grafana enabled use the following command:
+
+```
+$ ./bin/install-dev.sh --database mysql --broker kafka --monitoring prometheus
+```
+
+### <a id='install-ingress-dev'></a> Install Ingress resource for the Development Environment
+
+If you have an ingress controller and you want to use an Ingress resource, run the following command:
 
 ```
 $ kubectl kustomize ./apps/ingress/kustomize/overlays/dev/ | kapp deploy -y -a ingress -f -
 ```
+
+### <a id='uninstall-scdf-for-k8s-dev'></a> Uninstall the Development Environment
 
 To uninstall the components installed by the `install-dev.sh` script, run the `uninstall-dev.sh` script (also located in the `bin` directory):
 
