@@ -83,6 +83,18 @@ If you have an ingress controller and you want to use an Ingress resource, run t
 $ kubectl kustomize ./apps/ingress/kustomize/overlays/dev/ | kapp deploy -y -a ingress -f -
 ```
 
+### <a id='access-grafana-dev'></a> Accessing Grafana Dashboard for the Development Environment
+
+If you enabled monitoring for Prometheus and Grafana, then you can use port-forwarding to access the Grafana dashboard from youtr local browser.
+
+Run the following command:
+
+```
+$ kubectl port-forward service/grafana 3000:3000
+```
+
+You can now access the dashboard at http://localhost:3000
+
 ### <a id='uninstall-scdf-for-k8s-dev'></a> Uninstall the Development Environment
 
 To uninstall the components installed by the `install-dev.sh` script, run the `uninstall-dev.sh` script (also located in the `bin` directory):
