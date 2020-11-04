@@ -37,6 +37,8 @@ These variables should contain your login credentials for the registry that stor
     --docker-password=${password}
     ```
 
+<p class="note"><strong>Note</strong>: This secret is mounted by the Data Flow server. If you don't need credentials for relocated images, you must still create this secret with some dummy values.</p>
+
 ## <a id='install-dev-environment'></a> Install on the Development Environment
 
 Within the "SCDF for Kubernetes installation files" archive downloaded from VMware Tanzu Network, the `bin` directory contains an installation script named `install-dev.sh`.
