@@ -3,21 +3,34 @@ title: Upgrading Spring Cloud Data Flow for Kubernetes
 owner: Spring Cloud Data Flow Release Engineering
 ---
 
-This topic describes how to upgrade Spring Cloud Data Flow for Kubernetes.
+This topic describes how to upgrade an existing deployment of Spring Cloud Data Flow for Kubernetes (SCDF for Kubernetes).
 
 ## <a id='upgrade-process'></a> Upgrade Process
 
-To upgrade the product, follow these steps
+To upgrade SCDF for Kubernetes:
 
-1. Download the latest release as described in the [Preparing to install Spring Cloud Data Flow for Kubernetes](preparing-to-install-scdf-for-kubernetes.html) topic.
-1. Compare the contents of the kustomize based [Directory Structure](configuring-installation-values.html#directory-structure) in the newly downloaded version to the directory structure of the previously installed version.
-1. Look for differences using a `diff` tool of your choice, in particular paying attention to
-    * `appliation.yaml` and `bootstrap.yaml` files where new features added to the Data Flow or Skipper server will have new configuration values.
-    * `kustomization.yaml` files where the container image tag, the `newTag` property, of the new version will have been updated.
-    * Kubernetes resource files in `base` directories.  Suggested resource limits or other improvements that take advantage of Kuberentes features will be located here.
-1. Once the `diff`s from the new version have been merged into files in your existing directory structure, apply the changes using the Kubernetes tool of your choice.  This can be
-    * `kubectl kustomize [SKIPPER-OVERLAY-DIRECTORY] | kapp -y deploy -a skipper -f -`
-    * `kubectl kustomize [DATA-FLOW-OVERLAY-DIRECTORY] | kapp -y deploy -a data-flow -f -`
+1. Download the latest release of SCDF for Kubernetes (see [Preparing to install Spring Cloud Data Flow for Kubernetes](preparing-to-install-scdf-for-kubernetes.html)).
 
-    or whatever other tool you use to apply changes of Kuberenetes resources to your cluster.
+1. Extract the downloaded archive file.
 
+    ```
+    $ tar xzvf data-flow-1.1.4.tgz
+    ```
+
+1. Compare the directory contents between the new release and the currently-installed release. For information about the directory structure of the "SCDF for Kubernetes installation files" archive, see [Directory Structure](configuring-installation-values.html#directory-structure).
+
+1. Use a file comparison (diff) tool to compare files in the new release and the currently-installed release. Especially look for changes in the following files:
+    * `application.yaml` and `bootstrap.yaml` configuration files. These files may contain new configuration values that correspond to features added to the Data Flow or Skipper servers.
+    * `kustomization.yaml` files. These files will include updates to the container image tag (the `newTag` property).
+    * Kubernetes resource files in the `base` subdirectories. These files will contain any new suggested resource limits or other improvements that take advantage of Kubernetes features.
+
+1. Merge the changes into the existing files and directory structure of the currently-installed release.
+
+1. Using the Kubernetes tool of your choice, apply the changes to your Kubernetes cluster. For example, using `kubectl kustomize` and `kapp`, you might run the following commands:
+
+    ```
+    $ kubectl kustomize [SKIPPER_OVERLAY_DIR] | kapp -y deploy -a skipper -f -`
+    $ kubectl kustomize [DATA_FLOW_OVERLAY_DIR] | kapp -y deploy -a data-flow -f -`
+    ```
+
+    In these example commands, replace the `SKIPPER_OVERLAY_DIR` placeholder with the path to the `overlays` directory for the Skipper application, and replace the `DATA_FLOW_OVERLAY_DIR` placeholder with the path to the `overlays` directory for the Data Flow application.
