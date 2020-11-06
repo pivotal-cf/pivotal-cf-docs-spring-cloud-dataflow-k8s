@@ -1,41 +1,40 @@
 ---
-title: Multi-IO Stream Support for Spring Cloud Data Flow for Kubernetes
+title: Multi-IO Stream Support in Spring Cloud Data Flow for Kubernetes
 owner: Spring Cloud Data Flow Release Engineering
 ---
 
-This topic contains some highlights and FAQs of the multi-IO support for Spring Cloud Data Flow for Kubernetes.
+Spring Cloud Data Flow OSS currently only supports streaming pipelines built using applications that have a single input and output.
+The SCDF Pro server adds support for creating and deploying streaming pipelines using applications that have multiple inputs and outputs (this is referred to as "multi-IO").
+Spring Cloud Stream includes built-in support for binding multi-IO applications to the messaging system, and Spring Cloud Data Flow for Kubernetes (SCDF for Kubernetes) can embed multi-IO applications into a streaming pipeline.
 
-## <a id='multi-io-support'></a> Multi-IO Stream Support
+This topic describes some highlights of the multi-IO support in SCDF for Kubernetes and answers some frequently-asked questions.
 
-Spring Cloud Data Flow OSS currently supports the creation of streaming pipeline with applications that have only **single** input and output.
-The SCDF Pro server now adds support for creating and deploying streaming applications that have **multiple** inputs and outputs (multi-IO).
-With Spring Cloud Stream having built-in support for binding multi-IO to the messaging system, Spring Cloud Data Flow lets multi-IO applications be embedded into a streaming pipeline.
+## <a id='multi-io-support-Q1'></a> What Are the Multi-IO Features in the SCDF Pro Server?
 
-### <a id='multi-io-support-Q1'></a> What are the features of multi-IO support in SCDF Pro server?
+SCDF Pro adds a number of features to support multi-IO stream applications: 
 
-- Add **multi-IO Stream DSL** to construct streaming pipeline by using applications with multiple inputs and outputs
-- Stream Flo editor for wiring up multi-IO applications when creating the stream
-- Multi-IO Stream lifecycle management 
+* A multi-IO stream DSL for constructing streaming pipelines using applications that have multiple inputs and outputs
+* A Stream Flo editor for wiring up multi-IO applications when creating a stream
+* Lifecycle management for multi-IO streams
 
-### <a id='multi-io-support-Q2'></a> How different are the multi-IO applications from the applications with single input and output?
+## <a id='multi-io-support-Q2'></a> How Do Multi-IO Applications Differ From Single-IO Applications?
 
-So far, SCDF has been letting applications with a single input and output be registered with Spring Cloud Data Flow.
-The application needs to have its input and output endpoints configured to be `input` and `output`, respectively, by using Spring Cloud Stream framework’s `@EnableBinding` annotation (which provides input and output endpoints named `input` and `output`).
-With the new functional support in Spring Cloud Stream and with the ability to configure the function bindings, you can choose named endpoints for your function’s inbound and outbound bindings.
+SCDF previously included support for registering a stream application that had a single input and output, where the application input and output endpoints had to be configured as the `input` and `output` endpoints using the Spring Cloud Stream `@EnableBinding` annotation.
+With the new functional support added to Spring Cloud Stream, as well as configurable function bindings, you can choose named endpoints for the inbound and outbound bindings of your function.
 
-For instance, consider a function that receives multiple inputs and a single output:
+For instance, consider a function that has multiple inputs and a single output:
 
 ```java
 @Bean
 public BiFunction<String, Long, String> process() {
 
   return (inputString, inputLong) -> {
-	// process inputs and produce output
+	// Process inputs and produce output
   };
 }
 ```
 
-For the preceding example, you could define the function bindings as:
+In this example, you could define the following function bindings:
 
 ```java
 spring.cloud.function.defintion: process
@@ -44,7 +43,8 @@ spring.cloud.stream.function.bindings.process-in-1: myInput2
 spring.cloud.stream.function.bindings.process-out-0: processedOutput
 ```
 
-Once you have your function bindings defined as logical names, you can configure these logical names as inbound and outbound ports for your application, as follows, by creating a container image labels with the following key-value pairs:
+After defining function bindings as logical names, you can configure the logical names as inbound and outbound ports for your application.
+Create container image labels with the following key / value pairs:
 
 ```
 configuration-properties.outbound-ports/processedOutput
@@ -52,7 +52,8 @@ configuration-properties.inbound-ports/myInput1,myInput2
 ```
 
 You can use any build tool to apply your label to the container image.
-I chose to use the Maven jib plugin to generate my container image and, as a result, I have added the inbound and outbound ports as container image labels, as follows:
+This example assumes that you used the Maven Jib plugin to generate the container image.
+Add the inbound and outbound ports as container image labels, as shown in the following example:
 
 ```xml
 <container>
@@ -64,28 +65,23 @@ I chose to use the Maven jib plugin to generate my container image and, as a res
   </labels>
 </container>
 ```
-Once built and registered with Spring Cloud Data Flow, this application is ready for wiring up into a Stream.
 
-<div class="note">
-It is important to map the logical names of the function bindings into the inbound and outbound port mapping correctly, as those logical names are the ones used by SCDF to wire up the applications in a Stream.
-We plan to add some automation and validation to map these logical inbound and outbound names from the function bindings (instead of manual entries of these properties) in upcoming releases.
-</div>
+After building the application and registering it with SCDF, you can wire this application into a stream.
 
-### <a id='multi-io-support-Q3'></a> Do we have a sample application that demonstrates multi-IO support?
+<p class="note">Ensure that you correctly map the logical names of the function bindings to the inbound and outbound ports. SCDF uses the logical names to wire up the applications in a stream.</p>
 
-We have a set of sample applications created and ready for you to use to see the multi-IO support in action.
+## <a id='multi-io-support-Q3'></a> Is There a Sample Application Demonstrating Multi-IO Support?
 
-In this sample, you can see how to use a KStream processor (with multiple inputs and single output) in a Streaming pipeline.
+You can use a set of ready-made sample applications to see multi-IO support in action.
+Download the sample code from the [spring-cloud/spring-cloud-dataflow-samples](https://github.com/spring-cloud/spring-cloud-dataflow-samples/tree/master/multi-io-samples/kafka-streams/user-clicks-per-region) repository on GitHub.
 
-This streaming pipeline captures user click events (number of clicks per user) and user region events (user region) as HTTP events.
+The sample applications demonstrate how to build a streaming pipeline using a KStream processor that has multiple inputs and a single output.
+The pipeline captures user click events (the number of clicks per user) and user region events (the user region) as HTTP events.
+The KStream processor application includes a function that joins the `user-clicks` and `user-regions` and then computes the number of user clicks per region.
+Finally, a sink application logs the output of the KStream processor.
 
-The KStream processor adds a function that joins both the `user-clicks` and `user-regions` and computes the number of user clicks per region.
-
-There is a sample sink application that logs the result of the KStream processor’s output.
-
-Register the applications:
-
-Go to App Registry and bulk import the following:
+Begin by registering the sample applications.
+Visit the SCDF App Registry and bulk import the following applications:
 
 ```
 source.clicks-ingest=docker://springcloudstream/multi-io-sample-http-click-ingest:1.0.0-SNAPSHOT
@@ -94,26 +90,23 @@ processor.clicks-per-region=docker://springcloudstream/multi-io-sample-user-clic
 sink.clicks-per-region-logger=docker://springcloudstream/multi-io-sample-log-user-clicks-per-region:1.0.0-SNAPSHOT
 ```
 
-Once added, create a streaming pipeline by using the Stream Editor, as follows:
+After importing the applications, create a streaming pipeline using the Stream Editor:
 
 ![Multi-IO Streaming Pipeline](images/multi-io-stream.png)
 
-You can also create a stream by using the following DSL and deploy the stream:
+You can also deploy a stream created using the multi-IO stream DSL:
 
 ```
 clicks-ingest --server.port=9001 || regions-ingest --server.port=9000 || clicks-per-region :userRegions<:regions-ingest.user-regions :userClicks<:clicks-ingest.user-clicks || clicks-per-region-logger :_<:clicks-per-region.clicksPerRegion
 ```
 
-As you can see the `clicks-per-region` is a KStream application with two inputs and one output.
+`clicks-per-region` is a KStream application that has two inputs and one output.
 
-<div class="note">
-In order to post the HTTP events, you might either need to port-forward your pods (on minikube) or use the service endpoints(if you have a Service endpoint available) of <code>click-ingest</code> and <code>regions-ingest</code> deployments.
-Since this sample is now set up on <code>minikube</code>, the following sample data is posted to <code>http://localhost:9000</code>  and <code>http://localhost:9001</code> after port-forwarding the associated pods.
-</div>
+<p class="note"> To post HTTP events, you may need to either use port forwarding for your pods (if using Minikube) or use the <code>click-ingest</code> and <code>regions-ingest</code> deployments' Service resource endpoints (if available). This example assumes that the sample applications have been deployed on Minikube and that you are using port forwarding for the associated pods.</p>
 
-Post some HTTP events as user region events:
+Post several HTTP events as user region events:
 
-```bash
+```
 curl -X POST http://localhost:9000 -H "username: Glenn" -d "americas" -H "Content-Type: text/plain"
 curl -X POST http://localhost:9000 -H "username: Soby" -d "americas" -H "Content-Type: text/plain"
 curl -X POST http://localhost:9000 -H "username: Janne" -d "europe" -H "Content-Type: text/plain"
@@ -128,9 +121,9 @@ curl -X POST http://localhost:9000 -H "username: Christian" -d "europe" -H "Cont
 curl -X POST http://localhost:9000 -H "username: Thomas" -d "americas" -H "Content-Type: text/plain"
 ```
 
-We can also post some HTTP events as user click events:
+You can also post HTTP events as user click events:
 
-```bash
+```
 curl -X POST http://localhost:9001 -H "username: Glenn" -d 9 -H "Content-Type: text/plain"
 curl -X POST http://localhost:9001 -H "username: Soby" -d 15 -H "Content-Type: text/plain"
 curl -X POST http://localhost:9001 -H "username: Janne" -d 10 -H "Content-Type: text/plain"
@@ -144,8 +137,8 @@ curl -X POST http://localhost:9001 -H "username: Christian" -d 12 -H "Content-Ty
 curl -X POST http://localhost:9001 -H "username: Thomas" -d 12 -H "Content-Type: text/plain"
 ```
 
-
-Once both the user clicks and the user region events are posted, the KStream processor will start processing the user clicks per region and you can see the result at the logger application’s log:
+After both the user click events and the user region events have been posted, the KStream processor will begin to process the user clicks per region.
+You can see the result in the logs of the logger application:
 
 ```
 2020-08-04 21:53:36.735  INFO 1 --- [container-0-C-1] user-clicks-per-region                   : europe: 139
@@ -156,18 +149,16 @@ Once both the user clicks and the user region events are posted, the KStream pro
 
 ```
 
-The code for this sample is located in a [user-clicks-per-region GitHub repository](https://github.com/spring-cloud/spring-cloud-dataflow-samples/tree/master/multi-io-samples/kafka-streams/user-clicks-per-region)
+## <a id='multi-io-support-Q4'></a> How Does Multi-IO Support Differ From Adding a Tap to a Stream?
 
-### <a id='multi-io-support-Q4'></a> How does the multi-IO support differ from adding a tap to a stream?
+When you tap the output of a streaming application in order to create a parallel pipeline, the tap is added to that output of the application.
+The output acts as a publisher for all pipeline consumers that tap into it, and each of the consumers belongs to a unique consumer group.
+Tapping works only for the output of a stream application.
 
-When an output of a streaming application is tapped to create a parallel pipeline, the tap is added to the same `output` of the application.
-The `output` acts as a publisher for all the pipeline consumers tapped into it.
-Each consumer of the `output` also belongs to a unique consumer group.
-Also, you can tap into a stream application’s output **only**.
-In the case of multi-IO support, Spring Cloud Data Flow binds an application that has multiple inputs and outputs.
-Each input or output has its own functional binding and Spring Cloud Data Flow configures the application’s functional binding to a destination (at the messaging system).
+With the new multi-IO support, SCDF binds an application that has multiple inputs and outputs.
+Each input or output has its own functional binding, and SCDF maps the functional binding of the application to a destination at the messaging system.
 
-### <a id='multi-io-support-Q5'></a> How can I achieve multi-IO in SCDF OSS?
+## <a id='multi-io-support-Q5'></a> How Can I Replicate Multi-IO Support in SCDF OSS?
 
-Currently, the multi-IO support is added as a feature **only** to the Pro server and the Pro Dashboard.
-To deploy the multi-IO-based streaming applications with SCDF OSS, you have to use the `App` type and provide the manual configuration of the individual applications’ functional bindings.
+Multi-IO support is currently available only as a feature of the SCDF Pro server and SCDF Pro dashboard.
+To deploy multi-IO streaming applications using SCDF OSS, you must use the `App` type and provide manual configuration for the functional bindings of the individual applications.

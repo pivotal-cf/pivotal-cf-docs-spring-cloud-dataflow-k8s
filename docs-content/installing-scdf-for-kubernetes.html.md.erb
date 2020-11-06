@@ -3,80 +3,138 @@ title: Installing Spring Cloud Data Flow for Kubernetes
 owner: Spring Cloud Data Flow Release Engineering
 ---
 
-This topic describes how to install Spring Cloud Data Flow for Kubernetes.
+This topic describes how to install Spring Cloud Data Flow for Kubernetes (SCDF for Kubernetes).
 
-Before proceeding, review the [Configuring Installation Values](configuring-installation-values.html) topic to ensure that you have configured all of the required or recommended installation resources.
+Before beginning the installation process, review [Configuring Installation Values](configuring-installation-values.html) to ensure that you have configured all required or recommended installation resources.
 
-## <a id='install-scdf-create-imagpe-pull-secret'></a> Creating an Image Pull Secret for Spring Cloud Data Flow for Kubernetes
+## <a id='install-scdf-create-image-pull-secret'></a> Create an Image Pull Secret
 
-Before installing Spring Cloud Data Flow for Kubernetes, you must create a Kubernetes secret that lets the Spring Cloud Data Flow for Kubernetes service accounts pull images from the Tanzu Network Registry or from the registry where you optionally have relocated the images.
-In the namespace where you intend to install, create a secret, as shown in the next example.
+Before installing SCDF for Kubernetes, you must create a Kubernetes secret containing credentials for the image registry that stores SCDF for Kubernetes container images.
+This secret will be used by SCDF for Kubernetes service accounts to pull images from the registry.
+Create the secret in the namespace where you will install SCDF for Kubernetes.
 
-First, set the username and password variables based on your Tanzu Network login credentials or to the credentials for the registry where you have optionally relocated the images.
+If you have not relocated the images, use credentials for the Tanzu Net registry.
+If you have relocated the images to another registry, use credentials for that registry.
 
-```bash
-registry=registry.pivotal.io
-username=<your user name>
-password=<your password>
+To create the secret:
+
+1. Set `username` and `password` environment variables.
+These variables should contain your login credentials for the registry that stores the application images.
+
+    ```
+    $ registry=registry.pivotal.io
+    $ username=<your user name>
+    $ password=<your password>
+    ```
+
+1. Run the `kubectl create secret` command, using the variables set in the previous step.
+
+    ```
+    $ kubectl create secret \
+    docker-registry scdf-image-regcred \
+    --docker-server=${registry} \
+    --docker-username=${username} \
+    --docker-password=${password}
+    ```
+
+<p class="note"><strong>Note</strong>: This secret is mounted by the Data Flow server. If you don't need credentials for relocated images, you must still create this secret with some dummy values.</p>
+
+## <a id='install-dev-environment'></a> Install on the Development Environment
+
+Within the "SCDF for Kubernetes installation files" archive downloaded from VMware Tanzu Network, the `bin` directory contains an installation script named `install-dev.sh`.
+Given an existing Kubernetes cluster, the script automates installation steps for the following components for a development environment:
+
+* Database: PostgreSQL or MySQL
+* Broker: RabbitMQ or Kafka
+* Monitoring: Prometheus with Grafana
+* The Skipper server
+* The Data Flow server
+
+### <a id='install-scdf-for-k8s-dev'></a> Install the Spring Cloud Data Flow system
+
+To install the components mentioned above, run the `install-dev.sh` script.
+This script has three option flags to specify database and broker plus whether monitoring should be included.
+
+To list all available options use the `-h` or `--help` flag:
+
+```
+$ ./bin/install-dev.sh --help
+Install for development help
+Usage: ./bin/install-dev.sh [-d|--database <arg>] [-b|--broker <arg>] [-h|--help]
+	-d, --database: The database to use -- postgresql (default) or mysql
+	-b, --broker: The message broker to use -- rabbitmq (default) or kafka
+	-m, --monitoring: The monitoring solution to install and enable -- none (default) or prometheus
+	-o, --output-dir: The output directory for writing the config files that can be applied later
+	-h, --help: Prints help
 ```
 
-Then create the secret using the values you set in the preceding example:
+You can see that the defaults for the developer install is PostgreSQL for the database, RabbitMQ for the message broker and no monitoring (none).
+To override these defaults simply provide the option flag with the alternate choice.
 
-```bash
-kubectl create secret \
-docker-registry scdf-image-regcred \
---docker-server=${registry} \
---docker-username=${username} \
---docker-password=${password}
+As an example, to install with MySQL, Kafka and Prometheus/Grafana enabled use the following command:
+
+```
+$ ./bin/install-dev.sh --database mysql --broker kafka --monitoring prometheus
 ```
 
-## <a id='install-scdf-for-k8s-dev'></a> Installing Spring Cloud Data Flow for Kubernetes to the dev environment
+### <a id='install-ingress-dev'></a> Install Ingress resource for the Development Environment
 
-The install script located in `bin/install-dev.sh` automates the following steps of installing into an existing Kubernetes cluster.
+If you have an ingress controller and you want to use an Ingress resource, run the following command:
 
-* PostgreSQL
-* RabbitMQ
-* Skipper Server
-* Data Flow server
-
-If you want to use an Ingress resource, run the following command:
-
-```bash
+```
 $ kubectl kustomize ./apps/ingress/kustomize/overlays/dev/ | kapp deploy -y -a ingress -f -
 ```
 
-To uninstall, run the `bin/uninstall-dev.sh` script.
+### <a id='access-grafana-dev'></a> Accessing Grafana Dashboard for the Development Environment
 
-To uninstall the Ingress, run the following command:
+If you enabled monitoring for Prometheus and Grafana, then you can use port-forwarding to access the Grafana dashboard from youtr local browser.
 
-```bash
-kapp delete -y -a ingress
+Run the following command:
+
+```
+$ kubectl port-forward service/grafana 3000:3000
 ```
 
-## <a id='install-scdf-for-k8s-prod'></a> Installing Spring Cloud Data Flow for Kubernetes to the production environment
+You can now access the dashboard at http://localhost:3000
 
-Before running the following command ensure, that the database that Skipper and Data Flow need to use has been provisioned and properly configured in each `application.yaml` configuration file.
+### <a id='uninstall-scdf-for-k8s-dev'></a> Uninstall the Development Environment
 
-To install `skipper` app, run the following command:
+To uninstall the components installed by the `install-dev.sh` script, run the `uninstall-dev.sh` script (also located in the `bin` directory):
+
+```
+$ ./bin/uninstall-dev.sh
+```
+
+To uninstall the Ingress resource, run the following command:
 
 ```bash
+$ kapp delete -y -a ingress
+```
+
+## <a id='install-scdf-for-k8s-prod'></a> Install on the Production Environment
+
+Before installing SCDF for Kubernetes on the `production` environment, ensure that you have provisioned the database used by the Skipper and Data Flow servers and that you have properly configured the database settings in the Data Flow and Skipper applications' `application.yaml` files.
+
+<p class="note"><strong>Note</strong>: The following example commands pipe output to the <code>kapp</code> utility. If you wish, you can instead pipe the command output to a file for management in accordance with your organization's Kubernetes application deployment procedures.</p>
+
+To install the `skipper` application, run the following command:
+
+```
 $ kubectl kustomize ./apps/skipper/kustomize/overlays/production/ | kapp deploy -y -a skipper -f -
 ```
 
-To install `data-flow` app, run the following command:
+To install the `data-flow` application, run the following command:
 
-```bash
+```
 $ kubectl kustomize ./apps/data-flow/kustomize/overlays/production/ | kapp deploy -y -a data-flow -f -
 ```
 
 If you want to use an Ingress resource, run the following command:
 
-```bash
+```
 $ kubectl kustomize ./apps/ingress/kustomize/overlays/production/ | kapp deploy -y -a ingress -f -
 ```
 
-Alternatively, instead of piping the output of `kubectl kustomize` to kapp, you can pipe it to a file and then manage that file in a manner that fits into existing company deployment procedures for Kubernetes applications.
+## <a id='next-connecting-scdf'></a> Next: Connect to SCDF for Kubernetes
 
-## <a id='next-connecting-scdf'></a> Next: Connecting to SCDF for Kubernetes
-
-Proceed to the [Connecting to SCDF for Kubernetes](connecting-scdf-for-kubernetes.html) topic for connection instructions.
+For information about connecting to the newly-installed instance of SCDF for Kubernetes, see [Connecting to SCDF for Kubernetes](connecting-scdf-for-kubernetes.html).
