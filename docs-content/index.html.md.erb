@@ -3,8 +3,6 @@ title: Spring Cloud Data Flow for Kubernetes
 owner: Spring Cloud Data Flow Release Engineering
 ---
 
-<div class="note warning">VMware recommends Spring Cloud Data Flow for Kubernetes v1.2.0-beta-1 only for evaluation environments. Please use Spring Cloud Data Flow for Kubernetes v1.1 for production deployments.</div>
-
 This topic provides an overview of Spring Cloud Data Flow for Kubernetes.
 
 ## <a id='overview'></a> Overview
@@ -26,11 +24,11 @@ The table also provides information about the OSS versions used.
     <th>Details</th>
     <tr>
         <td>Version</td>
-        <td>v1.2.0-beta-1</td>
+        <td>v1.2.0</td>
     </tr>
     <tr>
         <td>Release date</td>
-        <td>November 6, 2020</td>
+        <td>December 7, 2020</td>
     </tr>
     <tr>
         <td>Software component versions:</td>
@@ -38,15 +36,15 @@ The table also provides information about the OSS versions used.
     </tr>
     <tr>
       <td>&nbsp;&nbsp;Spring Cloud Data Flow PRO</td>
-      <td>v1.1.0-M1</td>
+      <td>v1.1.0</td>
     </tr>
     <tr>
       <td>&nbsp;&nbsp;Spring Cloud Skipper OSS</td>
-      <td>v2.6.0-M1</td>
+      <td>v2.6.0</td>
     </tr>
     <tr>
       <td>&nbsp;&nbsp;Composed Task Runner OSS</td>
-      <td>v2.7.0-M1</td>
+      <td>v2.7.0</td>
     </tr>
 </table>
 
@@ -57,6 +55,9 @@ The table also provides information about the OSS versions used.
 * Image-relocation capabilities for air-gapped deployments
 * Support for using the relational databases, message brokers, and identity providers of your choice
 * Easily explore the provisioned software components in a development environment before promoting to production
+
+* Multi-IO stream support for constructing streaming pipelines using applications that have multiple inputs and outputs
+* Container registry updates feature for registered stream and task apps
 
 ## <a id="limitations"></a> Limitations
 
