@@ -118,6 +118,6 @@ You also have an option to mark any of the currently selected versions as the `d
 
 The credentials used in the REST request to connect to the container registry are, by default, obtained from the respective target platform account's `imagePullSecret`.
 
-If you have already configured the `imagePullSecret` (of type `.dockerconfigjson` for the container registry) to SCDF and Skipper deployment accounts, as documented in [SCDF installation documentation](configuring-installation-values.html#imagePullSecrets),the same secret is used to connect to the container registry to retrieve the latest tags of the registered applications.
+If you have already configured the `imagePullSecret` (of type `.dockerconfigjson` for the container registry) to SCDF and Skipper deployment accounts, as documented in [SCDF installation documentation](../configuring-installation-values.html#imagePullSecrets),the same secret is used to connect to the container registry to retrieve the latest tags of the registered applications.
 
 If you use container images from multiple container registries (apart from the one configured through the default `imagePullSecret`), you can add the container registry credentials to SCDF's container registry configure. See [Features Guide](https://dataflow.spring.io/docs/feature-guides/general/application-metadata/#using-metadata-container-image-labels) page for more detail.
