@@ -28,7 +28,7 @@ $ kubectl create secret generic wavefront-api --from-literal=wavefront-api-token
 ```
 
 Next, mount the secret, to make it available for use by the Data Flow server configuration.
-Add the secret mount settings in the `application.yaml` file for the Data Flow server application:
+Add the secret mount settings in the `deployment-patch.yaml` file for the Data Flow server application:
 
 ```yaml
       containers:
@@ -71,52 +71,6 @@ management:
         api-token: ${wavefront-api-token}
         uri: https://<YOUR_WAVEFRONT_URI>.wavefront.com
         source: <YOUR_SOURCE_NAME>
-```
-
-In this example configuration, replace the `<YOUR_WAVEFRONT_URI>` and `<YOUR_SOURCE_NAME>` placeholders with the relevant values.
-The value of the `api-token` field will be automatically resolved from the secret.
-
-#### <a id='wavefront-enable-streams'></a> Enable Wavefront for Stream Applications
-
-To enable Wavefront for deployed stream applications, edit the `application.yaml` file for the Data Flow application. Add the following configuration:
-
-```yaml
-spring:
-  cloud:
-    dataflow:
-      applicationProperties:
-        stream:
-          management:
-            metrics:
-              export:
-                wavefront:
-                  enabled: true
-                  api-token: ${wavefront-api-token}
-                  uri: https://<YOUR_WAVEFRONT_URI>.wavefront.com
-                  source: <YOUR_SOURCE_NAME>
-```
-
-In this example configuration, replace the `<YOUR_WAVEFRONT_URI>` and `<YOUR_SOURCE_NAME>` placeholders with the relevant values.
-The value of the `api-token` field will be automatically resolved from the secret.
-
-#### <a id='wavefront-enable-tasks'></a> Enable Wavefront for Task Applications
-
-To enable Wavefront for deployed task applications, edit the `application.yaml` file for the Data Flow application. Add the following configuration:
-
-```yaml
-spring:
-  cloud:
-    dataflow:
-      applicationProperties:
-        task:
-          management:
-            metrics:
-              export:
-                wavefront:
-                  enabled: true
-                  api-token: ${wavefront-api-token}
-                  uri: https://<YOUR_WAVEFRONT_URI>.wavefront.com
-                  source: <YOUR_SOURCE_NAME>
 ```
 
 In this example configuration, replace the `<YOUR_WAVEFRONT_URI>` and `<YOUR_SOURCE_NAME>` placeholders with the relevant values.
