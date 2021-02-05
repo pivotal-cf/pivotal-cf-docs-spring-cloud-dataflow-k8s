@@ -46,11 +46,11 @@ Add the secret mount settings in the `deployment-patch.yaml` file for the Data F
 
 ```
 
-### <a id='wavefront-enable'></a> Enable Wavefront for Data Flow Server, Stream Applications, and Task Applications
+### <a id='wavefront-enable'></a> Configure Monitoring with Wavefront
 
 See the following section for an example of the configuration to use when enabling Wavefront for SCDF for Kubernetes applications. After the Data Flow server starts up with this configuration, metrics from the applications will be sent to Wavefront.
 
-#### <a id='wavefront-enable-server'></a> Enable Wavefront for the Data Flow Server
+#### <a id='wavefront-enable-server'></a> Enable Wavefront for the Data Flow Server and Stream and Task applications
 
 To enable Wavefront for the Data Flow server, edit the `application.yaml` file for the Data Flow application. Add the following configuration:
 
