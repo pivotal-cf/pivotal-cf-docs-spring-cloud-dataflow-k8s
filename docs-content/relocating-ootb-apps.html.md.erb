@@ -32,9 +32,9 @@ We will relocate the following stream applications:
 We prepare a new `rabbitmq-docker-example.properties` file and add the application type, name, image name and tag for each selected application:
 
 ```
-source.http=docker:springcloudstream/http-source-rabbit:2.1.5.RELEASE
-processor.splitter=docker:springcloudstream/splitter-processor-rabbit:2.1.4.RELEASE
-sink.log=docker:springcloudstream/log-sink-rabbit:2.1.5.RELEASE
+source.http=docker:springcloudstream/http-source-rabbit:3.0.0
+processor.splitter=docker:springcloudstream/splitter-processor-rabbit:3.0.0
+sink.log=docker:springcloudstream/log-sink-rabbit:3.0.0
 ```
 
 Next, we package the properties file plus the referenced images in a `.tgz` archive.
