@@ -213,7 +213,7 @@ To add a JDBC driver, perform the following steps:
 
     ```
     $ jar -u0f spring-cloud-skipper-server-2.6.1.jar BOOT-INF/lib/*.jar
-    $ jar -u0f scdf-pro-server-1.2.0.jar BOOT-INF/lib/*.jar
+    $ jar -u0f scdf-pro-server-1.1.2.jar BOOT-INF/lib/*.jar
     $ jar -u0f spring-cloud-dataflow-composed-task-runner-2.7.1.jar BOOT-INF/lib/*.jar
     ```
 
@@ -246,9 +246,9 @@ Use a base image that is based on JDK 8.
     
     ```
     $ pack build --env BP_JVM_VERSION=8 \
-      --path scdf-pro-server-1.2.0.jar \
+      --path scdf-pro-server-1.1.2.jar \
       --builder gcr.io/paketo-buildpacks/builder:base \
-      --publish ${registry_prefix}/scdf-pro-server:1.2.0-jdbc
+      --publish ${registry_prefix}/scdf-pro-server:1.1.2-jdbc
     ```
 
     To build the container image for the `composed-task-runner` app, run the following command:
@@ -290,7 +290,7 @@ Use a base image that is based on JDK 8.
     images:
     - name: springcloud/spring-cloud-dataflow-server  # Used for Kustomize matching
       newName: registry.example.com/example/scdf-pro-server
-      newTag: 1.2.0-jdbc
+      newTag: 1.1.2-jdbc
       configMapGenerator:
       - name: scdf-server
         files:
