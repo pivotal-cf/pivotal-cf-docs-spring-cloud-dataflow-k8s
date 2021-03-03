@@ -1,21 +1,36 @@
 ---
-title: Creating a Data Pipeline with Spring Cloud Data Flow for Kubernetes
+title: Creating a Data Pipeline with VMware Spring Cloud® Data Flow for Kubernetes
 owner: Spring Cloud Data Flow Release Engineering
 ---
 
+<<<<<<< HEAD
 This topic describes how to get started using Spring Cloud Data Flow for Kubernetes (SCDF for Kubernetes) to quickly create a data pipeline.
+=======
+This topic describes how to get started using VMware Spring Cloud® Data Flow for Kubernetes (SCDF for Kubernetes) to quickly create a data pipeline.
+>>>>>>> v1.2
 
 ## <a id='start-shell'></a> Start the SCDF Shell
 
 First, download and start the SCDF shell. For information about using the shell to connect to the SCDF for Kubernetes server, see [Use the SCDF Shell](./connecting-scdf-for-kubernetes.html#connecting-scdf-shell).
 
+<<<<<<< HEAD
+=======
+```
+$ java -jar spring-cloud-dataflow-shell-2.7.1.jar --dataflow.uri=http://data-flow.example.com
+...
+
+dataflow:>
+>>>>>>> v1.2
 ```
 $ java -jar spring-cloud-dataflow-shell-2.7.0-M1.jar --dataflow.uri=http://data-flow.example.com
 ...
 
+<<<<<<< HEAD
 dataflow:>
 ```
 
+=======
+>>>>>>> v1.2
 ## <a id='import-stream-apps'></a> Import the Stream Applications
 
 Next, import the Spring Cloud Stream application starters, using the SCDF shell `app import` command.

@@ -3,7 +3,7 @@ title: Relocating Spring Cloud Stream and Task Applications
 owner: Spring Cloud Data Flow Release Engineering
 ---
 
-This topic describes how to relocate select Spring Cloud Stream and Spring Cloud Task applications for use with Spring Cloud Data Flow for Kubernetes (SCDF for Kubernetes).
+This topic describes how to relocate select Spring Cloud Stream and Spring Cloud Task applications for use with VMware Spring Cloud® Data Flow for Kubernetes (SCDF for Kubernetes).
 This can be useful if the SCDF for Kubernetes server is deployed in an environment without internet access (an "air-gapped" environment).
 
 The following sections demonstrate the relocation process using three stream applications: the `http` source application, the `split` processor application, and the `log` sink application.
@@ -32,9 +32,9 @@ We will relocate the following stream applications:
 We prepare a new `rabbitmq-docker-example.properties` file and add the application type, name, image name and tag for each selected application:
 
 ```
-source.http=docker:springcloudstream/http-source-rabbit:2.1.5.RELEASE
-processor.splitter=docker:springcloudstream/splitter-processor-rabbit:2.1.4.RELEASE
-sink.log=docker:springcloudstream/log-sink-rabbit:2.1.5.RELEASE
+source.http=docker:springcloudstream/http-source-rabbit:3.0.0
+processor.splitter=docker:springcloudstream/splitter-processor-rabbit:3.0.0
+sink.log=docker:springcloudstream/log-sink-rabbit:3.0.0
 ```
 
 Next, we package the properties file plus the referenced images in a `.tgz` archive.
@@ -68,7 +68,7 @@ prel relocate --repository-prefix $TARGET_REPOSITORY_PREFIX \
 ## <a id='register-stream-apps'></a> Register the Relocated Applications
 
 Finally, you can register the applications with SCDF for Kubernetes, using the the Spring Cloud Data Flow shell.
-For information about connecting to the SCDF for Kubernetes server using the shell, see [Connecting to Spring Cloud Data Flow for Kubernetes](connecting-scdf-for-kubernetes.html).
+For information about connecting to the SCDF for Kubernetes server using the shell, see [Connecting to VMware Spring Cloud® Data Flow for Kubernetes](connecting-scdf-for-kubernetes.html).
 
 ```bash
 dataflow:>app import --uri file:rabbitmq-docker-example-relocated.properties

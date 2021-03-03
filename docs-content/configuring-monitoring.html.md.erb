@@ -1,9 +1,13 @@
 ---
-title: Configuring Monitoring for Spring Cloud Data Flow for Kubernetes
+title: Configuring Monitoring for VMware Spring Cloud® Data Flow for Kubernetes
 owner: Spring Cloud Data Flow Release Engineering
 ---
 
+<<<<<<< HEAD
 This topic describes how to configure monitoring for Spring Cloud Data Flow for Kubernetes (SCDF for Kubernetes).
+=======
+This topic describes how to configure monitoring for VMware Spring Cloud® Data Flow for Kubernetes (SCDF for Kubernetes).
+>>>>>>> v1.2
 SCDF for Kubernetes can use either [Wavefront](#wavefront-monitoring) or [Prometheus](#prometheus-monitoring).
 
 ## <a id='wavefront-monitoring'></a> Configure Monitoring with Wavefront
@@ -28,7 +32,11 @@ $ kubectl create secret generic wavefront-api --from-literal=wavefront-api-token
 ```
 
 Next, mount the secret, to make it available for use by the Data Flow server configuration.
+<<<<<<< HEAD
 Add the secret mount settings in the `application.yaml` file for the Data Flow server application:
+=======
+Add the secret mount settings in the `deployment-patch.yaml` file for the Data Flow server application:
+>>>>>>> v1.2
 
 ```yaml
       containers:
@@ -46,6 +54,7 @@ Add the secret mount settings in the `application.yaml` file for the Data Flow s
 
 ```
 
+<<<<<<< HEAD
 ### <a id='wavefront-enable'></a> Enable Wavefront for Data Flow Server, Stream Applications, and Task Applications
 
 You can enable Wavefront for the Data Flow server application, for stream applications, or for task applications, based on your needs. Each is configured independently.
@@ -53,6 +62,13 @@ You can enable Wavefront for the Data Flow server application, for stream applic
 See the following sections for examples of the configuration to use when enabling Wavefront for SCDF for Kubernetes applications. After the Data Flow server starts up with this configuration, metrics from the applications will be sent to Wavefront.
 
 #### <a id='wavefront-enable-server'></a> Enable Wavefront for the Data Flow Server
+=======
+### <a id='wavefront-enable'></a> Configure Monitoring with Wavefront
+
+See the following section for an example of the configuration to use when enabling Wavefront for SCDF for Kubernetes applications. After the Data Flow server starts up with this configuration, metrics from the applications will be sent to Wavefront.
+
+#### <a id='wavefront-enable-server'></a> Enable Wavefront for the Data Flow Server and Stream and Task applications
+>>>>>>> v1.2
 
 To enable Wavefront for the Data Flow server, edit the `application.yaml` file for the Data Flow application. Add the following configuration:
 
@@ -71,6 +87,7 @@ management:
         api-token: ${wavefront-api-token}
         uri: https://<YOUR_WAVEFRONT_URI>.wavefront.com
         source: <YOUR_SOURCE_NAME>
+<<<<<<< HEAD
 ```
 
 In this example configuration, replace the `<YOUR_WAVEFRONT_URI>` and `<YOUR_SOURCE_NAME>` placeholders with the relevant values.
@@ -117,6 +134,8 @@ spring:
                   api-token: ${wavefront-api-token}
                   uri: https://<YOUR_WAVEFRONT_URI>.wavefront.com
                   source: <YOUR_SOURCE_NAME>
+=======
+>>>>>>> v1.2
 ```
 
 In this example configuration, replace the `<YOUR_WAVEFRONT_URI>` and `<YOUR_SOURCE_NAME>` placeholders with the relevant values.
