@@ -76,7 +76,7 @@ To access the dashboard:
 
 To run the Spring Cloud Data Flow shell, you must have the following installed on your local machine:
 
-* The Spring Cloud Data Flow shell; [download from the Spring Artifact repository](https://repo.spring.io/milestone/org/springframework/cloud/spring-cloud-dataflow-shell/2.7.1/spring-cloud-dataflow-shell-2.7.1.jar) (JAR file)
+* The Spring Cloud Data Flow shell; [download from the Spring Artifact repository](https://repo.spring.io/milestone/org/springframework/cloud/spring-cloud-dataflow-shell/2.8.0-M1/spring-cloud-dataflow-shell-2.8.0-M1.jar) (JAR file)
 * Java version 8 or later
 
 <p class="note">To download the shell, you can also follow the link on the <strong>About</strong> page of the SCDF dashboard.</p>
@@ -84,7 +84,7 @@ To run the Spring Cloud Data Flow shell, you must have the following installed o
 You can start the shell using `java -jar`. To list all available options, pass the `--help` option.
 
 ```
-$ java -jar spring-cloud-dataflow-shell-2.7.1.jar --help
+$ java -jar spring-cloud-dataflow-shell-2.8.1.jar --help
 Data Flow Options:
   --dataflow.uri=<uri>                              Address of the Data Flow Server [default: http://localhost:9393].
   --dataflow.username=<USER>                        Username of the Data Flow Server [no default].
@@ -111,7 +111,7 @@ To connect to the server:
     ```
     $ kubectl get ingress scdf-ingress
     NAME           HOSTS                            ADDRESS          PORTS   AGE
-scdf-ingress   data-flow.35.232.203.79.xip.io   35.225.206.207   80      23h
+    scdf-ingress   data-flow.35.232.203.79.xip.io   35.225.206.207   80      23h
     ```
 
     The value shown for `HOSTS` is the DNS name.
@@ -119,7 +119,7 @@ scdf-ingress   data-flow.35.232.203.79.xip.io   35.225.206.207   80      23h
 1. Start the shell, passing the `dataflow.uri` option with a value matching the DNS name obtained in the previous step. In this example, you can connect to the server by starting the shell with the following command:
     
     ```
-    $ java -jar spring-cloud-dataflow-shell-2.7.1.jar --dataflow.uri=http://data-flow.35.232.203.79.xip.io
+    $ java -jar spring-cloud-dataflow-shell-2.8.0-M1.jar --dataflow.uri=http://data-flow.35.232.203.79.xip.io
     ```
 
 ### <a id='scdf-shell-without-ingress'></a> If You Did Not Install an Ingress Resource
@@ -145,7 +145,7 @@ To connect to the server:
     If the `scdf-server` service uses a `LoadBalancer` resource, start the shell and pass the `dataflow.uri` option with a value matching the IP address obtained in the previous step. In this example, you can connect to the server by starting the shell with the following command:
 
     ```
-    $ java -jar spring-cloud-dataflow-shell-2.7.1.jar --dataflow.uri=http://10.55.253.237
+    $ java -jar spring-cloud-dataflow-shell-2.8.0-M1.jar --dataflow.uri=http://10.55.253.237
     ```
 
 1. If the `scdf-server` service does not use a `LoadBalancer` resource, you can use port forwarding to access the service. Run the following `kubectl` command (this example uses a local port of `8080`):
@@ -160,7 +160,7 @@ To connect to the server:
     You can now connect to the server by starting the shell and passing the `dataflow.uri` option with a value of `http://localhost:8080`:
     
     ```
-    $ java -jar spring-cloud-dataflow-shell-2.7.1.jar --dataflow.uri=http://localhost:8080
+    $ java -jar spring-cloud-dataflow-shell-2.8.0-M1.jar --dataflow.uri=http://localhost:8080
     ```
 
 ### <a id='scdf-shell-running-commands'></a> Run Shell Commands
@@ -172,7 +172,7 @@ dataflow:>
 ```
 
 You can now issue any of the available commands.
-For a guide to using the shell, see the [Shell](https://docs.spring.io/spring-cloud-dataflow/docs/2.7.1/reference/htmlsingle/#shell) section of the [Spring Cloud Data Flow Reference Guide](https://docs.spring.io/spring-cloud-dataflow/docs/2.7.1/reference/htmlsingle/).
+For a guide to using the shell, see the [Shell](https://docs.spring.io/spring-cloud-dataflow/docs/2.8.0/reference/htmlsingle/#shell) section of the [Spring Cloud Data Flow Reference Guide](https://docs.spring.io/spring-cloud-dataflow/docs/2.8.0/reference/htmlsingle/).
 
 ## <a id='next-pipeline'></a> Next: Create a Data Pipeline
 
