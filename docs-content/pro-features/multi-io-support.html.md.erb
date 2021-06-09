@@ -44,7 +44,7 @@ spring.cloud.stream.function.bindings.process-out-0: processedOutput
 ```
 
 After defining function bindings as logical names, you can configure the logical names as inbound and outbound ports for your application.
-Create container image labels with the following key / value pairs:
+Create <%= vars.scdf_image %> labels with the following key / value pairs:
 
 ```
 configuration-properties.outbound-ports/processedOutput
@@ -52,8 +52,8 @@ configuration-properties.inbound-ports/myInput1,myInput2
 ```
 
 You can use any build tool to apply your label to the container image.
-This example assumes that you used the Maven Jib plugin to generate the container image.
-Add the inbound and outbound ports as container image labels, as shown in the following example:
+This example assumes that you used the Maven Jib plugin to generate the <%= vars.scdf_image %>.
+Add the inbound and outbound ports as <%= vars.scdf_image %> labels, as shown in the following example:
 
 ```xml
 <container>
@@ -83,12 +83,23 @@ Finally, a sink application logs the output of the KStream processor.
 Begin by registering the sample applications.
 Visit the SCDF App Registry and bulk import the following applications:
 
+<% if vars.scdf_product == 'K8s' %>
 ```
 source.clicks-ingest=docker://springcloudstream/multi-io-sample-http-click-ingest:1.0.0-SNAPSHOT
 source.regions-ingest=docker://springcloudstream/multi-io-sample-http-region-ingest:1.0.0-SNAPSHOT
 processor.clicks-per-region=docker://springcloudstream/multi-io-sample-user-clicks-per-region-processor:1.0.0-SNAPSHOT
 sink.clicks-per-region-logger=docker://springcloudstream/multi-io-sample-log-user-clicks-per-region:1.0.0-SNAPSHOT
 ```
+<% end %>
+
+<% if vars.scdf_product == 'TAS' %>
+```
+source.clicks-ingest=maven://org.springframework.cloud.dataflow.samples:http-click-ingest:1.2.0-SNAPSHOT
+source.regions-ingest=maven://org.springframework.cloud.dataflow.samples:http-region-ingest:1.2.0-SNAPSHOT
+processor.clicks-per-region=maven://org.springframework.cloud.dataflow.samples:user-clicks-per-region-processor:1.2.0-SNAPSHOT
+sink.clicks-per-region-logger=maven://org.springframework.cloud.dataflow.samples:log-user-clicks-per-region:1.2.0-SNAPSHOT
+```
+<% end %>
 
 After importing the applications, create a streaming pipeline using the Stream Editor:
 
@@ -102,7 +113,9 @@ clicks-ingest --server.port=9001 || regions-ingest --server.port=9000 || clicks-
 
 `clicks-per-region` is a KStream application that has two inputs and one output.
 
+<% if vars.scdf_product == 'K8s' %>
 <p class="note"> To post HTTP events, you may need to either use port forwarding for your pods (if using Minikube) or use the <code>click-ingest</code> and <code>regions-ingest</code> deployments' Service resource endpoints (if available). This example assumes that the sample applications have been deployed on Minikube and that you are using port forwarding for the associated pods.</p>
+<% end %>
 
 Post several HTTP events as user region events:
 

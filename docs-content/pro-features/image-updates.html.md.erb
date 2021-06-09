@@ -1,23 +1,25 @@
 ---
-title: Container Registry Updates in VMware Spring Cloud® Data Flow for Kubernetes
+title: Image Updates in VMware Spring Cloud® Data Flow for Kubernetes
 owner: Spring Cloud Data Flow Release Engineering
 ---
 
-This topic describes how to use the new Pro server feature for managing container image versions for stream and task apps used with VMware Spring Cloud® Data Flow for Kubernetes (SCDF for Kubernetes).
+This topic describes how to use the new Pro server feature for managing <%= vars.scdf_image %> versions for stream and task apps used with VMware Spring Cloud® Data Flow for Kubernetes (SCDF for Kubernetes).
 
 ## <a id='new-application-version-alerts'></a> New Application Version Alerts and Continuous Delivery
 
-The SCDF Pro dashboard can register applications by automatically retrieving the available tags from container images in the backing Docker registry. With this automation in place, users can update existing Streams with these new versions of the registered applications.
+The SCDF Pro dashboard can register applications by automatically retrieving the available tags from <%= vars.scdf_images %> in the backing <%= vars.scdf_registry %>. With this automation in place, users can update existing Streams with these new versions of the registered applications.
 
-Once an application's container image is registered in SCDF's application registry, the server retrieves the latest available tags associated with the image by using the Docker registry REST API.
+Once an application's <%= vars.scdf_image %> is registered in SCDF's application registry, the server retrieves the latest available tags associated with the image by using the <%= vars.scdf_registry %> REST API.
 
-If the registry that is being used requires authentication, please see the [Managing Registry Authentication](#registry-authentication) section.
+<% if vars.scdf_product == 'K8s' %>
+If the <%= vars.scdf_registry_name %> that is being used requires authentication, please see the [Managing Authentication](#authentication) section.
+<% end %>
 
 <div class="note">The current implementation checks for new tags available above (that is, more recent than) the current default version.
 
 For instance, if you have an app registered with a tag of version 2.0.0, all the versions above 2.0.0 are retrieved (if available) and listed in the SCDF Dashboard as availabletags.</div>
 
-You can update the registered container images from the `Applications` page. You can check for:
+You can update the registered <%= vars.scdf_images %> from the `Applications` page. You can check for:
 
 * updates on all the registered applications
 * updates on the applications that are used by the Streams
@@ -58,7 +60,7 @@ For each selected application, you can see the list of available versions.
 
 Note that the list of available versions shown here are the net-new versions for the same application. 
 
-You can also choose a version to be the `default` version for the application in SCDF’s application registry Going forward, this new version is used as the default version for stream deployments.
+You can also choose a version to be the `default` version for the application in SCDF’s application registry. Going forward, this new version is used as the default version for stream deployments.
 
 ![Streams Update Apps Version Select](images/Stream_Update_AppVersionSelect.png)
 
@@ -114,10 +116,12 @@ You also have an option to mark any of the currently selected versions as the `d
 
 ![Application Register](images/Application_Register.png)
 
-### <a id='registry-authentication'></a> Managing Registry Authentication
+<% if vars.scdf_product == 'banana' %>
+### <a id='authentication'></a> Managing Authentication
 
 The credentials used in the REST request to connect to the container registry are, by default, obtained from the respective target platform account's `imagePullSecret`.
 
 If you have already configured the `imagePullSecret` (of type `.dockerconfigjson` for the container registry) to SCDF and Skipper deployment accounts, as documented in [SCDF installation documentation](../configuring-installation-values.html#imagePullSecrets),the same secret is used to connect to the container registry to retrieve the latest tags of the registered applications.
 
 If you use container images from multiple container registries (apart from the one configured through the default `imagePullSecret`), you can add the container registry credentials to SCDF's container registry configure. See [Features Guide](https://dataflow.spring.io/docs/feature-guides/general/application-metadata/#using-metadata-container-image-labels) page for more detail.
+<% end %>
