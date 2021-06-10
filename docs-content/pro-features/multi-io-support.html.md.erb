@@ -1,13 +1,13 @@
 ---
-title: Multi-IO Stream Support in VMware Spring Cloud® Data Flow for Kubernetes
+title: Multi-IO Stream Support
 owner: Spring Cloud Data Flow Release Engineering
 ---
 
 Spring Cloud Data Flow OSS currently only supports streaming pipelines built using applications that have a single input and output.
 The SCDF Pro server adds support for creating and deploying streaming pipelines using applications that have multiple inputs and outputs (this is referred to as "multi-IO").
-Spring Cloud Stream includes built-in support for binding multi-IO applications to the messaging system, and VMware Spring Cloud® Data Flow for Kubernetes (SCDF for Kubernetes) can embed multi-IO applications into a streaming pipeline.
+Spring Cloud Stream includes built-in support for binding multi-IO applications to the messaging system, and <%= vars.product_full_name %> (<% vars.product_short_name %>) can embed multi-IO applications into a streaming pipeline.
 
-This topic describes some highlights of the multi-IO support in SCDF for Kubernetes and answers some frequently-asked questions.
+This topic describes some highlights of the multi-IO support in <%= vars.product_short_name %> and answers some frequently-asked questions.
 
 ## <a id='multi-io-support-Q1'></a> What Are the Multi-IO Features in the SCDF Pro Server?
 
@@ -51,6 +51,7 @@ configuration-properties.outbound-ports/processedOutput
 configuration-properties.inbound-ports/myInput1,myInput2
 ```
 
+<% if vars.scdf_product == 'K8s' %>
 You can use any build tool to apply your label to the container image.
 This example assumes that you used the Maven Jib plugin to generate the <%= vars.scdf_image %>.
 Add the inbound and outbound ports as <%= vars.scdf_image %> labels, as shown in the following example:
@@ -65,6 +66,49 @@ Add the inbound and outbound ports as <%= vars.scdf_image %> labels, as shown in
   </labels>
 </container>
 ```
+<% end %>
+
+<% if vars.scdf_product == 'TAS' %>
+You can use the Data Flow apps metadata plugin to update the port-mapping into your configuration.
+The file `dataflow-configuration-port-mapping.properties` gets generated based on your inbound/outbound destination configurations.
+
+```xml
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>properties-maven-plugin</artifactId>
+        <version>1.0.0</version>
+        <executions>
+          <execution>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>read-project-properties</goal>
+            </goals>
+            <configuration>
+              <files>
+                <file>
+                  ${project.build.outputDirectory}/META-INF/dataflow-configuration-port-mapping.properties
+                </file>
+              </files>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-dataflow-apps-metadata-plugin</artifactId>
+        <version>1.0.3</version>
+        <executions>
+          <execution>
+            <id>aggregate-metadata</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>aggregate-metadata</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+```
+<% end %>
 
 After building the application and registering it with SCDF, you can wire this application into a stream.
 
@@ -85,10 +129,10 @@ Visit the SCDF App Registry and bulk import the following applications:
 
 <% if vars.scdf_product == 'K8s' %>
 ```
-source.clicks-ingest=docker://springcloudstream/multi-io-sample-http-click-ingest:1.0.0-SNAPSHOT
-source.regions-ingest=docker://springcloudstream/multi-io-sample-http-region-ingest:1.0.0-SNAPSHOT
-processor.clicks-per-region=docker://springcloudstream/multi-io-sample-user-clicks-per-region-processor:1.0.0-SNAPSHOT
-sink.clicks-per-region-logger=docker://springcloudstream/multi-io-sample-log-user-clicks-per-region:1.0.0-SNAPSHOT
+source.clicks-ingest=docker://springcloudstream/multi-io-sample-http-click-ingest:1.2.0-SNAPSHOT
+source.regions-ingest=docker://springcloudstream/multi-io-sample-http-region-ingest:1.2.0-SNAPSHOT
+processor.clicks-per-region=docker://springcloudstream/multi-io-sample-user-clicks-per-region-processor:1.2.0-SNAPSHOT
+sink.clicks-per-region-logger=docker://springcloudstream/multi-io-sample-log-user-clicks-per-region:1.2.0-SNAPSHOT
 ```
 <% end %>
 
