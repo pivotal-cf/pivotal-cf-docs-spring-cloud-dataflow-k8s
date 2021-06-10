@@ -7,17 +7,21 @@ This topic describes how to use the new Pro server feature for managing <%= vars
 
 ## <a id='new-application-version-alerts'></a> New Application Version Alerts and Continuous Delivery
 
-The SCDF Pro dashboard can register applications by automatically retrieving the available tags from <%= vars.scdf_images %> in the backing <%= vars.scdf_registry %>. With this automation in place, users can update existing Streams with these new versions of the registered applications.
+The SCDF Pro dashboard can register applications by automatically retrieving the available <%= vars.scdf_tags %> from <%= vars.scdf_images %> in the backing <%= vars.scdf_registry %>. With this automation in place, users can update existing Streams with these new versions of the registered applications.
 
-Once an application's <%= vars.scdf_image %> is registered in SCDF's application registry, the server retrieves the latest available tags associated with the image by using the <%= vars.scdf_registry %> REST API.
+Once an application's <%= vars.scdf_image %> is registered in SCDF's application registry, the server retrieves the latest available <%= vars.scdf_tags %> associated with the image by using the <%= vars.scdf_registry %> REST API.
 
 <% if vars.scdf_product == 'K8s' %>
 If the <%= vars.scdf_registry_name %> that is being used requires authentication, please see the [Managing Authentication](#authentication) section.
 <% end %>
 
-<div class="note">The current implementation checks for new tags available above (that is, more recent than) the current default version.
+<% if vars.scdf_product == 'TAS' %>
+If the repository that is being used requires authentication, please see the [Maven Configuration](https://docs.spring.io/spring-cloud-dataflow/docs/current/reference/htmlsingle/#configuration-maven) from the documentation.
+<% end %>
 
-For instance, if you have an app registered with a version of 2.0.0, all the versions above 2.0.0 are retrieved (if available) and listed in the SCDF Dashboard as availabletags.</div>
+<div class="note">The current implementation checks for new <%= vars.scdf_tags %> available above (that is, more recent than) the current default version.
+
+For instance, if you have an app registered with a version of 2.0.0, all the versions above 2.0.0 are retrieved (if available) and listed in the SCDF Dashboard as available <%= vars.scdf_tags %>.</div>
 
 You can update the registered <%= vars.scdf_images %> from the `Applications` page. You can check for:
 
@@ -27,7 +31,7 @@ You can update the registered <%= vars.scdf_images %> from the `Applications` pa
 
 ![Check for updates](images/Applications_Check_Updates.png)
 
-<div class="note">Since this operation involves getting the tags of all the corresponding images, it may take a few seconds to minutes depending on how many applications you have registered.</div>
+<div class="note">Since this operation involves getting the <%= vars.scdf_tags %> of all the corresponding images, it may take a few seconds to minutes depending on how many applications you have registered.</div>
 
 Once the updates are available, the corresponding application is updated with the `i` icon to alert that there are new versions available. For instance, in the following screenshot, you can see that the application `filter` has new versions available.
 
