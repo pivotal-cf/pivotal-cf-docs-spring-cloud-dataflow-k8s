@@ -51,19 +51,44 @@ configuration-properties.outbound-ports/processedOutput
 configuration-properties.inbound-ports/myInput1,myInput2
 ```
 
-You can use any build tool to apply your label to the container image.
-This example assumes that you used the Maven Jib plugin to generate the container image.
-Add the inbound and outbound ports as container image labels, as shown in the following example:
+You can use dataflow apps metadata plugin to update the port-mapping into your configuration.
+The file `dataflow-configuration-port-mapping.properties` gets generated based on your inbound/outbound destination configurations.
 
 ```xml
-<container>
-  <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
-  <format>Docker</format>
-  <labels>
-    <configuration-properties.outbound-ports>processedOutput</configuration-properties.outbound-ports>
-    <configuration-properties.inbound-ports>myInput1,myInput2</configuration-properties.inbound-ports>
-  </labels>
-</container>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>properties-maven-plugin</artifactId>
+        <version>1.0.0</version>
+        <executions>
+          <execution>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>read-project-properties</goal>
+            </goals>
+            <configuration>
+              <files>
+                <file>
+                  ${project.build.outputDirectory}/META-INF/dataflow-configuration-port-mapping.properties
+                </file>
+              </files>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-dataflow-apps-metadata-plugin</artifactId>
+        <version>1.0.3</version>
+        <executions>
+          <execution>
+            <id>aggregate-metadata</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>aggregate-metadata</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
 ```
 
 After building the application and registering it with SCDF, you can wire this application into a stream.
@@ -84,10 +109,10 @@ Begin by registering the sample applications.
 Visit the SCDF App Registry and bulk import the following applications:
 
 ```
-source.clicks-ingest=docker://springcloudstream/multi-io-sample-http-click-ingest:1.2.0-SNAPSHOT
-source.regions-ingest=docker://springcloudstream/multi-io-sample-http-region-ingest:1.2.0-SNAPSHOT
-processor.clicks-per-region=docker://springcloudstream/multi-io-sample-user-clicks-per-region-processor:1.2.0-SNAPSHOT
-sink.clicks-per-region-logger=docker://springcloudstream/multi-io-sample-log-user-clicks-per-region:1.2.0-SNAPSHOT
+source.clicks-ingest=maven://org.springframework.cloud.dataflow.samples:http-click-ingest:1.2.0-SNAPSHOT
+source.regions-ingest=maven://org.springframework.cloud.dataflow.samples:http-region-ingest:1.2.0-SNAPSHOT
+processor.clicks-per-region=maven://org.springframework.cloud.dataflow.samples:user-clicks-per-region-processor:1.2.0-SNAPSHOT
+sink.clicks-per-region-logger=maven://org.springframework.cloud.dataflow.samples:log-user-clicks-per-region:1.2.0-SNAPSHOT
 ```
 
 After importing the applications, create a streaming pipeline using the Stream Editor:
